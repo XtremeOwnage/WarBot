@@ -258,7 +258,7 @@ class persistantStorage {
 
 }
 
-class NotificationSettings {
+export class NotificationSettings {
     constructor() {
         this.WarPrepAlmostOver = true;
         this.WarPrepStarted = true;

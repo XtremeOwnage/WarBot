@@ -221,16 +221,27 @@ function SendMessagesForThisWar(cfg: BotCommonConfig) {
 
 
 process.argv.forEach(function (val, index, array) {
+    console.debug("Args: " + index + ': ' + val);
     if (val.startsWith('--')) {
         switch (val) {
-            case "--debug": {
+            case "--debug":
                 console.info("Debug mode specified via args.");
                 process.on('uncaughtException', UncaughtExceptionHandler);
                 debug = true;
-            }
+                break;
+
+            case "--token":
+                console.info("Setting Token");
+                let tok: string = array[index + 1];
+                console.info("Token = " + tok);
+                if (tok && tok != "") {
+                    DiscordSetup.Token = tok;
+                } else {
+                    console.warn("Token switch was specified, but, unable to find token.");
+                }
+                break;
+
         }
-    } else {
-        console.log(index + ': ' + val);
     }
 });
 

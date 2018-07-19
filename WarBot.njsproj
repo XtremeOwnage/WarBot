@@ -4,7 +4,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>WarBot</Name>
     <RootNamespace>WarBot</RootNamespace>
-    <ScriptArguments>--debug</ScriptArguments>
+    <ScriptArguments>--debug --token NDM3OTgzNzIyMTkzNTUxMzYz.Dd9mRA.P3e9aIONAjn3VOCMX3OYjkK93zo</ScriptArguments>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -12,7 +12,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>36b63e14-4a93-495a-bf1d-536a2e6a1828</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>bin\bot.js</StartupFile>
+    <StartupFile>src\bot.ts</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -36,8 +36,9 @@
     <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
     <TypeScriptOutFile>
     </TypeScriptOutFile>
-    <TypeScriptOutDir>C:\Users\oke17219\source\repos\WarBot\WarBot\bin</TypeScriptOutDir>
-    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptOutDir>
+    </TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
     <TypeScriptMapRoot />
