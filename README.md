@@ -18,6 +18,11 @@ The following commands should provision most, if not all features of WarBot
 * bot, set leader role @Admins
 * bot, set website http://my_site_here/
 
+# Validate Settings
+
+To validate or display the current settings configured, please use the command:
+* bot, show config
+
 # Invite URL
 To Invite WarBot to your discord server, Please visit this url:
 
@@ -37,3 +42,5 @@ Warbot will reply to either bot, {command} or @WarBot {command}.
 More details can be found at https://xtremeownage.com/index.php?threads/version-1-0-released.20561/
 
 You may join the discord server @ https://discord.gg/G4DUT7N to talk to me directly.
+
+To submit a request for a new feature, please submit through github via https://github.com/XtremeOwnage/WarBot/issues/new/choose
