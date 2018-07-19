@@ -47,6 +47,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="package.json" />
     <Content Include="README.md" />
   </ItemGroup>
