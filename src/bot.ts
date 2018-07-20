@@ -1,4 +1,4 @@
-import { Client, Channel, Guild, TextChannel, DMChannel, User } from "discord.js";
+import { Client, Channel, Guild, TextChannel, DMChannel, User, DiscordAPIError } from "discord.js";
 import { BotCommonConfig } from './BotCommonConfig';
 import * as Discord_Actions from './DiscordBot_Actions';
 import { HandleCommand_async } from './Discord_HandleChatMessage';
@@ -6,23 +6,24 @@ import { RecurrenceRule, scheduleJob } from 'node-schedule';
 import * as LOG from './Discord_Logging';
 import * as async from 'async';
 import { error } from "util";
+import { fail } from "assert";
 
 let DiscordSetup = {
     Token: "",
     UserName: "WarBot"
 };
 
+//Holds an array of Config objects, to guilds.
 let ConfigDictionary: Map<string, BotCommonConfig> = new Map<string, BotCommonConfig>();
+
+//Reference to the bot class.
 let bot: Client = new Client;
+
+//Determines if this bot is running in debug mode. This will seperate the logs and actions from regular production activities.
 let debug: boolean = false;
 
-function UncaughtExceptionHandler(err) {
-    console.log("Uncaught Exception Encountered!!");
-    console.log("err: ", err);
-    console.log("Stack trace: ", err.stack);
-
-    //A "Hack" to keep my visual studio from automatically closing the output window....
-    setInterval(function () { }, 100000);
+async function UncaughtExceptionHandler(err: Error) {
+    await LOG.Error_async(null, "UncaughtExceptionHandler", null, err);
 }
 
 function DiscordStartUp() {
@@ -31,7 +32,7 @@ function DiscordStartUp() {
         if (shouldReturn_TestCheck(guild)) { return; }
         let cfg: BotCommonConfig = await new BotCommonConfig(bot, guild);
         await Discord_Actions.Bot_JoinedServer(cfg);
-        setGuild(guild, cfg);
+        setConfig(guild, cfg);
     });
     bot.on('guildDelete', async (guild: Guild) => {
         if (shouldReturn_TestCheck(guild)) { return; }
@@ -49,24 +50,29 @@ function DiscordStartUp() {
         }
     });
     bot.on('error', async function (error: Error) {
-        await LOG.Log_Global_Error_async(error);
+        await LOG.Error_async(null, "bot.on.Error", null, error);
     });
     bot.on('ready', async () => {
         await LOG.Initialize_Logging(bot, debug);
 
+        //Set the exception handler, AFTER the logging library is initialized.
+        process.on('uncaughtException', UncaughtExceptionHandler);
+
+        //Send a log message. Useful to know if the process is crashing over and over.
         await LOG.Process_Started_async(bot.user.tag);
 
-        await bot.user.setUsername(DiscordSetup.UserName);
-        await bot.user.setStatus("online");
-        await bot.user.setActivity('Hustle Castle', { type: 'PLAYING' });
+        //Set Presence to "Online".
+        await Discord_Actions.ComeOnline(bot);
 
-        async.each(bot.guilds.values(), function (guild: Guild) {
+        //Initalize the config repository for each guild.
+        async.each(bot.guilds.values(), async function (guild: Guild) {
             if (shouldReturn_TestCheck(guild)) { return; }
             let cfg: BotCommonConfig = new BotCommonConfig(bot, guild);
-            Discord_Actions.ConnectedToServer(cfg);
-            setGuild(guild, cfg);
+            await Discord_Actions.ConnectedToServer_async(cfg);
+            setConfig(guild, cfg);
         });
 
+        //Schedule the notification events.
         ScheduleEvents();
     });
     bot.on('message', async function (msg) {
@@ -74,70 +80,76 @@ function DiscordStartUp() {
         try {
             //Ignore anything from a private channel, or anything without a guild.
             if (!msg.guild || !msg.guild.id || msg.channel instanceof DMChannel) return;
+
             //Prevents test from running in prod, and vise-versa.
             else if (shouldReturn_TestCheck(msg.guild)) return;
-            //Ignore other bots.
+
+            //Ignore other bots... per bot-etiquette
             else if (msg.author.bot == true) return;
 
-            //Start the logic.
+            //Fetch this guild's config object.
             cfg = getConfig(msg.guild);
 
-            //Throw exception if there is no defined config.
+            //Throw exception if there is no defined config... 
             if (!cfg) throw new Error("CFG is not defined.");
 
             if (msg.channel instanceof TextChannel) {
                 //If the message came from one of the logging channels, abort.
                 if (LOG.IsLogChannel(msg.channel)) return;
 
-                //Log the message for diagnostics.
-                await LOG.Log_ReceivedMessage_async(msg);
-
+                let ToMe: Boolean = false;
                 let Message: string = msg.content.trim();
 
                 if (msg.isMemberMentioned(cfg.Bot.user) && Message.startsWith(cfg.Guild.me.toString())) {
-                    // await msg.channel.send("(DEBUG) Message: " + Message);
-                    // await msg.channel.send("(DEBUG) Me: " + cfg.Guild.me.toString());
                     let Me: number = cfg.Guild.me.toString().length;
                     Message = Message.substr(Me, Message.length - Me).trim();
                     if (Message.startsWith(',')) {
                         Message = Message.substr(1, Message.length - 1);
                     }
-                    //await msg.channel.send("(DEBUG) Formatted: " + Message);
+                    ToMe = true;
                 } else if (msg.content.toLowerCase().startsWith("bot,")) {
                     Message = Message.substr(4, Message.length - 4);
+                    ToMe = true;
                 } else {
                     return;
                 }
-                await HandleCommand_async(Message.trim(), msg, cfg);
+
+                if (ToMe) {
+                    //Log the message for diagnostics.
+                    await LOG.Chat_Logging_async(msg);
+
+                    //Execute the command handler.
+                    await HandleCommand_async(Message.trim(), msg, cfg);
+                }
 
             } else {
-                await LOG.UnHandled_MessageType_async(msg.guild, msg);
+                await LOG.DebugOutput_async(msg.guild, "Encountered unhandled message type.");
             }
         } catch (err) {
-            await LOG.Error_async(cfg, "Handle_TextChannel_Message_async", err);
+            await LOG.Error_async(cfg, "bot.on.Message", null, err);
         }
     });
-
 }
 
 
-function setGuild(guild: Guild, cfg: BotCommonConfig) {
+function setConfig(guild: Guild, cfg: BotCommonConfig) {
     ConfigDictionary.set(guild.id, cfg);
 }
 function getConfig(guild: Guild): BotCommonConfig {
     let a: BotCommonConfig = ConfigDictionary.get(guild.id);
 
     if (!a) {
-        console.info(`Unable to find guild ${guild.name} by ID.`);
+        LOG.DebugOutput_async(guild, "Unable to locate config.");
         return null;
+    } else {
+        return a;
     }
-    return a;
 }
 function shouldReturn_TestCheck(guild: Guild): Boolean {
     return (debug && !isTestGuild(guild)) || (!debug && isTestGuild(guild));
 }
 function isTestGuild(guild: Guild): Boolean {
-    //Stupid, but.... it works.
+    //Statically defined... but, hey. it works. Might change one day.
     return guild.id == "458992709718245377" || guild.id == "461975072563789824";
 }
 function ScheduleEvents() {
@@ -165,10 +177,11 @@ function ScheduleEvents() {
 
 async function SendMessageToAll_async(msg: string, from: User) {
     async.each(ConfigDictionary.values(), async (cfg: BotCommonConfig) => {
-        await Discord_Actions.AdminMessage_async(cfg, from.toString(), msg);
-    }, function (err) {
-        if (err)
-            console.warn(err);
+        try {
+            await Discord_Actions.AdminMessage_async(cfg, from.toString(), msg);
+        } catch (err) {
+            LOG.Error_async(cfg, "SendMessageToAll_async", null, err);
+        }
     });
 }
 
@@ -176,35 +189,38 @@ async function SendWarPrepStartedToAll_async() {
     await Discord_Actions.ComeOnline(bot);
 
     async.each(ConfigDictionary.values(), async (cfg: BotCommonConfig) => {
-        if (SendMessagesForThisWar(cfg)) {
-            await Discord_Actions.WarPrepStarted_Members_async(cfg);
+        try {
+            if (SendMessagesForThisWar(cfg)) {
+                await Discord_Actions.WarPrepStarted_Members_async(cfg);
+            }
+        } catch (err) {
+            LOG.Error_async(cfg, "SendWarPrepStartedToAll_async", null, err);
         }
-    }, function (err) {
-        if (err)
-            console.warn(err);
     });
 }
 async function SendWarPrepEndingToAll_async() {
     async.each(ConfigDictionary.values(), async (cfg: BotCommonConfig) => {
-        if (SendMessagesForThisWar(cfg)) {
-            await Discord_Actions.WarPrepAlmostOver_Members_async(cfg);
-            await Discord_Actions.WarPrepAlmostOver_Officers_async(cfg);
-        };
-    }, function (err) {
-        if (err)
-            console.warn(err);
+        try {
+            if (SendMessagesForThisWar(cfg)) {
+                await Discord_Actions.WarPrepAlmostOver_Members_async(cfg);
+                await Discord_Actions.WarPrepAlmostOver_Officers_async(cfg);
+            };
+        } catch (err) {
+            LOG.Error_async(cfg, "SendWarPrepEndingToAll_async", null, err);
+        }
     });
 }
 async function SendWarStartedToAll_async() {
 
     async.each(ConfigDictionary.values(), async (cfg: BotCommonConfig) => {
-        if (SendMessagesForThisWar(cfg)) {
-            await Discord_Actions.WarStarted_Members_async(cfg);
-            await Discord_Actions.WarStarted_Officers_async(cfg);
+        try {
+            if (SendMessagesForThisWar(cfg)) {
+                await Discord_Actions.WarStarted_Members_async(cfg);
+                await Discord_Actions.WarStarted_Officers_async(cfg);
+            }
+        } catch (err) {
+            LOG.Error_async(cfg, "SendWarPrepEndingToAll_async", null, err);
         }
-    }, function (err) {
-        if (err)
-            console.warn(err);
     });
 }
 
@@ -221,23 +237,20 @@ function SendMessagesForThisWar(cfg: BotCommonConfig) {
 
 
 process.argv.forEach(function (val, index, array) {
-    console.debug("Args: " + index + ': ' + val);
+    console.info("Args: " + index + ': ' + val);
     if (val.startsWith('--')) {
         switch (val) {
             case "--debug":
-                console.info("Debug mode specified via args.");
-                process.on('uncaughtException', UncaughtExceptionHandler);
+                LOG.DebugOutput_async(null, "Debug mode specified via args.");
                 debug = true;
                 break;
 
             case "--token":
-                console.info("Setting Token");
                 let tok: string = array[index + 1];
-                console.info("Token = " + tok);
                 if (tok && tok != "") {
                     DiscordSetup.Token = tok;
                 } else {
-                    console.warn("Token switch was specified, but, unable to find token.");
+                    LOG.DebugOutput_async(null, "Token switch was specified, but, unable to find token.");
                 }
                 break;
 
@@ -246,7 +259,7 @@ process.argv.forEach(function (val, index, array) {
 });
 
 if (process.env.debug && process.env.debug.toLocaleLowerCase() == "true") {
-    console.info("Debug mode specified via environment variable.");
+    LOG.DebugOutput_async(null, "Debug mode specified via environment variable.");
     debug = true;
 }
 //Set the token from ENV variable.

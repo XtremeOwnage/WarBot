@@ -5,26 +5,26 @@ import { RoleLevel } from './RoleLevel';
 import * as LOG from './Discord_Logging';
 import * as Messages from './Discord_FormattedMessages';
 import { checkPermission } from './Discord_Utils';
+import { GuildActivityType } from './Discord_Logging';
 
 
 export async function Bot_JoinedServer(cfg: BotCommonConfig) {
-    await LOG.Guild_Created_async(cfg.Guild);
-    await ConnectedToServer(cfg);
+    await LOG.Guild_Activity_async(cfg.Guild, GuildActivityType.Created);
+    await ConnectedToServer_async(cfg);
     if (cfg.CH_Members) {
         await cfg.CH_Members.send(await Messages.Bot_Joining());
     }
 }
 export async function Bot_LeftServer(cfg: BotCommonConfig) {
-    //Don't log a message to the guild, because... we are no longer in it!!
-    await LOG.Guild_Deleted_async(cfg.Guild);
+    await LOG.Guild_Activity_async(cfg.Guild, GuildActivityType.Deleted);
 }
-export function ConnectedToServer(cfg: BotCommonConfig) {
-    console.info("Connected to Guild " + cfg.Guild.name);
+export async function ConnectedToServer_async(cfg: BotCommonConfig) {
+    LOG.DebugOutput_async(cfg.Guild, "Connected to Guild");
 
     Updates.UpdateCheck(cfg);
 
     if (cfg.Nickname) {
-        if (checkPermission(cfg.Guild.me, "MANAGE_NICKNAMES") && checkPermission(cfg.Guild.me, "CHANGE_NICKNAME")) {
+        if (checkPermission(cfg.Guild.me, "CHANGE_NICKNAME")) {
             cfg.Guild.me.setNickname(cfg.Nickname);
         }
     }
@@ -46,12 +46,6 @@ export async function ClearMessages_async(ch: Channel) {
     } else {
         //Can't handle this type of channel yet.
     }
-}
-export async function MassNotify(cfg: BotCommonConfig, message: string) {
-    cfg.Bot.guilds.forEach(async function (g: Guild) {
-        //Determine logic to send mass notification.
-    });
-
 }
 export async function HandleDeletedRole_async(Role: Role, cfg: BotCommonConfig) {
     if (cfg.Role_Admins && Role.id == cfg.Role_Admins.id) {
@@ -94,8 +88,6 @@ export async function HandleDeletedChannel_async(Channel: TextChannel, cfg: BotC
         }
     }
 }
-
-
 export function KickMember(cfg: BotCommonConfig, msg: Message) {
     let user: GuildMember = msg.mentions.members.last();
     if (!user) {
@@ -137,7 +129,7 @@ export async function WarPrepStarted_Members_async(cfg: BotCommonConfig) {
     if (!cfg.Notifications.WarPrepStarted) {
         return;
     } else if (!cfg.CH_Members) {
-        return await LOG.Log_SimpleMessage_async(cfg.Guild, "No configured channels to send war prep started to.");
+        return await LOG.DebugOutput_async(cfg.Guild, "No configured channels to send war prep started to.");
     }
 
     console.info(cfg.Guild.name + ": Sending war prep started.");
@@ -160,7 +152,7 @@ export async function WarPrepStarted_Members_async(cfg: BotCommonConfig) {
 }
 export async function AdminMessage_async(cfg: BotCommonConfig, from: string, msg: string) {
     if (!cfg.CH_Officers) {
-        return console.info(cfg.Guild.name + ": No configured member channel to send war prep ending to.");;
+        return await LOG.DebugOutput_async(cfg.Guild, "No officers channel configured to send admin message to.");
     }
     const embed = new RichEmbed()
         .setTitle("WarBot Global Message")
@@ -170,16 +162,16 @@ export async function AdminMessage_async(cfg: BotCommonConfig, from: string, msg
         .setFooter("Note- We cannot see responses to this message. To respond, please join the WARBOT test server @ https://discord.gg/ywSDGCf");
     try {
         cfg.CH_Officers.send(embed);
-        await LOG.Log_SimpleMessage_async(cfg.Guild, "Sent global message successfully.");
+        await LOG.DebugOutput_async(cfg.Guild, "Sent global message successfully.");
     } catch (err) {
-        await LOG.Error_async(cfg, "AdminMessage", err);
+        await LOG.Error_async(cfg, "AdminMessage", null, err);
     }
 }
 export async function WarPrepAlmostOver_Members_async(cfg: BotCommonConfig) {
     if (!cfg.Notifications.WarPrepAlmostOver) {
         return;
     } else if (!cfg.CH_Members) {
-        return console.info(cfg.Guild.name + ": No configured member channel to send war prep ending to.");;
+        return LOG.DebugOutput_async(cfg.Guild, "No configured member channel to send war prep ending to.");;
     }
     console.info(cfg.Guild.name + ": Sending war prep ending.");
     if (cfg.Notifications.WarPrepEndingMessage) {
