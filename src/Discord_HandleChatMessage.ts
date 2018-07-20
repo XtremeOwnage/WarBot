@@ -15,7 +15,7 @@ let CMD: Dictionary<RoleLevel, Dictionary<string, CommandHandlerCallBack>>
     = new Dictionary<RoleLevel, Dictionary<string, CommandHandlerCallBack>>();
 
 SetCommandHandler(RoleLevel.GlobalAdmin, "ping", cmd_AdminPing);
-SetCommandHandler(RoleLevel.GlobalAdmin, "mass message", cmd_MassMessage);
+//SetCommandHandler(RoleLevel.GlobalAdmin, "mass message", cmd_MassMessage);
 SetCommandHandler(RoleLevel.GlobalAdmin, "go die", cmd_GoDie);
 SetCommandHandler(RoleLevel.GlobalAdmin, "help", cmd_Help_GlobalAdmin);
 SetCommandHandler(RoleLevel.GlobalAdmin, "commands", cmd_Help_GlobalAdmin);
@@ -107,16 +107,23 @@ function SetCommandHandler(Role: RoleLevel, Command: string, Callback: CommandHa
 
 }
 export async function HandleCommand_async(cmd: string, msg: Message, cfg: BotCommonConfig): Promise<void> {
-    if (!cmd || !msg)
-        return;
+    //If there is no command or message, there is nothing to do.
+    if (!cmd || !msg) return;
     let role: RoleLevel = GetRole(cfg, msg);
     for (var lvl of CMD.keys()) {
         if (role >= lvl) {
             let CommandsToFunctions: Dictionary<string, CommandHandlerCallBack> = CMD.getValue(lvl);
             for (var cmdText of CommandsToFunctions.keys()) {
                 if (cmd.toLowerCase().startsWith(cmdText)) {
+                    //Get the arguements AFTER the command. In case the handling method requires them.
                     var Msg = cmd.substr(cmdText.length, cmd.length - cmdText.length).trim();
-                    return await CommandsToFunctions.getValue(cmdText)(Msg, msg, cfg);
+                    try {
+                        return await CommandsToFunctions.getValue(cmdText)(Msg, msg, cfg);
+                    }
+                    catch (err) {
+                        //Logs the method name, exception, and what command was being called.
+                        await LOG.Error_async(cfg, "HandleCommand_async", cmdText, err);
+                    }
                 }
             }
         }
@@ -405,9 +412,9 @@ async function cmd_ShowConfig(Parameters: string, msg: Message, cfg: BotCommonCo
 async function cmd_AdminPing(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('ADMIN Pong!');
 }
-async function cmd_MassMessage(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.MassNotify(cfg, Parameters);
-}
+//async function cmd_MassMessage(Parameters: string, msg: Message, cfg: BotCommonConfig) {
+//    await Actions.MassNotify(cfg, Parameters);
+//}
 async function cmd_GoDie(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply("I am sorry I did not live up to your expectations. Goodbye world.").then(() => process.exit());
 }
