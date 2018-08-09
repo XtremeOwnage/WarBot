@@ -4,7 +4,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>WarBot</Name>
     <RootNamespace>WarBot</RootNamespace>
-    <ScriptArguments>--debug --token NDM3OTgzNzIyMTkzNTUxMzYz.Dd9mRA.P3e9aIONAjn3VOCMX3OYjkK93zo</ScriptArguments>
+    <ScriptArguments>--debug --token {No Token For You}</ScriptArguments>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
