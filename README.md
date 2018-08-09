@@ -41,6 +41,6 @@ Warbot will reply to either bot, {command} or @WarBot {command}.
 
 More details can be found at https://xtremeownage.com/index.php?threads/version-1-0-released.20561/
 
-You may join the discord server @ https://discord.gg/G4DUT7N to talk to me directly.
+You may join the WarBot Development discord server @ https://discord.gg/uEkamH9 for support.
 
 To submit a request for a new feature, please submit through github via https://github.com/XtremeOwnage/WarBot/issues/new/choose
