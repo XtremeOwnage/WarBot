@@ -7,6 +7,7 @@ import * as LOG from './Discord_Logging';
 import * as async from 'async';
 import { error } from "util";
 import { fail } from "assert";
+import { retry } from "async";
 
 let DiscordSetup = {
     Token: "",
@@ -139,8 +140,16 @@ function getConfig(guild: Guild): BotCommonConfig {
     let a: BotCommonConfig = ConfigDictionary.get(guild.id);
 
     if (!a) {
-        LOG.DebugOutput_async(guild, "Unable to locate config.");
-        return null;
+        //Config was not found in the local cache. Re-add config to local cache.
+        let cfg: BotCommonConfig = new BotCommonConfig(bot, guild);
+        setConfig(guild, cfg);
+
+        let b: BotCommonConfig = ConfigDictionary.get(guild.id);
+        if (!b) {
+            LOG.DebugOutput_async(guild, "Unable to locate config.");
+            return null;
+        }
+        return b;
     } else {
         return a;
     }
