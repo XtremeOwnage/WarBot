@@ -9,7 +9,7 @@ using WarBot.Core;
 namespace WarBot.Modules
 {
     [RequireContext(ContextType.Guild)]
-    public class KickBanModule : ModuleBase
+    public class KickBanModule : ModuleBase<SocketCommandContext>
     {
         private IGuildConfigRepository repo;
         public KickBanModule(IGuildConfigRepository cfg)
@@ -23,7 +23,7 @@ namespace WarBot.Modules
         [RequireBotPermission(GuildPermission.KickMembers)]
         public async Task Kick(SocketGuildUser user, [Remainder]string Message = "An admin determined your services were no longer required.")
         {
-            var Me = (await this.Context.Guild.GetCurrentUserAsync()) as SocketGuildUser;
+            var Me = Context.Guild.CurrentUser;
 
             //Make sure to not kick myself.
             if (user.Id == Me.Id)

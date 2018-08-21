@@ -7,7 +7,7 @@ using WarBot.Core;
 
 namespace WarBot.Modules
 {
-    public class StatsModule : ModuleBase
+    public class StatsModule : ModuleBase<SocketCommandContext>
     {
         private IWARBOT bot;
         public StatsModule(IWARBOT bot)

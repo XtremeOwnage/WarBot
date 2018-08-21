@@ -1,4 +1,5 @@
 using Discord;
+using Discord.WebSocket;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,19 +11,17 @@ namespace WarBot.Core
         /// Finds the first TextChannel we can send messages to. Will first try the default channel.
         /// If we are unable to find a channel which we can send messages to, we will create a new channel, if we have permissions.
         /// </summary>
-        /// <param name="Client"></param>
         /// <returns></returns>
-        public static async Task<ITextChannel> findDefaultChannel(IDiscordClient Client, IGuild Guild)
+        public static async Task<ITextChannel> findDefaultChannel(SocketGuild Guild)
         {
-            var myUser = await Guild.GetCurrentUserAsync();
+            var myUser = Guild.CurrentUser;
 
             //First, test the default channel.
-            var DefaultChannel = await Guild.GetDefaultChannelAsync(CacheMode.AllowDownload);
-            if (DefaultChannel != null && PermissionHelper.TestPermission(DefaultChannel, ChannelPermission.SendMessages, myUser))
-                return DefaultChannel;
+            if (Guild.DefaultChannel != null && PermissionHelper.TestPermission(Guild.DefaultChannel, ChannelPermission.SendMessages, myUser))
+                return Guild.DefaultChannel;
 
             //Next, Just loop through channels, until we find a writeable channel.
-            foreach (IGuildChannel ch in await Guild.GetChannelsAsync())
+            foreach (IGuildChannel ch in Guild.Channels)
             {
                 //We only care about text channels.
                 if (ch is ITextChannel tch)
@@ -48,15 +47,15 @@ I will post messages into this channel.");
         /// <summary>
         /// Finds the first channel, which is private to everybody, but, viewable by admins.
         /// </summary>
-        /// <param name="Client"></param>
         /// <param name="Guild"></param>
+        /// 
         /// <returns></returns>
-        public static async Task<ITextChannel> findFirstAdminChannel(IDiscordClient Client, IGuild Guild)
+        public static async Task<ITextChannel> findFirstAdminChannel(SocketGuild Guild)
         {
-            var myUser = await Guild.GetCurrentUserAsync();
+            var ME = Guild.CurrentUser;
 
             //Next, Just loop through channels, until we find a writeable channel.
-            foreach (IGuildChannel ch in await Guild.GetChannelsAsync())
+            foreach (IGuildChannel ch in Guild.Channels)
             {
                 //We only care about text channels.
                 if (ch is ITextChannel tch)
@@ -64,13 +63,13 @@ I will post messages into this channel.");
                     //Simple stupid way. //ToDo - Add better logic in the future.
                     //Summary - Find a channel we can write to, but, everybody cannot.
                     if (!PermissionHelper.TestPermission(tch, ChannelPermission.ReadMessages, Guild.EveryoneRole)
-                        && PermissionHelper.TestPermission(tch, ChannelPermission.SendMessages, myUser))
+                        && PermissionHelper.TestPermission(tch, ChannelPermission.SendMessages, ME))
                         return tch;
                 }
             }
 
             //If, there are no writable channels. Lets create one?
-            if (myUser.GuildPermissions.ManageChannels && myUser.GuildPermissions.SendMessages)
+            if (ME.GuildPermissions.ManageChannels && ME.GuildPermissions.SendMessages)
             {
                 var newCh = await Guild.CreateTextChannelAsync("Admins");
 

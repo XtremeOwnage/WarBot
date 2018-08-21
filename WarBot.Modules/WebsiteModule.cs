@@ -8,7 +8,7 @@ using WarBot.Core;
 namespace WarBot.Modules
 {
     [RequireContext(ContextType.Guild)]
-    public class WebsiteModule : ModuleBase
+    public class WebsiteModule : ModuleBase<SocketCommandContext>
     {
         private IGuildConfigRepository repo;
         public WebsiteModule(IGuildConfigRepository cfg)

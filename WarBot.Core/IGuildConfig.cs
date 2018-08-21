@@ -1,5 +1,7 @@
 using Discord;
+using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace WarBot.Core
@@ -14,14 +16,6 @@ namespace WarBot.Core
         string BotVersion { get; set; }
 
         /// <summary>
-        /// Which channel to send Member-related messages to.
-        /// </summary>
-        IEntityStorage<ITextChannel> Channel_WAR_Notifications { get; set; }
-        IEntityStorage<ITextChannel> Channel_NewUser_Welcome { get; set; }
-        IEntityStorage<ITextChannel> Channel_Officers { get; set; }
-        IEntityStorage<ITextChannel> Channel_WarBot_News { get; set; }
-
-        /// <summary>
         /// Which environment is this bot? Used to keep prod/nonprod/other instances seperate.
         /// </summary>
         Environment Environment { get; set; }
@@ -29,7 +23,11 @@ namespace WarBot.Core
         /// The guild, this config belongs to.
         /// This value is mainly, to make the config files readable.
         /// </summary>
-        IEntityStorage<IGuild> Guild { get; }
+        SocketGuild Guild { get; }
+        /// <summary>
+        /// The current guild user for WarBot.
+        /// </summary>
+        SocketGuildUser CurrentUser { get; }
         /// <summary>
         /// This is the nickname the bot will assume when it joins.
         /// </summary>
@@ -38,17 +36,29 @@ namespace WarBot.Core
         /// Common notification settings.
         /// </summary>
         INotificationSettings Notifications { get; }
-        IEntityStorage<IRole> Role_Admin { get; set; }
-        IEntityStorage<IRole> Role_Leader { get; set; }
-        IEntityStorage<IRole> Role_Member { get; set; }
-        IEntityStorage<IRole> Role_Officer { get; set; }
 
+        ITextChannel GetGuildChannel(WarBotChannelType role);
+        void SetGuildChannel(WarBotChannelType role, ITextChannel Channel);
+
+        IRole GetGuildRole(RoleLevel role);
+        void SetGuildRole(RoleLevel role, IRole GuildRole);
+
+        /// <summary>
+        /// Return a mapping of ChannelTypes to Channel instances.
+        /// </summary>
+        /// <returns></returns>
+        IDictionary<WarBotChannelType, ITextChannel> GetChannelMap();
+        /// <summary>
+        /// Returns a mapping of WarBot role, to discord guild roles for this guild.
+        /// </summary>
+        /// <returns></returns>
+        IDictionary<RoleLevel, IRole> GetRoleMap();
         /// <summary>
         /// This initializes the config.
         /// Loads all of the references, sets the save method... etc.
         /// Must be called before a config can be utilized!!
         /// </summary>
-        Task Initialize(IDiscordClient Client, IGuild Guild, Func<IGuildConfig, Task> SaveFunc);
+        void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc);
         /// <summary>
         /// Save this config to disk.
         /// </summary>
@@ -58,6 +68,6 @@ namespace WarBot.Core
         /// This will set all settings to default settings.
         /// </summary>
         /// <returns></returns>
-        Task SetDefaults(IDiscordClient Client);
+        Task SetDefaults(SocketGuild Client);
     }
 }

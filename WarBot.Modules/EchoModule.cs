@@ -9,7 +9,7 @@ namespace WarBot.Modules
     /// </summary>
     /// 
     [RequireContext(ContextType.Guild)]
-    public class EchoModule : ModuleBase
+    public class EchoModule : ModuleBase<SocketCommandContext>
     {
         [Command("say"), Summary("Echos a message."), RequireBotPermission(Discord.GuildPermission.SendMessages), RoleLevel(Core.RoleLevel.None)]
         public async Task Say([Remainder, Summary("The text to echo")] string echo)

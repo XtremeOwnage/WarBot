@@ -1,5 +1,7 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
@@ -13,7 +15,7 @@ namespace WarBot.Storage.Models
     public class Guild : IGuildConfig
     {
         public Guild() { }
-        public static Guild Create(IGuild Guild)
+        public static Guild Create(SocketGuild Guild)
         {
             return new Guild
             {
@@ -24,20 +26,76 @@ namespace WarBot.Storage.Models
             };
         }
 
+        #region Discord IGUILD Entity
         [Key]
         public ulong GuildId { get; private set; }
 
         public string Name { get; set; }
 
         [NotMapped]
-        public IGuild Value { get; set; }
+        public SocketGuild Value { get; set; }
+        #endregion
 
         [ForeignKey("ConfigId")]
         public virtual GuildConfig Config { get; set; }
 
+        /// <summary>
+        /// This function will save the guild and its configuration.
+        /// </summary>
         [NotMapped]
         private Func<IGuildConfig, Task> saveFunc;
 
+        #region Channels and Roles
+        public IDictionary<RoleLevel, IRole> GetRoleMap()
+        {
+            return this.Config.Roles
+                .Where(o => o.Value != null)
+                .ToDictionary(o => o.Level, o => o.Value);
+        }
+        public IRole GetGuildRole(RoleLevel level) => this.Config.Roles.FirstOrDefault(o => o.Level == level)?.Value;
+        public void SetGuildRole(RoleLevel level, IRole GuildRole)
+        {
+            //Remove the specified channel type.
+            if (GuildRole == null)
+            {
+                if (this.Config.Roles.FirstOrDefault(o => o.Level == level).IsNotNull(out var deleteMe))
+                {
+                    this.Config.Roles.Remove(deleteMe);
+                }
+                return;
+            }
+
+            if (this.Config.Roles.FirstOrDefault(o => o.Level == level).IsNotNull(out var r))
+                r.Set(GuildRole);
+            else
+                this.Config.Roles.Add(new Models.GuildRole(level, GuildRole));
+        }
+
+        public IDictionary<WarBotChannelType, ITextChannel> GetChannelMap()
+        {
+            return this.Config.Channels
+                .Where(o => o.Value != null)
+                .ToDictionary(o => o.ChannelType, o => o.Value);
+        }
+        public ITextChannel GetGuildChannel(WarBotChannelType ChannelType) => this.Config.Channels.FirstOrDefault(o => o.ChannelType == ChannelType)?.Value;
+        public void SetGuildChannel(WarBotChannelType ChannelType, ITextChannel Channel)
+        {
+            //Remove the specified channel type.
+            if (Channel == null)
+            {
+                if (this.Config.Channels.FirstOrDefault(o => o.ChannelType == ChannelType).IsNotNull(out var deleteMe))
+                {
+                    this.Config.Channels.Remove(deleteMe);
+                }
+                return;
+            }
+
+            if (this.Config.Channels.FirstOrDefault(o => o.ChannelType == ChannelType).IsNotNull(out var r))
+                r.Set(Channel);
+            else
+                this.Config.Channels.Add(new Models.GuildChannel(ChannelType, Channel));
+        }
+        #endregion
         #region IGuildConfig Implementation
         string IGuildConfig.Website
         {
@@ -54,26 +112,6 @@ namespace WarBot.Storage.Models
             get => this.Config.BotVersion;
             set => this.Config.BotVersion = value;
         }
-        IEntityStorage<ITextChannel> IGuildConfig.Channel_WAR_Notifications
-        {
-            get => this.Config.Channel_WAR_Notifications.GetEntity<ITextChannel>();
-            set => this.Config.Channel_WAR_Notifications.Set(value);
-        }
-        IEntityStorage<ITextChannel> IGuildConfig.Channel_NewUser_Welcome
-        {
-            get => this.Config.Channel_Welcome.GetEntity<ITextChannel>();
-            set => this.Config.Channel_Welcome.Set(value);
-        }
-        IEntityStorage<ITextChannel> IGuildConfig.Channel_Officers
-        {
-            get => this.Config.Channel_Officers.GetEntity<ITextChannel>();
-            set => this.Config.Channel_Officers.Set(value);
-        }
-        IEntityStorage<ITextChannel> IGuildConfig.Channel_WarBot_News
-        {
-            get => this.Config.Channel_WarBot_News.GetEntity<ITextChannel>();
-            set => this.Config.Channel_WarBot_News.Set(value);
-        }
 
         Core.Environment IGuildConfig.Environment
         {
@@ -81,11 +119,12 @@ namespace WarBot.Storage.Models
             set => this.Config.Environment = value;
         }
 
-        IEntityStorage<IGuild> IGuildConfig.Guild
+        SocketGuild IGuildConfig.Guild
         {
-            get => new EntityStorage<IGuild>(this.Name, this.GuildId);
+            get => this.Value;
         }
 
+        SocketGuildUser IGuildConfig.CurrentUser => this.Value.CurrentUser;
         string IGuildConfig.NickName
         {
             get => this.Config.NickName;
@@ -97,54 +136,14 @@ namespace WarBot.Storage.Models
             get => this.Config.NotificationSettings;
         }
 
-        IEntityStorage<IRole> IGuildConfig.Role_Admin
+
+        public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc)
         {
-            get => this.Config.Role_Admin.GetEntity<IRole>();
-            set => this.Config.Role_Admin.Set(value);
-        }
-        IEntityStorage<IRole> IGuildConfig.Role_Leader
-        {
-            get => this.Config.Role_Leader.GetEntity<IRole>();
-            set => this.Config.Role_Leader.Set(value);
-        }
-        IEntityStorage<IRole> IGuildConfig.Role_Member
-        {
-            get => this.Config.Role_Member.GetEntity<IRole>();
-            set => this.Config.Role_Member.Set(value);
-        }
-        IEntityStorage<IRole> IGuildConfig.Role_Officer
-        {
-            get => this.Config.Role_Officer.GetEntity<IRole>();
-            set => this.Config.Role_Officer.Set(value);
-        }
-
-
-        public async Task Initialize(IDiscordClient Client, IGuild Guild, Func<IGuildConfig, Task> SaveFunc)
-        {
-            if (this.Config.Role_Admin?.EntityId != null)
-                this.Config.Role_Admin.Value = Guild.GetRole(this.Config.Role_Admin.EntityId.Value);
-
-            if (this.Config.Role_Leader?.EntityId != null)
-                this.Config.Role_Leader.Value = Guild.GetRole(this.Config.Role_Leader.EntityId.Value);
-
-            if (this.Config.Role_Officer?.EntityId != null)
-                this.Config.Role_Officer.Value = Guild.GetRole(this.Config.Role_Officer.EntityId.Value);
-
-            if (this.Config.Role_Member?.EntityId != null)
-                this.Config.Role_Member.Value = Guild.GetRole(this.Config.Role_Member.EntityId.Value);
-
-            if (this.Config.Channel_Welcome?.EntityId != null)
-                this.Config.Channel_Welcome.Value = await Guild.GetChannelAsync(this.Config.Channel_Welcome.EntityId.Value);
-
-            if (this.Config.Channel_WAR_Notifications?.EntityId != null)
-                this.Config.Channel_WAR_Notifications.Value = await Guild.GetChannelAsync(this.Config.Channel_WAR_Notifications.EntityId.Value);
-
-            if (this.Config.Channel_WarBot_News?.EntityId != null)
-                this.Config.Channel_WarBot_News.Value = await Guild.GetChannelAsync(this.Config.Channel_WarBot_News.EntityId.Value);
+            //Initialize the config object.
+            this.Config.Initialize(Guild);
 
             this.Value = Guild;
-
-            this.saveFunc = SaveFunc;
+            this.saveFunc = SaveFunc;            
         }
 
         public async Task SaveConfig()
@@ -152,9 +151,8 @@ namespace WarBot.Storage.Models
             await this.saveFunc.Invoke(this);
         }
 
-        public async Task SetDefaults(IDiscordClient Client)
+        public async Task SetDefaults(SocketGuild Guild)
         {
-            var Guild = await Client.GetGuildAsync(this.GuildId);
 
             this.Value = Guild;
             this.Name = Guild.Name;
@@ -162,28 +160,38 @@ namespace WarBot.Storage.Models
             var firtAdminRole = Guild.Roles
                 .OrderByDescending(o => o.Position)
                 .Where(o => o.Permissions.Administrator == true)
-                .Select(o => o.CreateStorage())
                 .FirstOrDefault();
 
             var defaultChannel = await ChannelHelper
-                .findDefaultChannel(Client, Guild)
-                .CreateStorage();
+                .findDefaultChannel(Guild);
 
-            //var adminChannel = await ChannelHelper
-            //    .findFirstAdminChannel(Client, Guild)
-            //    .CreateStorage();
+            var adminChannel = await ChannelHelper
+                .findFirstAdminChannel(Guild);
 
-            //Config.Environment = Core.Environment.PROD;
-            //Config.Role_Admin.Set(firtAdminRole);
-            //Config.Role_Leader.Set(firtAdminRole);
-            //Config.Role_Officer.Set(firtAdminRole);
-            //Config.Role_Member.Set(firtAdminRole);
-           // Config.Channel_WarBot_News.Set(adminChannel);
-            //Config.Channel_Officers.Set(adminChannel);
-            //Config.Channel_WAR_Notifications.Set(defaultChannel);
-            //Config.Channel_Welcome.Set(defaultChannel);
-            //Config.NickName = "WarBOT";
-            //Config.NotificationSettings.setDefaults();
+            Config.Environment = Core.Environment.PROD;
+
+            //These two roles should never be set, Just a sanity check to ensure they are empty.
+            SetGuildRole(RoleLevel.GlobalAdmin, null);
+            SetGuildRole(RoleLevel.None, null);
+
+
+            SetGuildRole(RoleLevel.ServerAdmin, firtAdminRole);
+            SetGuildRole(RoleLevel.Leader, firtAdminRole);
+
+            //We will empty these roles. Up to the server owner to configure.
+            SetGuildRole(RoleLevel.Member, null);
+            SetGuildRole(RoleLevel.Officer, null);
+            SetGuildRole(RoleLevel.Guest, null);
+            SetGuildRole(RoleLevel.SuperMember, null);
+
+
+            SetGuildChannel(WarBotChannelType.CH_New_Users, defaultChannel);
+            SetGuildChannel(WarBotChannelType.CH_Officers, adminChannel);
+            SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, adminChannel);
+            SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, defaultChannel);
+
+            Config.NickName = "WarBOT";
+            Config.NotificationSettings.setDefaults();
         }
         #endregion
 

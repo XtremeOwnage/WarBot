@@ -9,7 +9,7 @@ using WarBot.Core;
 namespace WarBot.Modules
 {
     [RequireContext(ContextType.Guild)]
-    public class NickNameModule : ModuleBase
+    public class NickNameModule : ModuleBase<SocketCommandContext>
     {
         private IGuildConfigRepository repo;
         public NickNameModule(IGuildConfigRepository cfg)
@@ -23,9 +23,7 @@ namespace WarBot.Modules
         [RequireBotPermission(GuildPermission.ChangeNickname)]
         public async Task SetNickName_Me(string Nickname)
         {
-            var Me = (await this.Context.Guild.GetCurrentUserAsync()) as SocketGuildUser;
-            if (Me == null)
-                throw new System.NullReferenceException("Unable to find ME.");
+            var Me = Context.Guild.CurrentUser;
 
             if (string.IsNullOrEmpty(Nickname) || Nickname.Length < 2)
             {
@@ -53,7 +51,7 @@ namespace WarBot.Modules
         [RequireBotPermission(GuildPermission.ManageNicknames)]
         public async Task SetNickName_Other(SocketGuildUser user, string Nickname)
         {
-            var Me = (await this.Context.Guild.GetCurrentUserAsync()) as SocketGuildUser;
+            var Me = Context.Guild.CurrentUser;
             if (string.IsNullOrEmpty(Nickname) || Nickname.Length < 2)
             {
                 await ReplyAsync("The provided nickname was not valid.");

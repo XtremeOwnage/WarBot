@@ -9,7 +9,7 @@ using WarBot.Storage;
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    [Migration("20180816202504_Initial")]
+    [Migration("20180820211618_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,20 +17,6 @@ namespace WarBot.Storage.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.1.1-rtm-30846");
-
-            modelBuilder.Entity("WarBot.Storage.Models.DiscordEntity", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<ulong?>("EntityId");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("DiscordEntity");
-                });
 
             modelBuilder.Entity("WarBot.Storage.Models.Guild", b =>
                 {
@@ -48,6 +34,26 @@ namespace WarBot.Storage.Migrations
                     b.ToTable("Guilds");
                 });
 
+            modelBuilder.Entity("WarBot.Storage.Models.GuildChannel", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ChannelType");
+
+                    b.Property<ulong?>("EntityId");
+
+                    b.Property<int?>("GuildConfigID");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("GuildConfigID");
+
+                    b.ToTable("GuildChannel");
+                });
+
             modelBuilder.Entity("WarBot.Storage.Models.GuildConfig", b =>
                 {
                     b.Property<int>("ID")
@@ -63,41 +69,9 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<string>("Website");
 
-                    b.Property<int?>("ch_news_id");
-
-                    b.Property<int?>("ch_officers_id");
-
-                    b.Property<int?>("ch_war_id");
-
-                    b.Property<int?>("ch_welcome_id");
-
-                    b.Property<int?>("role_admin_id");
-
-                    b.Property<int?>("role_leader_id");
-
-                    b.Property<int?>("role_member_id");
-
-                    b.Property<int?>("role_officer_id");
-
                     b.HasKey("ID");
 
                     b.HasIndex("GuildNotificationSettingsId");
-
-                    b.HasIndex("ch_news_id");
-
-                    b.HasIndex("ch_officers_id");
-
-                    b.HasIndex("ch_war_id");
-
-                    b.HasIndex("ch_welcome_id");
-
-                    b.HasIndex("role_admin_id");
-
-                    b.HasIndex("role_leader_id");
-
-                    b.HasIndex("role_member_id");
-
-                    b.HasIndex("role_officer_id");
 
                     b.ToTable("GuildConfig");
                 });
@@ -134,6 +108,26 @@ namespace WarBot.Storage.Migrations
                     b.ToTable("GuildNotificationsConfig");
                 });
 
+            modelBuilder.Entity("WarBot.Storage.Models.GuildRole", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<ulong?>("EntityId");
+
+                    b.Property<int?>("GuildConfigID");
+
+                    b.Property<int>("Level");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("GuildConfigID");
+
+                    b.ToTable("GuildRole");
+                });
+
             modelBuilder.Entity("WarBot.Storage.Models.User", b =>
                 {
                     b.Property<ulong>("ID")
@@ -151,43 +145,25 @@ namespace WarBot.Storage.Migrations
                         .HasForeignKey("ConfigId");
                 });
 
+            modelBuilder.Entity("WarBot.Storage.Models.GuildChannel", b =>
+                {
+                    b.HasOne("WarBot.Storage.Models.GuildConfig", "GuildConfig")
+                        .WithMany("Channels")
+                        .HasForeignKey("GuildConfigID");
+                });
+
             modelBuilder.Entity("WarBot.Storage.Models.GuildConfig", b =>
                 {
                     b.HasOne("WarBot.Storage.Models.GuildNotificationsConfig", "NotificationSettings")
                         .WithMany()
                         .HasForeignKey("GuildNotificationSettingsId");
+                });
 
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Channel_WarBot_News")
-                        .WithMany()
-                        .HasForeignKey("ch_news_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Channel_Officers")
-                        .WithMany()
-                        .HasForeignKey("ch_officers_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Channel_WAR_Notifications")
-                        .WithMany()
-                        .HasForeignKey("ch_war_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Channel_Welcome")
-                        .WithMany()
-                        .HasForeignKey("ch_welcome_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Role_Admin")
-                        .WithMany()
-                        .HasForeignKey("role_admin_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Role_Leader")
-                        .WithMany()
-                        .HasForeignKey("role_leader_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Role_Member")
-                        .WithMany()
-                        .HasForeignKey("role_member_id");
-
-                    b.HasOne("WarBot.Storage.Models.DiscordEntity", "Role_Officer")
-                        .WithMany()
-                        .HasForeignKey("role_officer_id");
+            modelBuilder.Entity("WarBot.Storage.Models.GuildRole", b =>
+                {
+                    b.HasOne("WarBot.Storage.Models.GuildConfig", "GuildConfig")
+                        .WithMany("Roles")
+                        .HasForeignKey("GuildConfigID");
                 });
 #pragma warning restore 612, 618
         }

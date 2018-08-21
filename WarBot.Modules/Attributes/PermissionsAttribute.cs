@@ -21,7 +21,7 @@ namespace WarBot.Attributes
         }
         public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            var cfg = await services.GetService<IGuildConfigRepository>().GetConfig(context.Guild);
+            var cfg = await services.GetService<IGuildConfigRepository>().GetConfig(context.Guild as SocketGuild);
             var User = context.User as SocketGuildUser;
 
             if (User == null || cfg == null)

@@ -335,3 +335,4 @@ ASALocalRun/
 /src/*.js
 /src/*.js.*
 /src/*.d.ts
+*warBOT.db

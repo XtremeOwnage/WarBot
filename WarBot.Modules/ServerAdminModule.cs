@@ -9,7 +9,7 @@ namespace WarBot.Modules
 {
     //All of these commands are server admin specific.
     [RoleLevel(RoleLevel.ServerAdmin)]
-    public class ServerAdminModule : ModuleBase
+    public class ServerAdminModule : ModuleBase<SocketCommandContext>
     {
         //Created via dependancy injection.
         public IGuildConfigRepository repo { get; set; }

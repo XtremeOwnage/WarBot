@@ -8,7 +8,7 @@ using WarBot.Core;
 namespace WarBot.Modules
 {
     [RequireContext(ContextType.Guild)]
-    public class LootModule : ModuleBase
+    public class LootModule : ModuleBase<SocketCommandContext>
     {
         private IGuildConfigRepository repo;
         public LootModule(IGuildConfigRepository cfg)

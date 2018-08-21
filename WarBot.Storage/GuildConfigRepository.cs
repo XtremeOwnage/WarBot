@@ -8,6 +8,7 @@ using WarBot.Core;
 using WarBot.Storage;
 using WarBot.Storage.Models;
 using Microsoft.EntityFrameworkCore;
+using Discord.WebSocket;
 
 namespace WarBot.Storage
 {
@@ -28,7 +29,7 @@ namespace WarBot.Storage
             configStore = new Dictionary<ulong, IGuildConfig>();
 
         }
-        public async Task<IGuildConfig> GetConfig(IGuild Guild)
+        public async Task<IGuildConfig> GetConfig(SocketGuild Guild)
         {
             //If config is already loaded, return it.
             if (configStore.ContainsKey(Guild.Id))
@@ -39,7 +40,7 @@ namespace WarBot.Storage
             {
 
                 //Inflate the object before returning it.
-                await g.Initialize(bot.Client, Guild, Save);
+                g.Initialize(Guild, Save);
 
                 //Add the object to the local cache.
                 configStore.Add(Guild.Id, g);
@@ -65,25 +66,25 @@ namespace WarBot.Storage
                 newCfg.Config.Loot = oldCfg.LootURL;
 
                 //Roles
-                if (oldCfg.Role_Admin?.ID != null)
-                    newCfg.Config.Role_Admin.Set(oldCfg.Role_Admin.ID, oldCfg.Role_Admin.Name);
-                if (oldCfg.Role_Leader?.ID != null)
-                    newCfg.Config.Role_Leader.Set(oldCfg.Role_Leader.ID, oldCfg.Role_Leader.Name);
-                if (oldCfg.Role_Officer?.ID != null)
-                    newCfg.Config.Role_Officer.Set(oldCfg.Role_Officer.ID, oldCfg.Role_Officer.Name);
-                if (oldCfg.Role_Member?.ID != null)
-                    newCfg.Config.Role_Member.Set(oldCfg.Role_Member.ID, oldCfg.Role_Member.Name);
+                if (oldCfg.Role_Admin?.ID != null && Guild.GetRole(oldCfg.Role_Admin.ID).IsNotNull(out var adminRole))
+                    newCfg.SetGuildRole(RoleLevel.ServerAdmin, adminRole);
+                if (oldCfg.Role_Leader?.ID != null && Guild.GetRole(oldCfg.Role_Leader.ID).IsNotNull(out var leaderRole))
+                    newCfg.SetGuildRole(RoleLevel.Leader, leaderRole);
+                if (oldCfg.Role_Officer?.ID != null && Guild.GetRole(oldCfg.Role_Officer.ID).IsNotNull(out var officerRole))
+                    newCfg.SetGuildRole(RoleLevel.Officer, officerRole);
+                if (oldCfg.Role_Member?.ID != null && Guild.GetRole(oldCfg.Role_Member.ID).IsNotNull(out var memberRole))
+                    newCfg.SetGuildRole(RoleLevel.Member, memberRole);
 
                 //Channels
-                if (oldCfg.Channel_Officer?.ID != null)
+                if (oldCfg.Channel_Officer?.ID != null && (Guild.GetChannel(oldCfg.Channel_Officer.ID) as ITextChannel).IsNotNull(out var officerChannel))
                 {
-                    newCfg.Config.Channel_Officers.Set(oldCfg.Channel_Officer.ID, oldCfg.Channel_Officer.Name);
-                    newCfg.Config.Channel_WarBot_News.Set(oldCfg.Channel_Officer.ID, oldCfg.Channel_Officer.Name);
+                    newCfg.SetGuildChannel(WarBotChannelType.CH_Officers, officerChannel);
+                    newCfg.SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, officerChannel);
                 }
-                if (oldCfg.Channel_Member?.ID != null)
+                if (oldCfg.Channel_Member?.ID != null && (Guild.GetChannel(oldCfg.Channel_Member.ID) as ITextChannel).IsNotNull(out var memberChannel))
                 {
-                    newCfg.Config.Channel_WAR_Notifications.Set(oldCfg.Channel_Member.ID, oldCfg.Channel_Member.Name);
-                    newCfg.Config.Channel_Welcome.Set(oldCfg.Channel_Member.ID, oldCfg.Channel_Member.Name);
+                    newCfg.SetGuildChannel(WarBotChannelType.CH_New_Users, memberChannel);
+                    newCfg.SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, memberChannel);
                 }
 
 
@@ -100,15 +101,15 @@ namespace WarBot.Storage
                 newCfg.Config.NotificationSettings.WarStartedMessage = oldCfg.Notifications.WarStartedMessage;
                 newCfg.Config.NotificationSettings.SendUpdateMessage = oldCfg.Notifications.SendUpdateMessage;
 
-                await newCfg.Initialize(bot.Client, Guild, Save);
+                newCfg.Initialize(Guild, Save);
 
                 await bot.Log.Debug($"Updated config from json to database for {Guild.Name}", Guild);
             }
             else
             {
-                await newCfg.SetDefaults(bot.Client);
+                await newCfg.SetDefaults(Guild);
 
-                await newCfg.Initialize(bot.Client, Guild, Save);
+                newCfg.Initialize(Guild, Save);
             }
             //Add the new Guild to the database.
             db.Guilds.Add(newCfg);

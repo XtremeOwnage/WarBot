@@ -1,54 +1,30 @@
 ﻿using Discord;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WarBot.Core;
+
 namespace WarBot.Storage.Models
 {
-    public class DiscordEntity
+    public class DiscordEntity : IEntity<ulong>
     {
-        public DiscordEntity() { }
-
-        public static DiscordEntity CreateNew()
-        {
-            return new DiscordEntity
-            {
-                EntityId = null,
-                Name = null
-            };
-        }
-
-
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; private set; }
-        public ulong? EntityId { get; private set; }
 
+        #region Stored properties, for Discord
         public string Name { get; set; }
+        public ulong? EntityId { get; protected set; }
+        #endregion
 
-        [NotMapped]
-        public object Value { get; set; }
+        #region IEntity<ulong> implementation        
+        ulong IEntity<ulong>.Id => EntityId.Value;
+        #endregion
 
-        public IEntityStorage<T> GetEntity<T>() where T : IEntity<ulong>
-        {
-            if (Value != null)
-                return new EntityStorage<T>(this.Name, (T)this.Value);
-            else if (EntityId.HasValue)
-                return new EntityStorage<T>(this.Name, this.EntityId.Value);
-            else
-                return null;
-        }
 
-        public void Set<T>(IEntityStorage<T> Value) where T : IEntity<ulong>
-        {
-            this.EntityId = Value.ID;
-            this.Name = Value.Name;
-            this.Value = Value.Value;
-        }
-
+        //This is used to set the value, without actually having the value.... 
+        //Such as, when migrating config versions to the latest version.
         public void Set(ulong ID, string Name)
         {
             this.EntityId = ID;
             this.Name = Name;
-            this.Value = null;
         }
     }
 }
