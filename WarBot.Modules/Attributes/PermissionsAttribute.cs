@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WarBot.Core;
+using WarBot.Core.ModuleType;
 using WarBot.Modules;
 
 namespace WarBot.Attributes

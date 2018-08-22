@@ -1,7 +1,7 @@
-﻿using Discord.Commands;
+using Discord.Commands;
 using Discord.WebSocket;
 using WarBot.Core;
-namespace WarBot.Modules
+namespace WarBot.Core.ModuleType
 {
     public class GuildCommandContext : SocketCommandContext
     {

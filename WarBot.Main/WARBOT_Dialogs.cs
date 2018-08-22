@@ -1,16 +1,7 @@
-﻿using DiscordBotsList.Api;
-using Discord.Net;
-using Discord;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using WarBot.Storage;
-using Discord.Commands;
-using System.Threading;
-using WarBot.Core.Dialogs;
+﻿using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using WarBot.Core.Dialogs;
 
 namespace WarBot
 {
@@ -26,12 +17,23 @@ namespace WarBot
         //Keep track of current, open dialogs.
         public ConcurrentDictionary<int, SocketGuildDialogContextBase> Dialogs = new ConcurrentDictionary<int, SocketGuildDialogContextBase>();
 
-        public void OpenDialog(SocketGuildDialogContextBase Dialog)
+        public async Task OpenDialog(SocketGuildDialogContextBase Dialog)
         {
+            await Dialog.OnCreated();
+
             this.Dialogs.TryAdd(Dialog.GetHashCode(), Dialog);
         }
-        public void CloseDialog(SocketGuildDialogContextBase Dialog)
+        public async Task CloseDialog(SocketGuildDialogContextBase Dialog)
         {
+            try
+            {
+                await Dialog.OnClosed();
+            }
+            catch (Exception ex)
+            {
+                await this.Log.Error(null, ex);
+            }
+
             this.Dialogs.TryRemove(Dialog.GetHashCode(), out var _);
         }
     }

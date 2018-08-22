@@ -1,7 +1,7 @@
-﻿using Discord.Commands;
+using Discord.Commands;
 using WarBot.Core;
 
-namespace WarBot.Modules
+namespace WarBot.Core.ModuleType
 {
     public abstract class GuildCommandModuleBase : ModuleBase<GuildCommandContext>
     {

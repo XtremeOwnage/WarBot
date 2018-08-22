@@ -1,16 +1,10 @@
-﻿using DiscordBotsList.Api;
-using Discord.Net;
-using Discord;
+﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using WarBot.Storage;
-using Discord.Commands;
 using System.Threading;
+using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
-using WarBot.Modules;
+using WarBot.Core.ModuleType;
 
 namespace WarBot
 {
@@ -56,7 +50,7 @@ namespace WarBot
                 //This case, is outside of the channel type comparison, because a dialog can occur in many multiple channel types.
                 if (this.Dialogs.ContainsKey(UserChannelHash) && this.Dialogs[UserChannelHash].InContext(message.Channel.Id, message.Author.Id))
                 {
-                    await this.Dialogs[UserChannelHash].ProcessMessage(message.Content);
+                    await this.Dialogs[UserChannelHash].ProcessMessage(message);
                 }
                 //Socket GUILD TEXT Channel.
                 else if (message.Channel is SocketTextChannel tch)
@@ -73,7 +67,7 @@ namespace WarBot
 
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);
-
+                    
                     var result = await commands.ExecuteAsync(context, Msg, services, MultiMatchHandling.Best);
 
                     await Log.ChatMessage(message, tch.Guild, result);
