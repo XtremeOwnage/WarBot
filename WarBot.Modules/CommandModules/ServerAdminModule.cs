@@ -1,18 +1,16 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
     //All of these commands are server admin specific.
     [RoleLevel(RoleLevel.ServerAdmin)]
-    public class ServerAdminModule : ModuleBase<SocketCommandContext>
+    public class ServerAdminModule : WarBotModuleBase
     {
-        //Created via dependancy injection.
-        public IGuildConfigRepository repo { get; set; }
 
         [Command("leave"), Alias("Go Away"), Summary("I will leave the guild."), RequireBotPermission(ChannelPermission.SendMessages), Priority(5)]
         public async Task Leave()

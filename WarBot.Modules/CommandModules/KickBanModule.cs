@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -6,17 +6,11 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class KickBanModule : ModuleBase<SocketCommandContext>
+    public class KickBanModule : WarBotModuleBase
     {
-        private IGuildConfigRepository repo;
-        public KickBanModule(IGuildConfigRepository cfg)
-        {
-            this.repo = cfg;
-        }
-
         [Command("kick"), Alias("remove")]
         [RoleLevel(RoleLevel.Leader)]
         [Summary("Remove a user from this guild.")]

@@ -10,6 +10,7 @@ using WarBot.Storage;
 using Discord.Commands;
 using System.Threading;
 using WarBot.Core.Dialogs;
+using WarBot.Modules;
 
 namespace WarBot
 {
@@ -70,7 +71,7 @@ namespace WarBot
                         return;
 
                     //Load dynamic command context.
-                    var context = new SocketCommandContext(Client, message);
+                    var context = new GuildCommandContext(Client, message, cfg);
 
                     var result = await commands.ExecuteAsync(context, Msg, services, MultiMatchHandling.Best);
 

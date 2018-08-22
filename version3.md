@@ -3,6 +3,7 @@ Version 3.0 of bot. Will be converted to use .net core.
 # Major Changes
 * Entire re-write to utilize .net core instead of node.js / typescript.
 	* Logic was added to migrate your current configurations to the new version of the bot.
+	* For me as a developer, it is MUCH easier to add new functionality.
 
 # Minor Changes
 * There will no longer be seperate notifications to the officers channel. Although, this was togglable before, after revewing use of the bot, I determined the additional notification was not required.

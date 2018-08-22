@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -7,29 +7,30 @@ using WarBot.Core;
 using System.Linq;
 
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
     //Required chat context type.
     [RequireContext(ContextType.Guild)]
-    public class TemplateModule : ModuleBase<SocketCommandContext>
+    public class TemplateModule : WarBotModuleBase
     {
-        private IGuildConfigRepository repo;
-        public TemplateModule(IGuildConfigRepository cfg)
-        {
-            this.repo = cfg;
-        }
-
         [Command("command_goes_here"), Alias("add_alias")]
         [RoleLevel(RoleLevel.Officer)]
         [Summary("Change WARBot's nickname.")]
         [RequireBotPermission(GuildPermission.ChangeNickname)]
         public async Task TemplateTask([Remainder]string Nickname)
         {
+            //Make sure to remove this line.
+            if (true)
+                await Task.CompletedTask;
+
             var Me = Context.Guild.CurrentUser;
             var user = Context.User as SocketGuildUser;
 
             if (user == null)
                 throw new System.NullReferenceException("User was not socket guild user.");
+
+            if (this.cfg == null)
+                throw new System.NullReferenceException("IGuildConfig was null");
 
             //If user is ME(WarBot)
             if (Context.User.Id == Me.Id)
@@ -47,9 +48,6 @@ namespace WarBot.Modules
                 return;
             }
 
-
-            //Get the stored guild config.
-            var cfg = await repo.GetConfig(Context.Guild);
 
         }
     }

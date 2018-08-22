@@ -31,6 +31,10 @@ namespace WarBot.Storage
         }
         public async Task<IGuildConfig> GetConfig(SocketGuild Guild)
         {
+            //If no guild was passed in, return null.
+            if (Guild == null)
+                return null;
+
             //If config is already loaded, return it.
             if (configStore.ContainsKey(Guild.Id))
                 return configStore[Guild.Id];

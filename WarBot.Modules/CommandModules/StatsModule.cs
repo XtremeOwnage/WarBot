@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using WarBot.Core;
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
-    public class StatsModule : ModuleBase<SocketCommandContext>
+    public class StatsModule : WarBotModuleBase
     {
         private IWARBOT bot;
         public StatsModule(IWARBOT bot)

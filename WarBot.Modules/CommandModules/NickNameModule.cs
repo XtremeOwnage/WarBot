@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -6,17 +6,11 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class NickNameModule : ModuleBase<SocketCommandContext>
+    public class NickNameModule : WarBotModuleBase
     {
-        private IGuildConfigRepository repo;
-        public NickNameModule(IGuildConfigRepository cfg)
-        {
-            this.repo = cfg;
-        }
-
         [Command("set nickname"), Alias("nickname")]
         [RoleLevel(RoleLevel.Officer)]
         [Summary("Change WARBot's nickname.")]
@@ -32,7 +26,6 @@ namespace WarBot.Modules
             }
 
             //Update the config.
-            var cfg = await repo.GetConfig(Context.Guild);
             cfg.NickName = Nickname;
             await cfg.SaveConfig();
 

@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
 using WarBot.Attributes;
@@ -6,25 +6,18 @@ using WarBot.Core;
 using System.Linq;
 using System;
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class ShowConfigModule : ModuleBase<SocketCommandContext>
+    public class ShowConfigModule : WarBotModuleBase
     {
-        private IGuildConfigRepository repo;
-        public ShowConfigModule(IGuildConfigRepository cfg)
-        {
-            this.repo = cfg;
-        }
-        // ~say hello -> hello
+       // ~say hello -> hello
         [Command("show config"), Alias("config show")]
         [RoleLevel(RoleLevel.Officer)]
         [Summary("Display command stats related to me.")]
         [RequireBotPermission(Discord.ChannelPermission.SendMessages)]
         public async Task ShowConfig([Remainder]string Config = "ALL")
         {
-            var cfg = await repo.GetConfig(this.Context.Guild);
-
             #region Determine which config parts to show
             const string c_ROLE = "role";
             const string c_CHANNEL = "channel";

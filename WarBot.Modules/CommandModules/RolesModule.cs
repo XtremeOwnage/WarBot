@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
@@ -7,35 +7,27 @@ using System.Text;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
-using WarBot.Modules;
 
 
-namespace WarBot.Modules
-{/// <summary>
-/// This module manages a user's roles.
-/// </summary>
+namespace WarBot.Modules.CommandModules
+{
+    /// <summary>
+    /// This module manages a user's roles.
+    /// </summary>
     //Required chat context type.
     [RequireContext(ContextType.Guild)]
 
-    public class RolesModule : ModuleBase<SocketCommandContext>
+    public class RolesModule : WarBotModuleBase
     {
-        private IGuildConfigRepository repo;
-        public RolesModule(IGuildConfigRepository cfg)
-        {
-            this.repo = cfg;
-        }
-
         [Command("demote")]
         [Summary("Demote user[s] to the previous role."), RoleLevel(RoleLevel.Officer), RequireBotPermission(GuildPermission.ManageRoles)]
         public async Task DemoteUser(params SocketGuildUser[] Users)
         {
             var Me = Context.Guild.CurrentUser;
             var SendingUser = this.Context.User as SocketGuildUser;
-            var cfg = await repo.GetConfig(Context.Guild as SocketGuild);
 
             //Basic error handling... Make sure all of the expected values are populated.
             if (SendingUser == null) throw new System.NullReferenceException("The calling user was null");
-            else if (cfg == null) throw new System.NullReferenceException("Unable to locate guild config.");
 
             //This will hold the returned message.
             StringBuilder sb = new StringBuilder();
@@ -77,11 +69,9 @@ namespace WarBot.Modules
         {
             var Me = Context.Guild.CurrentUser;
             var SendingUser = this.Context.User as SocketGuildUser;
-            var cfg = await repo.GetConfig(Context.Guild);
 
             //Basic error handling... Make sure all of the expected values are populated.
             if (SendingUser == null) throw new System.NullReferenceException("The calling user was null");
-            else if (cfg == null) throw new System.NullReferenceException("Unable to locate guild config.");
 
             //This will hold the returned message.
             StringBuilder sb = new StringBuilder();
@@ -126,11 +116,9 @@ namespace WarBot.Modules
         {
             var Me = Context.Guild.CurrentUser;
             var SendingUser = this.Context.User as SocketGuildUser;
-            var cfg = await repo.GetConfig(Context.Guild);
 
             //Basic error handling... Make sure all of the expected values are populated.
             if (SendingUser == null) throw new System.NullReferenceException("The calling user was null");
-            else if (cfg == null) throw new System.NullReferenceException("Unable to locate guild config.");
 
             //This will hold the returned message.
             StringBuilder sb = new StringBuilder();
@@ -174,10 +162,6 @@ namespace WarBot.Modules
         public async Task SetRoleInConfig(string Role = "INVALID ROLE", SocketRole RoleTag = null)
         {
             var Me = Context.Guild.CurrentUser;
-            var cfg = await repo.GetConfig(Context.Guild);
-
-            //Basic error handling... Make sure all of the expected values are populated.
-            if (cfg == null) throw new System.NullReferenceException("Unable to locate guild config.");
 
             StringBuilder sb = new StringBuilder();
 
@@ -187,7 +171,7 @@ namespace WarBot.Modules
                 {
                     sb.AppendLine($"You cannot manage the {targetRole.ToString()} role.");
                 }
-                else if(RoleTag == null)
+                else if (RoleTag == null)
                 {
                     sb.AppendLine("Please remember to tag a role for this command. Proper Syntex:")
                         .AppendLine("bot, set role {RoleType} @TagARoleHere");

@@ -1,15 +1,15 @@
-﻿using Discord.Commands;
+using Discord.Commands;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 
-namespace WarBot.Modules
+namespace WarBot.Modules.CommandModules
 {
     /// <summary>
     /// Contains simple messages, with little to no logic.
     /// </summary>
     /// 
     [RequireContext(ContextType.Guild)]
-    public class EchoModule : ModuleBase<SocketCommandContext>
+    public class EchoModule : WarBotModuleBase
     {
         [Command("say"), Summary("Echos a message."), RequireBotPermission(Discord.GuildPermission.SendMessages), RoleLevel(Core.RoleLevel.None)]
         public async Task Say([Remainder, Summary("The text to echo")] string echo)

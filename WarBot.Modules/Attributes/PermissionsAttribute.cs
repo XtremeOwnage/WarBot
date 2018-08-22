@@ -21,11 +21,21 @@ namespace WarBot.Attributes
         }
         public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
-            var cfg = await services.GetService<IGuildConfigRepository>().GetConfig(context.Guild as SocketGuild);
+            IGuildConfig cfg;
+
+            //If this a custom guild command context, get the config from the context.
+            if (context is GuildCommandContext gcc)
+                cfg = gcc.cfg;
+            //Else, query the DI system to locate the config.
+            else
+                cfg = await services.GetService<IGuildConfigRepository>().GetConfig(context.Guild as SocketGuild);
+
+
             var User = context.User as SocketGuildUser;
 
             if (User == null || cfg == null)
                 throw new NullReferenceException("Guild Config and/or User is null for RoleLevelAttribute. Please validate this attribute is only utilized on guild functions.");
+
             RoleLevel role = User.GetRole(cfg);
 
             switch (matchType)

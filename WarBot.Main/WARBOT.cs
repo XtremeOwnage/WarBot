@@ -79,7 +79,7 @@ namespace WarBot
             ((GuildConfigRepository)this.GuildRepo).Initialize(this, services.GetService<WarDB>());
 
             //Initialize the commands.
-            await commands.AddModulesAsync(typeof(Modules.StatsModule).Assembly);
+            await commands.AddModulesAsync(typeof(Modules.WarBotModuleBase).Assembly);
 
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.
