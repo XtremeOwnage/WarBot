@@ -18,6 +18,9 @@ Version 3.0 of bot. Will be converted to use .net core.
 	* alias: bot, nickname
 	* bot, nickname {nickname} will update WarBOT's nickname.
 * Promote and Demote Members
+	* bot, set role {RoleName} @User, @User1
+		* You can add multile users to a provided role.
+	* To See available roles, type bot, set role
 	* bot, promote @member
 	* bot, promote @member, @member2, etc...
 	* bot, demote @member
@@ -26,3 +29,6 @@ Version 3.0 of bot. Will be converted to use .net core.
 	* Note, if there are multiple WarBot roles, with the same Guild role, the highest warbot role will be used.
 		* Ex: You have Officer set to @Admins, and Leaders set to @Admins.
 		* A user will be promoted from member to Leader, since, it is the same role.
+* Show Config
+	* bot, show config {ALL, Notifications, Channels, Roles}
+	* You can now display a certain config element, or multiple elements. It will default to show all config items.

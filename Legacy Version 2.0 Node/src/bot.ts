@@ -1,45 +1,5 @@
-import { Client, Channel, Guild, TextChannel, DMChannel, User, DiscordAPIError } from "discord.js";
-import { BotCommonConfig } from './BotCommonConfig';
-import * as Discord_Actions from './DiscordBot_Actions';
-import { HandleCommand_async } from './Discord_HandleChatMessage';
-import { RecurrenceRule, scheduleJob } from 'node-schedule';
-import * as LOG from './Discord_Logging';
-import * as async from 'async';
-import { error } from "util";
-import { fail } from "assert";
-import { retry } from "async";
-
-let DiscordSetup = {
-    Token: "",
-    UserName: "WarBot"
-};
-
-//Holds an array of Config objects, to guilds.
-let ConfigDictionary: Map<string, BotCommonConfig> = new Map<string, BotCommonConfig>();
-
-//Reference to the bot class.
-let bot: Client = new Client;
-
-//Determines if this bot is running in debug mode. This will seperate the logs and actions from regular production activities.
-let debug: boolean = false;
-
-async function UncaughtExceptionHandler(err: Error) {
-    await LOG.Error_async(null, "UncaughtExceptionHandler", null, err);
-}
 
 function DiscordStartUp() {
-    bot.login(DiscordSetup.Token);
-    bot.on('guildCreate', async (guild: Guild) => {
-        if (shouldReturn_TestCheck(guild)) { return; }
-        let cfg: BotCommonConfig = await new BotCommonConfig(bot, guild);
-        await Discord_Actions.Bot_JoinedServer(cfg);
-        setConfig(guild, cfg);
-    });
-    bot.on('guildDelete', async (guild: Guild) => {
-        if (shouldReturn_TestCheck(guild)) { return; }
-        await Discord_Actions.Bot_LeftServer(getConfig(guild));
-        ConfigDictionary.delete(guild.id);
-    });
     bot.on('roleDelete', async (role) => {
         if (shouldReturn_TestCheck(role.guild)) { return; }
         await Discord_Actions.HandleDeletedRole_async(role, getConfig(role.guild));
@@ -50,54 +10,11 @@ function DiscordStartUp() {
             await Discord_Actions.HandleDeletedChannel_async(channel, getConfig(channel.guild));
         }
     });
-    bot.on('error', async function (error: Error) {
-        await LOG.Error_async(null, "bot.on.Error", null, error);
-    });
-    bot.on('ready', async () => {
-        await LOG.Initialize_Logging(bot, debug);
-
-        //Set the exception handler, AFTER the logging library is initialized.
-        process.on('uncaughtException', UncaughtExceptionHandler);
-
-        //Send a log message. Useful to know if the process is crashing over and over.
-        await LOG.Process_Started_async(bot.user.tag);
-
-        //Set Presence to "Online".
-        await Discord_Actions.ComeOnline(bot);
-
-        //Initalize the config repository for each guild.
-        async.each(bot.guilds.values(), async function (guild: Guild) {
-            if (shouldReturn_TestCheck(guild)) { return; }
-            let cfg: BotCommonConfig = new BotCommonConfig(bot, guild);
-            await Discord_Actions.ConnectedToServer_async(cfg);
-            setConfig(guild, cfg);
-        });
-
-        //Schedule the notification events.
-        ScheduleEvents();
-    });
     bot.on('message', async function (msg) {
         let cfg: BotCommonConfig = null;
         try {
-            //Ignore anything from a private channel, or anything without a guild.
-            if (!msg.guild || !msg.guild.id || msg.channel instanceof DMChannel) return;
-
-            //Prevents test from running in prod, and vise-versa.
-            else if (shouldReturn_TestCheck(msg.guild)) return;
-
-            //Ignore other bots... per bot-etiquette
-            else if (msg.author.bot == true) return;
-
-            //Fetch this guild's config object.
-            cfg = getConfig(msg.guild);
-
-            //Throw exception if there is no defined config... 
-            if (!cfg) throw new Error("CFG is not defined.");
 
             if (msg.channel instanceof TextChannel) {
-                //If the message came from one of the logging channels, abort.
-                if (LOG.IsLogChannel(msg.channel)) return;
-
                 let ToMe: Boolean = false;
                 let Message: string = msg.content.trim();
 

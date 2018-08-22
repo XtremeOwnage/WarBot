@@ -88,43 +88,7 @@ export async function HandleDeletedChannel_async(Channel: TextChannel, cfg: BotC
         }
     }
 }
-export function KickMember(cfg: BotCommonConfig, msg: Message) {
-    let user: GuildMember = msg.mentions.members.last();
-    if (!user) {
-        msg.reply("Did you forget to mention a user?");
-        return;
-    } else if (cfg.Bot.user.id == user.id) {
-        msg.reply("Sorry, I do not wish to kick myself.");
-        return;
-    }
 
-    if (checkPermission(cfg.Guild.me, "KICK_MEMBERS")) {
-        if (cfg.Guild.me.highestRole > user.highestRole) {
-            user.kick("An admin determined your services were no longer required.").then(() => {
-                msg.channel.send(Messages.KickUser(user));
-            });
-        }
-        else {
-            //The user is in a higher role then I am.
-            msg.reply("I cannot kick that user. He is in a equal or higher role then I am.");
-        }
-
-    } else {
-        msg.reply("I do not have the KICK_MEMBERS permission.");
-    }
-}
-export function SetNickName(cfg: BotCommonConfig, msg: Message, nickname: string) {
-    if (nickname.length <= 2) {
-        msg.reply("The provided nickname is not long enough.");
-    }
-
-    if (checkPermission(cfg.Guild.me, "MANAGE_NICKNAMES") && checkPermission(cfg.Guild.me, "CHANGE_NICKNAME")) {
-        cfg.Guild.me.setNickname(nickname);
-        cfg.Nickname = nickname;
-    } else {
-        msg.reply("I dont have the permissons to change my nickname in this server. I require MANGE_NICKNAMES and CHANGE_NICKNAME");
-    }
-}
 export async function WarPrepStarted_Members_async(cfg: BotCommonConfig) {
     if (!cfg.Notifications.WarPrepStarted) {
         return;

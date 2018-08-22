@@ -1,32 +1,3 @@
-import { Client, TextChannel, GuildMember, RichEmbed, Guild } from 'discord.js';
-import { BotCommonConfig } from './BotCommonConfig';
-
-
-
-export function Statistics(cfg: BotCommonConfig): RichEmbed {
-    let totalSeconds = (cfg.Bot.uptime / 1000);
-    let hours = Math.floor(totalSeconds / 3600);
-    totalSeconds %= 3600;
-    let minutes = Math.floor(totalSeconds / 60);
-    let seconds = totalSeconds % 60;
-    const embed = new RichEmbed()
-        .setTitle("Bot Stats")
-        .addField("Process Uptime", `${hours} hours, ${minutes} minutes and ${seconds} seconds`)
-        .addField("Guilds Using Bot", cfg.Bot.guilds.array().length);
-
-    return embed;
-}
-
-export function Bot_Updated(Version: number, URL: string): RichEmbed {
-    const embed = new RichEmbed()
-        .setTitle("WarBot Updates")
-        .setDescription("I have been updated to version " + Version + " 👏")
-        .setFooter("To view my patch notes, open this embed.")
-        .setURL(URL);
-
-    return embed;
-}
-
 export function ShowGuilds(bot: Client): RichEmbed[] {
     let Embeds: RichEmbed[] = new Array<RichEmbed>();
 
@@ -51,29 +22,6 @@ export function ShowGuilds(bot: Client): RichEmbed[] {
     return Embeds;
 }
 
-export function Bot_Joining(): RichEmbed {
-    const embed = new RichEmbed()
-        .setTitle("WarBOT")
-        .setColor("#33FF74")
-        .setDescription("Thanks for inviting me to your server. I will send you notifications related to Hustle Castle war events.")
-        .addBlankField()
-        .addField("For Help", "Just type 'bot, help'")
-        .addField("For Support", "Either click this message or contact <@381654208073433091>.")
-        .setURL("https://xtremeownage.com/index.php?forums/WARBOT/")
-        .setImage("http://i1223.photobucket.com/albums/dd516/ericmck2000/download.jpg");
-
-    return embed;
-}
-
-export function Bot_Leaving(): RichEmbed {
-    const embed = new RichEmbed()
-        .setTitle("GoodBye 😭")
-        .setDescription("I am sorry I did not meet the expectations of your guild. If you wish to invite me back, you may click this embed.")
-        .setURL("https://discordapp.com/oauth2/authorize?client_id=437983722193551363&scope=bot&permissions=0x00000008");
-
-    return embed;
-}
-
 export function DefaultChannelSet(ch: TextChannel): RichEmbed {
     const embed = new RichEmbed()
         .setTitle("Default Member Channel Configured")
@@ -92,49 +40,8 @@ export function OfficerChannelSet(ch: TextChannel): RichEmbed {
     return embed;
 }
 
-export function ShowConfig(cfg: BotCommonConfig): RichEmbed[] {
-    const embed = new RichEmbed()
-        .setTitle("Bot Configuration")
-        .addField('Admin Role', cfg.Role_Admins)
-        .addField('Leader Role', cfg.Role_Leaders)
-        .addField('Officer Role', cfg.Role_Officers)
-        .addField('Member Role', cfg.Role_Members)
-        .addBlankField()
-        .addField('Member Channel', cfg.CH_Members)
-        .addField('Officer Channel', cfg.CH_Officers)
-        .addBlankField()
-        .addField('Website URL', cfg.Website_URL)
-        .addField('Loot URL', cfg.Loot_URL)
-        .addBlankField()
-        .addField('UserName:', cfg.Nickname);
 
-    const embed2 = new RichEmbed()
-        .setTitle("Bot Configuration (2)")
-        .addField("War Prep Started Notification Enabled", cfg.Notifications.WarStarted)
-        .addField("War Prep Almost Over Notification Enabled", cfg.Notifications.WarPrepAlmostOver)
-        .addField("War Started Notification Enabled", cfg.Notifications.WarStarted)
-        .addField("Bot Update Notifications Enabled", cfg.Notifications.SendUpdateMessage)
-        .addBlankField()
-        .addField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
-        .addField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
-        .addField("War Started Message", cfg.Notifications.WarStartedMessage)
-        .addBlankField()
-        .addField("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
-        .addField("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
-        .addField("War 3 Enabled (2pm CST)", cfg.Notifications.War3Enabled)
-        .addField("War 4 Enabled (8pm CST)", cfg.Notifications.War4Enabled);
 
-    return [embed, embed2];
-}
-
-export function KickUser(user: GuildMember): RichEmbed {
-    const embed = new RichEmbed()
-        .setTitle("User Kicked")
-        .setColor("#FF0000")
-        .setDescription("User " + user + " has been kicked from this guild.");
-
-    return embed;
-}
 
 export function Commands_GlobalAdmin(): RichEmbed {
     const embed = new RichEmbed()

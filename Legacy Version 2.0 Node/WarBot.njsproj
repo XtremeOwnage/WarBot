@@ -56,15 +56,13 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\bot.ts" />
-    <TypeScriptCompile Include="src\BotCommonConfig.ts" />
-    <TypeScriptCompile Include="src\DiscordBot_Actions.ts" />
-    <TypeScriptCompile Include="src\Discord_FormattedMessages.ts" />
-    <TypeScriptCompile Include="src\Discord_HandleChatMessage.ts" />
-    <TypeScriptCompile Include="src\Discord_Logging.ts" />
-    <TypeScriptCompile Include="src\Discord_Utils.ts" />
-    <TypeScriptCompile Include="src\RoleLevel.ts" />
-    <TypeScriptCompile Include="src\Updates.ts" />
+    <None Include="src\bot.ts" />
+    <None Include="src\BotCommonConfig.ts" />
+    <None Include="src\DiscordBot_Actions.ts" />
+    <None Include="src\Discord_FormattedMessages.ts" />
+    <None Include="src\Discord_HandleChatMessage.ts" />
+    <None Include="src\Discord_Logging.ts" />
+    <None Include="src\Discord_Utils.ts" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

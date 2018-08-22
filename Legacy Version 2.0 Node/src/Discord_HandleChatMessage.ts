@@ -1,19 +1,3 @@
-import { Client, Channel, Guild, TextChannel, Role, Message, User, GuildMember, RichEmbed } from 'discord.js';
-import { BotCommonConfig } from './BotCommonConfig';
-import * as Actions from './DiscordBot_Actions';
-import * as Messages from './Discord_FormattedMessages';
-import { RoleLevel } from './RoleLevel'
-import * as LOG from './Discord_Logging'
-import * as async from 'async';
-import { Dictionary } from 'typescript-collections';
-import { GetRole } from './Discord_Utils';
-
-type CommandHandlerCallBack =
-    (Parameters: string, msg: Message, cfg: BotCommonConfig) => Promise<void>;
-
-let CMD: Dictionary<RoleLevel, Dictionary<string, CommandHandlerCallBack>>
-    = new Dictionary<RoleLevel, Dictionary<string, CommandHandlerCallBack>>();
-
 SetCommandHandler(RoleLevel.GlobalAdmin, "ping", cmd_AdminPing);
 //SetCommandHandler(RoleLevel.GlobalAdmin, "mass message", cmd_MassMessage);
 SetCommandHandler(RoleLevel.GlobalAdmin, "go die", cmd_GoDie);
@@ -95,44 +79,6 @@ SetCommandHandler(RoleLevel.None, "thanks", cmd_Say_Thanks);
 SetCommandHandler(RoleLevel.None, "stats", cmd_Show_My_Stats);
 SetCommandHandler(RoleLevel.None, "show stats", cmd_Show_My_Stats);
 SetCommandHandler(RoleLevel.None, "uptime", cmd_Show_My_Stats);
-
-
-function SetCommandHandler(Role: RoleLevel, Command: string, Callback: CommandHandlerCallBack) {
-    if (!CMD.containsKey(Role))
-        CMD.setValue(Role, new Dictionary<string, CommandHandlerCallBack>());
-
-    var RoleCommands = CMD.getValue(Role);
-
-    RoleCommands.setValue(Command, Callback);
-
-}
-export async function HandleCommand_async(cmd: string, msg: Message, cfg: BotCommonConfig): Promise<void> {
-    //If there is no command or message, there is nothing to do.
-    if (!cmd || !msg) return;
-    let role: RoleLevel = GetRole(cfg, msg);
-    for (var lvl of CMD.keys()) {
-        if (role >= lvl) {
-            let CommandsToFunctions: Dictionary<string, CommandHandlerCallBack> = CMD.getValue(lvl);
-            for (var cmdText of CommandsToFunctions.keys()) {
-                if (cmd.toLowerCase().startsWith(cmdText)) {
-                    //Get the arguements AFTER the command. In case the handling method requires them.
-                    var Msg = cmd.substr(cmdText.length, cmd.length - cmdText.length).trim();
-                    try {
-                        return await CommandsToFunctions.getValue(cmdText)(Msg, msg, cfg);
-                    }
-                    catch (err) {
-                        //Logs the method name, exception, and what command was being called.
-                        await LOG.Error_async(cfg, "HandleCommand_async", cmdText, err);
-                    }
-                }
-            }
-        }
-    }
-};
-
-
-//All commands go below.
-
 
 async function cmd_Kick(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await Actions.KickMember(cfg, msg);
@@ -281,40 +227,8 @@ async function cmd_SetRole_Leader(Parameters: string, msg: Message, cfg: BotComm
 async function cmd_Change_My_NickName(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await Actions.SetNickName(cfg, msg, Parameters);
 }
-async function cmd_Set_Website_URL(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (Parameters.length > 5) {
-        cfg.Website_URL = Parameters;
-        await msg.reply("The new website URL has been set.");
-    } else {
-        cfg.Website_URL = null;
-        await msg.reply("A valid URL was not provided. The value has been set to 'Blank'.");
-    }
-}
-async function cmd_Set_LootPage_URL(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (Parameters.length > 5) {
-        cfg.Loot_URL = Parameters;
-        await msg.reply("The new loot URL has been set.");
-    } else {
-        cfg.Loot_URL = null;
-        await msg.reply("A valid URL was not provided. The value has been set to 'Blank'.");
-    }
-}
 async function cmd_WhoIsAwesome_Hidden(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('<@381654208073433091> of course. He is the greatest. He created me.');
-}
-async function cmd_Show_Loot_URL(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (cfg.Loot_URL) {
-        await msg.reply(cfg.Loot_URL);
-    } else {
-        await msg.reply("Sorry, there is no message set for this command.");
-    }
-}
-async function cmd_Show_Website_URL(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (cfg.Website_URL) {
-        await msg.reply(cfg.Website_URL);
-    } else {
-        await msg.reply("Sorry, your leader has not set a valid message for this command.");
-    }
 }
 async function cmd_PING(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('Pong!');
@@ -331,11 +245,6 @@ async function cmd_ResetConfig(Parameters: string, msg: Message, cfg: BotCommonC
     await msg.channel.send(Messages.ShowConfig(cfg)).then(() =>
         msg.reply("All settings have been reverted to default.")
     );
-}
-async function cmd_LeaveGuild(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    cfg.SetDefaultSettings();
-    await msg.channel.send(Messages.Bot_Leaving())
-        .then(() => cfg.Guild.leave());
 }
 
 async function cmd_TestMessages(Parameters: string, msg: Message, cfg: BotCommonConfig) {
@@ -404,14 +313,7 @@ async function cmd_Notification_WarStarted_Disable(Parameters: string, msg: Mess
     cfg.saveChanges();
     msg.reply("Done.");
 }
-async function cmd_ShowConfig(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    return Messages.ShowConfig(cfg).forEach(async function DisplayMessage(embed: RichEmbed) {
-        await msg.channel.send(embed);
-    });
-}
-async function cmd_AdminPing(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.reply('ADMIN Pong!');
-}
+
 //async function cmd_MassMessage(Parameters: string, msg: Message, cfg: BotCommonConfig) {
 //    await Actions.MassNotify(cfg, Parameters);
 //}
