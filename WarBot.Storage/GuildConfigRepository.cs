@@ -58,6 +58,10 @@ namespace WarBot.Storage
             //There is a old-json based config. lets migrate it to the new database.
             if (!string.IsNullOrEmpty(cfgTxt) && (JsonConvert.DeserializeObject<Legacy.LegacyGuildConfig>(cfgTxt)).IsNotNull(out var oldCfg))
             {
+                //If the old configuration's enviornment does not match the bot's current environment. Return.
+                //This will prevent the TEST bot, from creating channels for PRODUCTION guilds.
+                if (oldCfg.Environment != bot.Environment)
+                    return null;
                 //Simple settings.
                 newCfg.Config.BotVersion = oldCfg.BotVersion;
                 newCfg.Config.NickName = oldCfg.NickName;
@@ -107,6 +111,11 @@ namespace WarBot.Storage
             }
             else
             {
+                //If this is not the production bot, do not create a new config.
+                //Reason: The set defaults method can and will create additional channels as required.
+                if (this.bot.Environment != Core.Environment.PROD)
+                    return null;
+
                 await newCfg.SetDefaults(Guild);
 
                 newCfg.Initialize(Guild, Save);
