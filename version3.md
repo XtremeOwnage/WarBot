@@ -14,24 +14,42 @@ Version 3.0 of bot. Will be converted to use .net core.
 		* Updates Channel - If you wish to see news regarding warbot (Will not happen frequenetly) it will happen in this channel.
 
 # New Commands / Updated Commands
-* Updates a user's nickname.
+* Update a user's nickname.
 	```
 	bot, set nickname @User NewNickName
+	alias: bot, nickname @User NewNickName
 	```
-	* alias: bot, nickname
-	* bot, nickname {nickname} will update WarBOT's nickname.
+* Update WarBot's nickname
+	```
+	bot, nickname NewNickName
+	alias: bot, set nickname NewNickName
+	```
 * Promote and Demote Members
-	* bot, promote @member, [@member2, @member3, etc....]
-	* bot, demote @member, [@member2, @member3, etc....]
-	* bot, set role {RoleName} @User, [@User2, @User3, etc....]
-		* You can add multiple users to a provided role.
-	* To See available roles, type bot, set role
-
+	```
+	bot, promote @member, [@member2, @member3, etc....]
+	bot, demote @member, [@member2, @member3, etc....]
+	bot, set role {RoleName} @User, [@User2, @User3, etc....]
+		alias: bot, add role
+		alias: bot, remove role
+	```
+	* You can promote one or more users at a time. Just tag multiple users. No commas required.
+	* To See available roles:
+		```
+		bot, set role
+			alias: bot, set role ?
+		```
 	* These commands will promote or demote a user to the next configured rank.
 	* Note, if there are multiple WarBot roles, with the same Guild role, the highest warbot role will be used.
 		* Ex: You have Officer set to @Admins, and Leaders set to @Admins.
 		* A user will be promoted from member to Leader, since, it is the same role.
 	* Note, The promote command, will not promote users to above the level of leader. 
 		* To promote to server admin, please use: bot, set role ServerAdmin @user, (@moreusers)
-* bot, show config [All, notifications, Channels, Roles]
+* Show current configuration
+	```
+	- Show the selected configuration sections
+		bot, show config [All, notifications, Channels, Roles]
+	- Print a list of available options. Multiple options may be selected.
+		bot, show config ?
+		
+	```
 	* You can now display a certain config element, or multiple elements. It will default to show all config items.
