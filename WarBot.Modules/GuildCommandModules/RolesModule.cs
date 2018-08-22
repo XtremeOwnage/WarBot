@@ -9,7 +9,7 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     /// <summary>
     /// This module manages a user's roles.
@@ -17,7 +17,7 @@ namespace WarBot.Modules.CommandModules
     //Required chat context type.
     [RequireContext(ContextType.Guild)]
 
-    public class RolesModule : WarBotModuleBase
+    public class RolesModule : GuildCommandModuleBase
     {
         [Command("demote")]
         [Summary("Demote user[s] to the previous role."), RoleLevel(RoleLevel.Officer), RequireBotPermission(GuildPermission.ManageRoles)]

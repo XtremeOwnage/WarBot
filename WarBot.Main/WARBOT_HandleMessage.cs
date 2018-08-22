@@ -58,6 +58,7 @@ namespace WarBot
                 {
                     await this.Dialogs[UserChannelHash].ProcessMessage(message.Content);
                 }
+                //Socket GUILD TEXT Channel.
                 else if (message.Channel is SocketTextChannel tch)
                 {
                     //If the message was not to me, Ignore it.

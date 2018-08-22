@@ -5,11 +5,11 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     //All of these commands are server admin specific.
     [RoleLevel(RoleLevel.ServerAdmin)]
-    public class ServerAdminModule : WarBotModuleBase
+    public class ServerAdminModule : GuildCommandModuleBase
     {
 
         [Command("leave"), Alias("Go Away"), Summary("I will leave the guild."), RequireBotPermission(ChannelPermission.SendMessages), Priority(5)]

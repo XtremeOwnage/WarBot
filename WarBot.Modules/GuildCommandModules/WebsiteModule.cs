@@ -5,10 +5,10 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class WebsiteModule : WarBotModuleBase
+    public class WebsiteModule : GuildCommandModuleBase
     {
         [Command("set website"), Alias("Website")]
         [RoleLevel(RoleLevel.Leader)]

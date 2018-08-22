@@ -7,11 +7,11 @@ using WarBot.Core;
 using System.Linq;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     //Required chat context type.
     [RequireContext(ContextType.Guild)]
-    public class TemplateModule : WarBotModuleBase
+    public class TemplateModule : GuildCommandModuleBase
     {
         [Command("command_goes_here"), Alias("add_alias")]
         [RoleLevel(RoleLevel.Officer)]

@@ -6,10 +6,10 @@ using WarBot.Core;
 using System.Linq;
 using System;
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class ShowConfigModule : WarBotModuleBase
+    public class ShowConfigModule : GuildCommandModuleBase
     {
        // ~say hello -> hello
         [Command("show config"), Alias("config show")]

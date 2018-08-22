@@ -6,10 +6,10 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class NickNameModule : WarBotModuleBase
+    public class NickNameModule : GuildCommandModuleBase
     {
         [Command("set nickname"), Alias("nickname")]
         [RoleLevel(RoleLevel.Officer)]

@@ -5,10 +5,10 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class LootModule : WarBotModuleBase
+    public class LootModule : GuildCommandModuleBase
     {
         [Command("set loot"), Alias("loot")]
         [RoleLevel(RoleLevel.Leader)]

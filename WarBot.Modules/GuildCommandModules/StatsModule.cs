@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using WarBot.Core;
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
-    public class StatsModule : WarBotModuleBase
+    public class StatsModule : GuildCommandModuleBase
     {
         private IWARBOT bot;
         public StatsModule(IWARBOT bot)

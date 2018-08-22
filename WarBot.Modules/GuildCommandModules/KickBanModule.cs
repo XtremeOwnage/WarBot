@@ -6,10 +6,10 @@ using WarBot.Attributes;
 using WarBot.Core;
 
 
-namespace WarBot.Modules.CommandModules
+namespace WarBot.Modules.GuildCommandModules
 {
     [RequireContext(ContextType.Guild)]
-    public class KickBanModule : WarBotModuleBase
+    public class KickBanModule : GuildCommandModuleBase
     {
         [Command("kick"), Alias("remove")]
         [RoleLevel(RoleLevel.Leader)]
