@@ -72,7 +72,7 @@ namespace WarBot
                         return;
 
                     //Load dynamic command context.
-                    var context = new GuildCommandContext(Client, message, cfg);
+                    var context = new GuildCommandContext(Client, message, cfg, this);
 
                     var result = await commands.ExecuteAsync(context, Msg, services, MultiMatchHandling.Best);
 

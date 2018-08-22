@@ -9,12 +9,6 @@ namespace WarBot.Modules.GuildCommandModules
 {
     public class StatsModule : GuildCommandModuleBase
     {
-        private IWARBOT bot;
-        public StatsModule(IWARBOT bot)
-        {
-            this.bot = bot;
-        }
-
         [Command("stats"), Alias("uptime", "show stats", "show uptime"), Summary("Display command stats related to me.")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         [RequireContext(ContextType.Guild)]
