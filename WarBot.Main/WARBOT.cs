@@ -17,6 +17,9 @@ using WarBot.Core;
 using System.Collections.Concurrent;
 using WarBot.Core.Dialogs;
 using System.Runtime.CompilerServices;
+using Hangfire.MemoryStorage;
+using Hangfire;
+using WarBot.Core.JobScheduling;
 
 namespace WarBot
 {
@@ -43,6 +46,12 @@ namespace WarBot
         //Container to keep track of cached guild configs.
         public IGuildConfigRepository GuildRepo;
         public BotConfig Config { get; private set; }
+        public IJobScheduler Jobs { get; private set; }
+
+        /// <summary>
+        /// Just need to keep an instance of the background job server, for background jobs to process.
+        /// </summary>
+        private BackgroundJobServer jobServer;
 
 
         public WARBOT()
@@ -61,6 +70,16 @@ namespace WarBot
 
         public async Task Start()
         {
+            #region Background Job Processing
+            //Initialize Hangfire (Background Job Server)
+            //ToDo - Replace this with a stateful MySql database, if available.
+            GlobalConfiguration.Configuration.UseMemoryStorage();
+            this.jobServer = new BackgroundJobServer();
+
+            //Hangfire uses a lot of static methods, so, we just have to create the placeholder task.
+            this.Jobs = new Implementation.HangfireJobScheduler();
+            #endregion
+
             using (WarDB db = new WarDB(new Microsoft.EntityFrameworkCore.DbContextOptions<WarDB>()))
             {
                 await db.Migrate();
