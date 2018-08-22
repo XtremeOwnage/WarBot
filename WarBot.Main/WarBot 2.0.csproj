@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>WarBot</RootNamespace>
+    <AssemblyName>WarBot.NET</AssemblyName>
+    <StartupObject>WarBot.Program</StartupObject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="1.0.2" />
+    <PackageReference Include="Discord.Net.Commands" Version="1.0.2" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="1.0.2" />
+    <PackageReference Include="DiscordBotsList.Api.Adapter.Discord.Net" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Users\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Config\BotConfig" />
+    <None Include="bin\Guilds\381654582444687370" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WarBot.Core\WarBot.Core.csproj" />
+    <ProjectReference Include="..\WarBot.Modules\WarBot.Modules.csproj" />
+    <ProjectReference Include="..\WarBot.Storage\WarBot.Storage.csproj" />
+  </ItemGroup>
+
+
+</Project>
