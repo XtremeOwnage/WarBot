@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 using WarBot.Core;
+using System.Linq;
 
 namespace WarBot
 {
@@ -16,6 +17,24 @@ namespace WarBot
 
             await Log.ConsoleOUT($"Removed Guild: {arg.Name}");
 
+            try
+            {
+                //There was an open dialog for this guild. Lets remove it.
+                if (this.Dialogs.Any(o => o.Value.Config == cfg))
+                {
+                    foreach (var Dialog in this.Dialogs.Where(o => o.Value.Config == cfg).ToArray())
+                    {
+                        //Send a message to the user/channel, that we are closing the dialog.
+                        await Dialog.Value.CloseDialog_GuildRemoved();
+                        //Remove the dialog from the stack.
+                        this.Dialogs.TryRemove(Dialog.Key, out var _);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Log.Error(arg, ex);
+            }
 
             //Update the DBL stats.
             try
@@ -99,7 +118,7 @@ namespace WarBot
                     await CH.SendMessageAsync("", embed: eb);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await Log.Error(arg, ex);
             }
@@ -129,14 +148,31 @@ namespace WarBot
 
         private async Task Client_ChannelDestroyed(SocketChannel arg)
         {
+            #region Close any open dialogs in this channel.
+            try
+            {
+                //There was an open dialog for this guild. Lets remove it.
+                if (this.Dialogs.Any(o => o.Value.Channel.Id == arg.Id))
+                {
+                    foreach (var Dialog in this.Dialogs.Where(o => o.Value.Channel.Id == arg.Id).ToArray())
+                    {
+                        //Remove the dialog from the stack.
+                        this.Dialogs.TryRemove(Dialog.Key, out var _);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Log.Error(null, ex);
+            }
+            #endregion
+
             if (arg is SocketGuildChannel sg)
             {
                 var cfg = await this.GuildRepo.GetConfig(sg.Guild);
 
                 if (!ShouldHandleMessage(cfg))
                     return;
-
-
             }
         }
         private async Task Client_GuildAvailable(SocketGuild arg)

@@ -14,6 +14,9 @@ using System.Linq;
 
 using Microsoft.Extensions.DependencyInjection;
 using WarBot.Core;
+using System.Collections.Concurrent;
+using WarBot.Core.Dialogs;
+using System.Runtime.CompilerServices;
 
 namespace WarBot
 {
@@ -41,6 +44,7 @@ namespace WarBot
         public IGuildConfigRepository GuildRepo;
         public BotConfig Config { get; private set; }
 
+
         public WARBOT()
         {
             this.Config = BotConfig.Load();
@@ -51,10 +55,9 @@ namespace WarBot
             this.GuildRepo = new GuildConfigRepository();
         }
 
-        //ToDo - This is scoped so it will only listen to events from the TEST guild.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool ShouldHandleMessage(IGuildConfig Cfg)
-            => Cfg.Guild.Id == 458992709718245377 || Cfg.Guild.Id == 461975072563789824;
-        //    => this.Environment == Cfg.Environment && Cfg.Guild.ID == 458992709718245377;
+                    => Cfg != null && Cfg.Environment == this.Config.Environment;
 
         public async Task Start()
         {
@@ -91,7 +94,7 @@ namespace WarBot
             Client.Ready += Client_Ready;
             Client.RoleDeleted += Client_RoleDeleted;
             Client.UserJoined += Client_UserJoined;
-            Client.UserLeft += Client_UserLeft;          
+            Client.UserLeft += Client_UserLeft;
 
             //Open the bot list API.
             botListMe = await BotListAPI.GetMeAsync();

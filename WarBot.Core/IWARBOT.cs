@@ -1,4 +1,6 @@
 using Discord;
+using System.Collections.Concurrent;
+using WarBot.Core.Dialogs;
 
 namespace WarBot.Core
 {
@@ -11,5 +13,8 @@ namespace WarBot.Core
         int LoadedModules { get; }
         int LoadedCommands { get; }
         long MessagesProcessed { get; }
+
+        void OpenDialog(SocketGuildDialogContextBase Dialog);
+        void CloseDialog(SocketGuildDialogContextBase Dialog);
     }
 }

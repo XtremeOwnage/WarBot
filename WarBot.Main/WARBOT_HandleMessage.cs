@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WarBot.Storage;
 using Discord.Commands;
 using System.Threading;
+using WarBot.Core.Dialogs;
 
 namespace WarBot
 {
@@ -19,23 +20,24 @@ namespace WarBot
             Interlocked.Increment(ref this.MessagesProcessed);
             try
             {
-                //If the message is from a bot, ignore it.
-                if (socketMessage.Author.IsBot)
-                    return;
-
-                //If the message is from me, ignore it.
-                if (socketMessage.Author.Id == Client.CurrentUser.Id)
-                    return;
-
-                //If the message came from a logging channel, ignore it.
-                if (Log.IsLoggingChannel(socketMessage.Channel.Id))
-                    return;
-
                 var message = socketMessage as SocketUserMessage;
 
                 //If this was a system message, ignore it.
                 if (message == null)
                     return;
+
+                //If the message is from a bot, ignore it.
+                if (message.Author.IsBot)
+                    return;
+
+                //If the message is from me, ignore it.
+                if (message.Author.Id == Client.CurrentUser.Id)
+                    return;
+
+                //If the message came from a logging channel, ignore it.
+                if (Log.IsLoggingChannel(message.Channel.Id))
+                    return;
+
 
                 #region Parse out command from prefix.
                 int argPos = 0;
@@ -46,8 +48,16 @@ namespace WarBot
                 string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
                 #endregion
 
-                //Start actual processing logic.
-                if (message.Channel is SocketTextChannel tch)
+                //Start actual processing logic.              
+                var UserChannelHash = SocketGuildDialogContextBase.GetHashCode(message.Channel, message.Author);
+                //Check if there is an open dialog.
+                //ToDo - If the hash logic is perfectly sound, we can remove the second check to improve performance.
+                //This case, is outside of the channel type comparison, because a dialog can occur in many multiple channel types.
+                if (this.Dialogs.ContainsKey(UserChannelHash) && this.Dialogs[UserChannelHash].InContext(message.Channel.Id, message.Author.Id))
+                {
+                    await this.Dialogs[UserChannelHash].ProcessMessage(message.Content);
+                }
+                else if (message.Channel is SocketTextChannel tch)
                 {
                     //If the message was not to me, Ignore it.
                     if (!(HasStringPrefix || HasBotPrefix))
