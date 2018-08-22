@@ -4,7 +4,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
-
+using WarBot.Core.ModuleType;
 
 namespace WarBot.Modules.GuildCommandModules
 {

@@ -3,8 +3,7 @@ using Discord.Commands;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
-
-
+using WarBot.Core.ModuleType;
 namespace WarBot.Modules.GuildCommandModules
 {
     //All of these commands are server admin specific.

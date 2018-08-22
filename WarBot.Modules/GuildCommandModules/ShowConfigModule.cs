@@ -5,7 +5,7 @@ using WarBot.Attributes;
 using WarBot.Core;
 using System.Linq;
 using System;
-
+using WarBot.Core.ModuleType;
 namespace WarBot.Modules.GuildCommandModules
 {
     [RequireContext(ContextType.Guild)]

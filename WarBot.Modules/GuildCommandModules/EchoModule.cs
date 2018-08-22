@@ -1,6 +1,7 @@
 using Discord.Commands;
 using System.Threading.Tasks;
 using WarBot.Attributes;
+using WarBot.Core.ModuleType;
 
 namespace WarBot.Modules.GuildCommandModules
 {
@@ -16,6 +17,12 @@ namespace WarBot.Modules.GuildCommandModules
         {
             // ReplyAsync is a method on ModuleBase
             await ReplyAsync(echo);
+        }
+
+        [Command("mimic me"), Summary("I will repeat everything you say, until you say stop."), RequireBotPermission(Discord.GuildPermission.SendMessages), RoleLevel(Core.RoleLevel.None)]
+        public async Task MimicMe()
+        {
+            await this.bot.OpenDialog(new Dialogs.MimicMeDialog(this.Context));
         }
 
         [Command("ping"), Summary("Provides an Admin Pong"), RequireBotPermission(Discord.GuildPermission.SendMessages), RoleLevel(Core.RoleLevel.GlobalAdmin), Priority(5)]
