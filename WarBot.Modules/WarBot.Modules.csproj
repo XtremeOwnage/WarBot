@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net.Commands" Version="1.0.2" />
     <PackageReference Include="Discord.Net.WebSocket" Version="1.0.2" />
+    <PackageReference Include="Humanizer" Version="2.4.2" />
   </ItemGroup>
 
   <ItemGroup>
