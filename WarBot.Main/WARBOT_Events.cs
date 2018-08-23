@@ -178,9 +178,6 @@ namespace WarBot
 
             //Save changes.
             await cfg.SaveConfig();
-
-
-
         }
 
         private async Task Client_ChannelDestroyed(SocketChannel arg)
@@ -189,9 +186,9 @@ namespace WarBot
             try
             {
                 //There was an open dialog for this guild. Lets remove it.
-                if (this.Dialogs.Any(o => o.Value.Channel.Id == arg.Id))
+                if (this.Dialogs.Any(o => o.Value.Channel == arg))
                 {
-                    foreach (var Dialog in this.Dialogs.Where(o => o.Value.Channel.Id == arg.Id).ToArray())
+                    foreach (var Dialog in this.Dialogs.Where(o => o.Value.Channel == arg).ToArray())
                     {
                         //Remove the dialog from the stack.
                         this.Dialogs.TryRemove(Dialog.Key, out var _);
@@ -204,12 +201,60 @@ namespace WarBot
             }
             #endregion
 
+
             if (arg is SocketGuildChannel sg)
             {
                 var cfg = await this.GuildRepo.GetConfig(sg.Guild);
 
                 if (!ShouldHandleMessage(cfg))
                     return;
+
+                #region Check if this channel was configured as any of the guild's targets.
+                //We need to validate this role was not configured as any of this guild's current roles.
+                var AffectedChannels = cfg.GetChannelMap().Where(o => o.Value == sg);
+
+                try
+                {
+                    //Determine if there is an officers channel configured. If so, lets send a message.
+                    //Secondary check to validate it was not the officer's channel which was deleted.
+                    if (cfg.GetGuildChannel(WarBotChannelType.CH_Officers).IsNotNull(out var ch) && sg != ch)
+                    {
+                        var eb = new EmbedBuilder()
+                            .WithTitle("Error: Channel Deleted")
+                            .WithDescription($"Channel '#{sg.Name}' was just deleted. This channel was configured for these purposes:");
+
+                        foreach (var r in AffectedChannels)
+                            eb.AddField_ex("Purpose", r.Key.ToString());
+
+                        eb.AddField_ex("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", null);
+
+                        //It was the officers 
+                        if (ch == sg)
+                        {
+                            //See if we can PM the discord owner.
+                            var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
+                            await dm.SendMessageAsync(null, embed: eb);
+
+                            await dm.SendMessageAsync("Since, this was also the channel configured for management messages, you will no longer see these types of messages until the configuration has been updated.");
+                        }
+                        else
+                        {
+                            await ch.SendMessageAsync("", embed: eb);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Log.Error(sg.Guild, ex);
+                }
+
+                //Remove these roles from the warbot configuration.
+                foreach (var role in AffectedChannels)
+                    cfg.SetGuildChannel(role.Key, null);
+                #endregion
+
+                //Save changes.
+                await cfg.SaveConfig();
             }
         }
         private async Task Client_GuildAvailable(SocketGuild arg)
