@@ -16,12 +16,15 @@ Warbot is a discord bot designed around the Hustle Castle mobile game. While, ma
 ### Voting
 * Ever need a standarized way to initiate a vote in Discord? WarBOT is here to help!
 
-### Remindars
+### Reminders
 * In addition to WAR reminders for hustle castle, you can also ask WarBOT to remind you of something. This feature is available in both guilds, and via DM to the bot.
+
+### Cleaning up channels
+* You can use WarBOT to delete messages from a channel, with the option to filter on pinned, nonpinned, or all messages.
 
 ## Hustle Castle - Specific Features
 
-### WAR Prep / War Prep Ending / War Started Remindars
+### WAR Prep / War Prep Ending / War Started Reminders
 * Toggable notifications when war prep starts, war prep is ending, and war is started.
 	* Customizable messages.
 
