@@ -15,35 +15,37 @@ namespace WarBot.Modules.CommandModules
     [Summary("Send a reminder message.")]
     public class RemindMeModule : CommandModuleBase
     {
+        [RequireBotPermission(ChannelPermission.SendMessages)]
         [Command("remind me"), Alias("remind")]
         public async Task RemindMe(TimeSpanext When, [Remainder]string Message)
         {
-
             //Check if we have permissions in this channel. If not, we will DM the user.
             if (this.Context is GuildCommandContext gcc && WarBot.Core.PermissionHelper.TestBotPermission(gcc, ChannelPermission.SendMessages))
             {
-                await ReplyAsync($"I will remind you in {When.Span.Humanize()}, in this channel.");
-                //ToDo - Fix job scheduling.
-                await Task.Delay(When.Span);
-
-                await gcc.GuildChannel.SendMessageAsync($"{gcc.User.Mention}, {Message}");
+                await ReplyAsync($"I will remind you here in {When.Span.Humanize()}.");
+                this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_GuildChannel(gcc.User.Id, gcc.Channel.Id, Message), When.Span);
             }
             else
             {
                 var DM = await Context.User.GetOrCreateDMChannelAsync();
-
                 await DM.SendMessageAsync($"I will remind you in {When.Span.Humanize()}, via DM.");
-
-                await Task.Delay(When.Span);
-
-                await DM.SendMessageAsync($"Here is your remindar: {Message}");
+                this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_DM(Context.User.Id, Message), When.Span);
             }
-
         }
 
+        [Command("dm me"), Alias("remind", "remind me", "remind dm")]
 
+        public async Task RemindMe_DM(TimeSpanext When, [Remainder]string Message)
+        {
+            var DM = await Context.User.GetOrCreateDMChannelAsync();
+            await DM.SendMessageAsync($"I will remind you in {When.Span.Humanize()}, via DM.");
+            this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_DM(Context.User.Id, Message), When.Span);
+        }
     }
 
+    /// <summary>
+    /// Note- This service must be registered with the IServiceProvider for it to be properly 
+    /// </summary>
     public class RemindMeStandAloneJob
     {
         private IWARBOT bot;
@@ -57,7 +59,7 @@ namespace WarBot.Modules.CommandModules
             var User = await bot.Client.GetUserAsync(UserId);
             var Channel = await User.GetOrCreateDMChannelAsync();
 
-            await Channel.SendMessageAsync($"Here is your remindar: {Message}");
+            await Channel.SendMessageAsync($"{Message}");
         }
         public async Task SendReminder_GuildChannel(ulong UserId, ulong ChannelId, string Message)
         {
@@ -65,7 +67,7 @@ namespace WarBot.Modules.CommandModules
             var Channel = await bot.Client.GetChannelAsync(ChannelId);
             var GuildChannel = Channel as SocketTextChannel;
 
-            await GuildChannel.SendMessageAsync($"{User.Mention}, Here is your remindar: {Message}");
+            await GuildChannel.SendMessageAsync($"{User.Mention}, {Message}");
         }
 
     }
