@@ -48,6 +48,8 @@ namespace WarBot
         public IGuildConfigRepository GuildRepo;
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
+        public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(15);
+
 
         /// <summary>
         /// Just need to keep an instance of the background job server, for background jobs to process.
@@ -85,6 +87,8 @@ namespace WarBot
             sc.AddSingleton<IGuildConfigRepository>(GuildRepo);
             sc.AddSingleton<IWARBOT>(this);
             sc.AddDbContext<WarDB>(ServiceLifetime.Singleton);
+
+            sc.AddSingleton(o => new Modules.CommandModules.RemindMeStandAloneJob(this));
             services = sc.BuildServiceProvider();
 
             #endregion
@@ -95,7 +99,8 @@ namespace WarBot
 
             BackgroundJobServerOptions options = new BackgroundJobServerOptions()
             {
-                Activator = new Implementation.HangfireActivator(this.services),                
+                Activator = new Implementation.HangfireActivator(this.services),
+                SchedulePollingInterval = jobPollingInterval,
             };
 
             this.jobServer = new BackgroundJobServer(options);
