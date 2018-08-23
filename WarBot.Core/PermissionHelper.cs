@@ -3,17 +3,27 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using WarBot.Core.ModuleType;
 
 namespace WarBot.Core
 {
     public static class PermissionHelper
     {
-        public static bool TestPermission(this IGuildChannel Channel, ChannelPermission Permission, IGuildUser User)
-        => User.GetPermissions(Channel).ToList().Contains(Permission);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TestPermission(this GuildCommandContext Context, ChannelPermission Permission)
+            => Context.GuildUser.GetPermissions(Context.GuildChannel).ToList().Contains(Permission);
 
+        public static bool TestPermission(this SocketTextChannel Channel, SocketGuildUser User, ChannelPermission Permission)
+            => User.GetPermissions(Channel).ToList().Contains(Permission);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TestPermission(this IGuildChannel Channel, ChannelPermission Permission, IRole Role)
             => Channel.GetPermissionOverwrite(Role)?.ToAllowList().Contains(Permission) ?? false;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TestBotPermission(this GuildCommandContext Context, ChannelPermission Permission)
+            => Context.Guild.CurrentUser.GetPermissions(Context.GuildChannel).ToList().Contains(Permission);
         /// <summary>
         /// This will return a guild user's current WarBot Role.
         /// Only used inside of guild-context.

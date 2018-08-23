@@ -12,3 +12,4 @@ namespace WarBot.Core.ModuleType
         public IWARBOT bot => this.Context.bot;
     }
 }
+

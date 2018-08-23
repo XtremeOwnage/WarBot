@@ -17,19 +17,14 @@ namespace WarBot.Core
             var myUser = Guild.CurrentUser;
 
             //First, test the default channel.
-            if (Guild.DefaultChannel != null && PermissionHelper.TestPermission(Guild.DefaultChannel, ChannelPermission.SendMessages, myUser))
+            if (Guild.DefaultChannel != null && myUser.GetPermissions(Guild.DefaultChannel).SendMessages)
                 return Guild.DefaultChannel;
 
             //Next, Just loop through channels, until we find a writeable channel.
-            foreach (IGuildChannel ch in Guild.Channels)
+            foreach (SocketTextChannel ch in Guild.Channels.OfType<SocketTextChannel>())
             {
-                //We only care about text channels.
-                if (ch is ITextChannel tch)
-                {
-                    if (PermissionHelper.TestPermission(tch, ChannelPermission.SendMessages, myUser))
-                        return tch;
-                }
-
+                if (myUser.GetPermissions(ch).SendMessages)
+                    return ch;
             }
 
             //If, there are no writable channels. Lets create one?
@@ -55,17 +50,14 @@ I will post messages into this channel.");
             var ME = Guild.CurrentUser;
 
             //Next, Just loop through channels, until we find a writeable channel.
-            foreach (IGuildChannel ch in Guild.Channels)
+            foreach (SocketTextChannel tch in Guild.Channels.OfType<SocketTextChannel>())
             {
-                //We only care about text channels.
-                if (ch is ITextChannel tch)
-                {
-                    //Simple stupid way. //ToDo - Add better logic in the future.
-                    //Summary - Find a channel we can write to, but, everybody cannot.
-                    if (!PermissionHelper.TestPermission(tch, ChannelPermission.ReadMessages, Guild.EveryoneRole)
-                        && PermissionHelper.TestPermission(tch, ChannelPermission.SendMessages, ME))
-                        return tch;
-                }
+                //Simple stupid way. //ToDo - Add better logic in the future.
+                //Summary - Find a channel we can write to, but, everybody cannot.
+                if (!PermissionHelper.TestPermission(tch, ChannelPermission.ReadMessages, Guild.EveryoneRole)
+                    && ME.GetPermissions(tch).SendMessages)
+                    return tch;
+
             }
 
             //If, there are no writable channels. Lets create one?
