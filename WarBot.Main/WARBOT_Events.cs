@@ -143,6 +143,43 @@ namespace WarBot
 
         private async Task Client_RoleDeleted(SocketRole arg)
         {
+            var cfg = await this.GuildRepo.GetConfig(arg.Guild);
+            if (!ShouldHandleMessage(cfg))
+                return;
+
+            //We need to validate this role was not configured as any of this guild's current roles.
+            var AffectedRoles = cfg.GetRoleMap().Where(o => o.Value.Id == arg.Id);
+
+            try
+            {
+                //Determine if there is an officers channel configured. If so, lets send a message.
+                if (cfg.GetGuildChannel(WarBotChannelType.CH_Officers).IsNotNull(out var ch))
+                {
+                    var eb = new EmbedBuilder()
+                        .WithTitle("Error: Role Deleted")
+                        .WithDescription($"Role '{arg.Name}' was just deleted. This discord role was configured for these roles:");
+
+                    foreach (var r in AffectedRoles)
+                        eb.AddField_ex("Role", r.Key.ToString());
+
+                    eb.WithDescription("I will remove this role from my configuration. Please update the configuration if you wish to use it again.");
+
+                    await ch.SendMessageAsync("", embed: eb);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Log.Error(arg.Guild, ex);
+            }
+
+            //Remove these roles from the warbot configuration.
+            foreach (var role in AffectedRoles)
+                cfg.SetGuildRole(role.Key, null);
+
+            //Save changes.
+            await cfg.SaveConfig();
+
+
 
         }
 
