@@ -34,7 +34,7 @@ namespace WarBot.Core
         }
         public static EmbedBuilder AddField_ex(this EmbedBuilder eb, string Name, object Value, bool Inline = false)
         {
-            eb.Fields.Add(new EmbedFieldBuilder
+            eb.AddField(new EmbedFieldBuilder
             {
                 Name = string.IsNullOrEmpty(Name) ? "" : Name,
                 Value = Value == null || string.IsNullOrWhiteSpace(Value.ToString()) ? "_ _" : Value,
