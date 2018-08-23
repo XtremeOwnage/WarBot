@@ -16,7 +16,7 @@ namespace WarBot.Modules.GuildCommandModules
     [RequireContext(ContextType.Guild)]
     public class ClearMessagesModule : GuildCommandModuleBase
     {
-        [Command("clear messages"), Alias("clear")]
+        [Command("clear messages"), Alias("clear", "purge")]
         [RoleLevel(RoleLevel.Leader)]
         [Summary("Delete specified messages from a channel.")]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
