@@ -129,15 +129,27 @@ namespace WarBot.Util
 
             eb.AddInlineField("Success", Result.IsSuccess);
 
-            if (Result.Error == CommandError.UnmetPrecondition)
+            if (Result.Error == CommandError.UnmetPrecondition && Result is AccessDeniedPreconditionResult accessDenied)
             {
-                if (Result is AccessDeniedPreconditionResult accessDenied)
-                {
-                    eb.AddField("Error", "Access Denied")
-                        .AddInlineField("User Role", accessDenied.UserRole.ToString())
-                        .AddInlineField("Match Type", accessDenied.MatchType.ToString())
-                        .AddInlineField("Required Role", accessDenied.RequiredRole.ToString());
-                }
+                eb.AddField("Error", "Access Denied")
+                    .AddInlineField("User Role", accessDenied.UserRole.ToString())
+                    .AddInlineField("Match Type", accessDenied.MatchType.ToString())
+                    .AddInlineField("Required Role", accessDenied.RequiredRole.ToString());
+
+            }
+            else if (Result.Error == CommandError.ParseFailed && Result is ParseResult tr)
+            {
+                eb.AddField("Error", "Parse Failed");
+                if (!string.IsNullOrEmpty(tr.ErrorReason))
+                    eb.AddInlineField("Error Message", tr.ErrorReason);
+                if (tr.ParamValues != null)
+                    foreach (var pv in tr.ParamValues.Where(o => !o.IsSuccess))
+                        foreach (var val in pv.Values)
+                        {
+                            eb.AddField_ex("Value", val.Value, true)
+                                .AddField_ex("Score", val.Score, true);
+                        }
+
             }
             else if (!Result.IsSuccess)
                 eb.AddField("Failure Reason", Result.ErrorReason);
