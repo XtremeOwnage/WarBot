@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 using Hangfire.MemoryStorage;
 using Hangfire;
 using WarBot.Core.JobScheduling;
+using WarBot.Modules.TypeReaders;
 
 namespace WarBot
 {
@@ -70,20 +71,12 @@ namespace WarBot
 
         public async Task Start()
         {
-            #region Background Job Processing
-            //Initialize Hangfire (Background Job Server)
-            //ToDo - Replace this with a stateful MySql database, if available.
-            GlobalConfiguration.Configuration.UseMemoryStorage();
-            this.jobServer = new BackgroundJobServer();
-
-            //Hangfire uses a lot of static methods, so, we just have to create the placeholder task.
-            this.Jobs = new Implementation.HangfireJobScheduler();
-            #endregion
-
             using (WarDB db = new WarDB(new Microsoft.EntityFrameworkCore.DbContextOptions<WarDB>()))
             {
                 await db.Migrate();
             }
+
+            #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
             var sc = new ServiceCollection();
             sc.AddSingleton(this); //add WARBOT.
@@ -94,11 +87,33 @@ namespace WarBot
             sc.AddDbContext<WarDB>(ServiceLifetime.Singleton);
             services = sc.BuildServiceProvider();
 
+            #endregion
+            #region Background Job Processing
+            //Initialize Hangfire (Background Job Server)
+            //ToDo - Replace this with a stateful MySql database, if available.
+            GlobalConfiguration.Configuration.UseMemoryStorage();
+
+            BackgroundJobServerOptions options = new BackgroundJobServerOptions()
+            {
+                Activator = new Implementation.HangfireActivator(this.services),                
+            };
+
+            this.jobServer = new BackgroundJobServer(options);
+
+            //Hangfire uses a lot of static methods, so, we just have to create the placeholder task.
+            this.Jobs = new Implementation.HangfireJobScheduler();
+            #endregion
+
             //Initialize the config repository with an instance of the WarDB from the DI container.
             ((GuildConfigRepository)this.GuildRepo).Initialize(this, services.GetService<WarDB>());
 
+            //Add custom type readers.
+            commands.AddTypeReader<TimeSpanext>(new ImprovedTimeSpanTypeReader());
+
             //Initialize the commands.
             await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly);
+
+
 
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.

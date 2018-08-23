@@ -19,10 +19,14 @@ namespace WarBot.Util
                 if (!Cfg.BotVersion.Equals(CurrentVersion, StringComparison.OrdinalIgnoreCase))
                 {
                     bool UpdateSentToClan = false;
-                    if (Cfg.GetGuildChannel(WarBotChannelType.CH_WarBot_Updates).IsNotNull(out var CH) 
+                    //Validate the update channel is configured.
+                    if (Cfg.GetGuildChannel(WarBotChannelType.CH_WarBot_Updates).IsNotNull(out var CH)
+                        //Validate this update, should sent a message out.
                         && SendUpdateNotificationForCurrentVersion
+                        //Validate the guild is opt-in to receive update messages.
                         && Cfg.Notifications.SendUpdateMessage
-                        && CH.TestPermission(ChannelPermission.SendMessages, Cfg.CurrentUser))
+                        //Validate I have permissiosn to send to this channel.
+                        && Cfg.CurrentUser.GetPermissions(CH).SendMessages)
                     {
                         UpdateSentToClan = true;
                         var eb = new EmbedBuilder()
