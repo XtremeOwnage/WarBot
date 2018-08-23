@@ -55,13 +55,10 @@ namespace WarBot.Storage.Models
         public IRole GetGuildRole(RoleLevel level) => this.Config.Roles.FirstOrDefault(o => o.Level == level)?.Value;
         public void SetGuildRole(RoleLevel level, IRole GuildRole)
         {
-            //Remove the specified channel type.
+            //Remove the specified role type.
             if (GuildRole == null)
-            {
-                if (this.Config.Roles.FirstOrDefault(o => o.Level == level).IsNotNull(out var deleteMe))
-                {
-                    this.Config.Roles.Remove(deleteMe);
-                }
+            {               
+                this.Config.Roles.RemoveAll(o => o.Level == level);
                 return;
             }
 
@@ -83,10 +80,7 @@ namespace WarBot.Storage.Models
             //Remove the specified channel type.
             if (Channel == null)
             {
-                if (this.Config.Channels.FirstOrDefault(o => o.ChannelType == ChannelType).IsNotNull(out var deleteMe))
-                {
-                    this.Config.Channels.Remove(deleteMe);
-                }
+                this.Config.Channels.RemoveAll(o => o.ChannelType == ChannelType);
                 return;
             }
 
@@ -143,7 +137,7 @@ namespace WarBot.Storage.Models
             this.Config.Initialize(Guild);
 
             this.Value = Guild;
-            this.saveFunc = SaveFunc;            
+            this.saveFunc = SaveFunc;
         }
 
         public async Task SaveConfig()
