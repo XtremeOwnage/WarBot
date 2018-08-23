@@ -15,6 +15,16 @@ Version 3.0 of bot. Will be converted to use .net core.
 		* Updates Channel - If you wish to see news regarding warbot (Will not happen frequenetly) it will happen in this channel.
 
 # New Commands / Updated Commands
+* Remind Me
+	- Ever want a reminder for something? WARBot can assist with that now!
+	```
+	bot, remind me 1d Do Something
+	bot, remind me 1m do something in a minute.
+	bot, remind me 10:02:12 Remind me in 10 hours, 2 minutes, and 12 seconds.
+	alias: bot, remind {span} {message}
+	```
+	- If WARBot is unable to send messages in the channel where the command was entered, WARBOT will DM you instead.
+	- As well, this command can be used in a DM to warbot.
 * Update a user's nickname.
 	```
 	bot, set nickname @User NewNickName
