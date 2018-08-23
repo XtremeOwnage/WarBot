@@ -1,31 +1,33 @@
 # WarBot
 Warbot is a discord bot designed for the hustle-castle mobile phone game. It is intended to display a notification when wars are starting, to assist with reminding members to deploy their troops.
 
-### What is WarBOT
+## What is WarBOT
 
-Warbot is a discord bot designed around the Hustle Castle mobile game. While, many of the features are specific to this game, there are many other features you may want.
+Warbot is a discord bot designed around the Hustle Castle mobile game. While, many of the features are specific to this game, you do not need to play this game to utilize WarBOT.
 
-### Basic Features
+## Basic Features
 
-* Discord User/Role Management
-	* Can promote, demote, and set user to role(s).
-	* Keeps track of the last time a user was online in discord.
-	* Keeps track of the last time a user sent a message in discord.
-	* Kick Users. Not a huge feature, but, It does leave a nice "Kicked" message.
+### Discord User/Role Management
+* Can promote, demote, and set user to role(s).
+* Keeps track of the last time a user was online in discord.
+* Keeps track of the last time a user sent a message in discord.
+* Kick Users. Not a huge feature, but, It does leave a nice "Kicked" message.
 
-* Voting
-	* Ever need a standarized way to initiate a vote in Discord? WarBOT is here to help!
+### Voting
+* Ever need a standarized way to initiate a vote in Discord? WarBOT is here to help!
 
-* Remindars
-	* In addition to WAR reminders for hustle castle, you can also ask WarBOT to remind you of something. This feature is available in both guilds, and via DM to the bot.
+### Remindars
+* In addition to WAR reminders for hustle castle, you can also ask WarBOT to remind you of something. This feature is available in both guilds, and via DM to the bot.
 
-### Hustle Castle - Specific Features
+## Hustle Castle - Specific Features
 
-* WAR Prep / War Prep Ending / War Started Remindars
+### WAR Prep / War Prep Ending / War Started Remindars
+* Toggable notifications when war prep starts, war prep is ending, and war is started.
+	* Customizable messages.
 
-* Keep track of your clan members
-	* Can force discord nickname to match in-game nickname.
-	* Keeps track of the day they joined.
+### Keep track of your clan members
+* Can force discord nickname to match in-game nickname.
+* Keeps track of the day they joined.
 
 # Basic Setup
 
