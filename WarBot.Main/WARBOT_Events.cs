@@ -187,6 +187,16 @@ namespace WarBot
 
                 //Do update check.
                 await Util.Update.UpdateCheck(cfg, this);
+
+                //Do a nickname check.
+                if (!arg.CurrentUser.Nickname.Equals(cfg.NickName) && arg.CurrentUser.GuildPermissions.ChangeNickname == true)
+                {
+                    //Change my nickname to match what is in the config.
+                    await arg.CurrentUser.ModifyAsync(o =>
+                    {
+                        o.Nickname = cfg.NickName;
+                    });
+                }
             }
             catch (Exception ex)
             {
