@@ -24,6 +24,11 @@ namespace WarBot.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TestBotPermission(this GuildCommandContext Context, ChannelPermission Permission)
             => Context.Guild.CurrentUser.GetPermissions(Context.GuildChannel).ToList().Contains(Permission);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TestBotPermission(this SocketTextChannel Context, ChannelPermission Permission)
+            => Context.Guild.CurrentUser.GetPermissions(Context).ToList().Contains(Permission);
+
         /// <summary>
         /// This will return a guild user's current WarBot Role.
         /// Only used inside of guild-context.
