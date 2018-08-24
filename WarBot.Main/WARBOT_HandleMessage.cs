@@ -61,13 +61,16 @@ namespace WarBot
 
                     var cfg = await this.GuildRepo.GetConfig(tch.Guild);
 
+
                     //Compares the guilds environment with the current processes environment.
-                    if (!ShouldHandleMessage(cfg))
+
+                    //However, if the command is set enviornment. we need to process that.
+                    if (!ShouldHandleMessage(cfg) && !Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase) && cfg != null)
                         return;
 
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);
-                    
+
                     var result = await commands.ExecuteAsync(context, Msg, services, MultiMatchHandling.Best);
 
                     await Log.ChatMessage(message, tch.Guild, result);
