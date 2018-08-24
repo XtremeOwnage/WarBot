@@ -45,7 +45,7 @@ namespace WarBot
         //Simple, stupid dependancy injection.
         public IServiceProvider services;
         //Container to keep track of cached guild configs.
-        public IGuildConfigRepository GuildRepo;
+        public IGuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
         public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(15);
@@ -84,7 +84,7 @@ namespace WarBot
             sc.AddSingleton(this); //add WARBOT.
             sc.AddSingleton<IDiscordClient>(Client);
             sc.AddSingleton<ILog>(Log);
-            sc.AddSingleton<IGuildConfigRepository>(GuildRepo);
+            sc.AddSingleton(GuildRepo);
             sc.AddSingleton<IWARBOT>(this);
             sc.AddDbContext<WarDB>(ServiceLifetime.Singleton);
 

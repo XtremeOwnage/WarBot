@@ -27,7 +27,10 @@ namespace WarBot.Core
         /// </summary>
         IJobScheduler Jobs { get; }
 
-
+        /// <summary>
+        /// Guild config repository.
+        /// </summary>
+        IGuildConfigRepository GuildRepo { get; }
 
         int LoadedModules { get; }
         int LoadedCommands { get; }
