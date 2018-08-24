@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using System.Text;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
@@ -28,6 +29,37 @@ namespace WarBot.Modules.GuildCommandModules
         public async Task Leave_NoMessage()
         {
             await Context.Guild.LeaveAsync();
+        }
+
+        [Command("set environment"), Summary("Choose the WARBot instance to use.")]
+        public async Task SetEnvironment(string Environment)
+        {
+            if (System.Enum.TryParse(Environment, true, out WarBot.Core.Environment Env))
+            {
+                IGuildConfig CFG;
+                if (this.cfg == null)
+                    CFG = await bot.GuildRepo.GetConfig(Context.Guild, bot.Environment);
+                else
+                    CFG = cfg;
+
+                //Update the config.
+                CFG.Environment = Env;
+                await CFG.SaveConfig();
+
+                await ReplyAsync("This guild has been updated to use environment " + Env.ToString());
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                //Was unable to parse a role level from the input text.
+                sb.AppendLine("I was unable to parse the desired environment from your input. The accepted values are:");
+                var validRoles = System.Enum.GetValues(typeof(WarBot.Core.Environment));
+                foreach (RoleLevel val in validRoles)
+                {
+                    sb.AppendLine($"\t{val.ToString()}");
+                }
+                await ReplyAsync(sb.ToString());
+            }
         }
     }
 }
