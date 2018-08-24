@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using WarBot.Core;
 namespace WarBot.Storage.Models
 {
-    public class GuildRole : DiscordEntity, IStoredDiscordEntity<IRole>
+    public class GuildRole : BaseDiscordEntity
     {
         public GuildRole() { }
 
@@ -18,10 +18,10 @@ namespace WarBot.Storage.Models
         public RoleLevel Level { get; set; }
 
         //Navigation Property.
-        public virtual GuildConfig GuildConfig { get; set; }
+        public virtual DiscordGuild Guild { get; set; }
 
         [NotMapped]
-        public IRole Value { get; set; }
+        public IRole Value { get; private set; }
 
         public void Set(IRole Value)
         {

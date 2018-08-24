@@ -9,6 +9,7 @@ using WarBot.Storage;
 using WarBot.Storage.Models;
 using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
+using System.Linq;
 
 namespace WarBot.Storage
 {
@@ -29,7 +30,10 @@ namespace WarBot.Storage
             configStore = new Dictionary<ulong, IGuildConfig>();
 
         }
+
         public async Task<IGuildConfig> GetConfig(SocketGuild Guild)
+            => await GetConfig(Guild, null);
+        public async Task<IGuildConfig> GetConfig(SocketGuild Guild, Core.Environment? Environment)
         {
             //If no guild was passed in, return null.
             if (Guild == null)
@@ -40,7 +44,7 @@ namespace WarBot.Storage
                 return configStore[Guild.Id];
 
             //Look in the database.          
-            if (db.Find<Guild>(Guild.Id).IsNotNull(out var g))
+            if (db.Guilds.FirstOrDefault(o => o.EntityId == Guild.Id).IsNotNull(out var g))
             {
 
                 //Inflate the object before returning it.
@@ -55,7 +59,7 @@ namespace WarBot.Storage
 
             //Past this point, there was no config stored in the database. Look at the old config files to determine if we can find a json file to update.
 
-            var newCfg = Storage.Models.Guild.Create(Guild);
+            var newCfg = Storage.Models.DiscordGuild.Create(Guild);
 
 
             var cfgTxt = await TryReadConfigFile(Guild);
@@ -64,14 +68,20 @@ namespace WarBot.Storage
             {
                 //If the old configuration's enviornment does not match the bot's current environment. Return.
                 //This will prevent the TEST bot, from creating channels for PRODUCTION guilds.
-                if (oldCfg.Environment != bot.Environment)
+                if (oldCfg.Environment != bot.Environment && !Environment.HasValue)
                     return null;
+
                 //Simple settings.
-                newCfg.Config.BotVersion = oldCfg.BotVersion;
-                newCfg.Config.NickName = oldCfg.NickName;
-                newCfg.Config.Environment = oldCfg.Environment ?? Core.Environment.PROD;
-                newCfg.Config.Website = oldCfg.WebsiteURL;
-                newCfg.Config.Loot = oldCfg.LootURL;
+                newCfg.BotVersion = oldCfg.BotVersion;
+                newCfg.WarBOTNickName = oldCfg.NickName;
+
+                if (Environment.HasValue)
+                    newCfg.Environment = Environment.Value;
+                else
+                    newCfg.Environment = oldCfg.Environment ?? Core.Environment.PROD;
+
+                newCfg.Website = oldCfg.WebsiteURL;
+                newCfg.Loot = oldCfg.LootURL;
 
                 //Roles
                 if (oldCfg.Role_Admin?.ID != null && Guild.GetRole(oldCfg.Role_Admin.ID).IsNotNull(out var adminRole))
@@ -97,17 +107,17 @@ namespace WarBot.Storage
 
 
                 //Migrate the notification settings over.
-                newCfg.Config.NotificationSettings.War1Enabled = oldCfg.Notifications.War1Enabled;
-                newCfg.Config.NotificationSettings.War2Enabled = oldCfg.Notifications.War2Enabled;
-                newCfg.Config.NotificationSettings.War3Enabled = oldCfg.Notifications.War3Enabled;
-                newCfg.Config.NotificationSettings.War4Enabled = oldCfg.Notifications.War4Enabled;
-                newCfg.Config.NotificationSettings.WarPrepAlmostOver = oldCfg.Notifications.WarPrepAlmostOver;
-                newCfg.Config.NotificationSettings.WarPrepEndingMessage = oldCfg.Notifications.WarPrepEndingMessage;
-                newCfg.Config.NotificationSettings.WarPrepStarted = oldCfg.Notifications.WarPrepStarted;
-                newCfg.Config.NotificationSettings.WarPrepStartedMessage = oldCfg.Notifications.WarPrepStartedMessage;
-                newCfg.Config.NotificationSettings.WarStarted = oldCfg.Notifications.WarStarted;
-                newCfg.Config.NotificationSettings.WarStartedMessage = oldCfg.Notifications.WarStartedMessage;
-                newCfg.Config.NotificationSettings.SendUpdateMessage = oldCfg.Notifications.SendUpdateMessage;
+                newCfg.NotificationSettings.War1Enabled = oldCfg.Notifications.War1Enabled;
+                newCfg.NotificationSettings.War2Enabled = oldCfg.Notifications.War2Enabled;
+                newCfg.NotificationSettings.War3Enabled = oldCfg.Notifications.War3Enabled;
+                newCfg.NotificationSettings.War4Enabled = oldCfg.Notifications.War4Enabled;
+                newCfg.NotificationSettings.WarPrepAlmostOver = oldCfg.Notifications.WarPrepAlmostOver;
+                newCfg.NotificationSettings.WarPrepEndingMessage = oldCfg.Notifications.WarPrepEndingMessage;
+                newCfg.NotificationSettings.WarPrepStarted = oldCfg.Notifications.WarPrepStarted;
+                newCfg.NotificationSettings.WarPrepStartedMessage = oldCfg.Notifications.WarPrepStartedMessage;
+                newCfg.NotificationSettings.WarStarted = oldCfg.Notifications.WarStarted;
+                newCfg.NotificationSettings.WarStartedMessage = oldCfg.Notifications.WarStartedMessage;
+                newCfg.NotificationSettings.SendUpdateMessage = oldCfg.Notifications.SendUpdateMessage;
 
                 newCfg.Initialize(Guild, Save);
 
@@ -137,7 +147,7 @@ namespace WarBot.Storage
 
         private async Task Save<T>(T Cfg) where T : IGuildConfig
         {
-            if (Cfg is Storage.Models.Guild guild)
+            if (Cfg is Storage.Models.DiscordGuild guild)
             {
                 await db.SaveWithOutput();
             }

@@ -4,7 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using WarBot.Core;
 namespace WarBot.Storage.Models
 {
-    public class GuildChannel : DiscordEntity, IStoredDiscordEntity<ITextChannel>
+    /// <summary>
+    /// Represents a Discord Guild Channel, with a specific purpose.
+    /// </summary>
+    public class GuildChannel : BaseDiscordEntity
     {
         public GuildChannel() { }
         public GuildChannel(WarBotChannelType Type, ITextChannel Channel)
@@ -13,14 +16,15 @@ namespace WarBot.Storage.Models
             this.Set(Channel);
         }
 
+
         //Navigation Property.
-        public virtual GuildConfig GuildConfig { get; set; }
+        public virtual DiscordGuild Guild { get; set; }
 
         [Required]
         public WarBotChannelType ChannelType { get; set; }
 
         [NotMapped]
-        public ITextChannel Value { get; set; }
+        public ITextChannel Value { get; private set; }
 
         public void Set(ITextChannel Value)
         {

@@ -1,20 +1,21 @@
-﻿using Discord;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 using WarBot.Core;
 
 namespace WarBot.Storage.Models
 {
-    public class GuildNotificationsConfig : INotificationSettings
+    /// <summary>
+    /// A secondary storage for guild settings.
+    /// </summary>
+    public class GuildNotificationsSettings : INotificationSettings
     {
-        public GuildNotificationsConfig() { }
+        public GuildNotificationsSettings() { }
 
-        public static GuildNotificationsConfig CreateNew()
+        public static GuildNotificationsSettings CreateNew()
         {
-            return new GuildNotificationsConfig().setDefaults();
+            return new GuildNotificationsSettings().setDefaults();
         }
 
-        internal GuildNotificationsConfig setDefaults()
+        internal GuildNotificationsSettings setDefaults()
         {
             War1Enabled = true;
             War2Enabled = true;
@@ -29,8 +30,14 @@ namespace WarBot.Storage.Models
             SendUpdateMessage = true;
             return this;
         }
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+
+        [Key]
+        public uint ID { get; set; }
+
+        /// <summary>
+        /// This config is always associated with a DiscordGuild.
+        /// </summary>
+        public virtual DiscordGuild DiscordGuild { get; }
 
 
         public bool WarPrepStarted { get; set; }

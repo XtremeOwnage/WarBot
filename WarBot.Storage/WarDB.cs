@@ -17,12 +17,12 @@ namespace WarBot.Storage
         {
             optionsBuilder
                 .UseSqlite("Data Source=warBOT.db")
-                .UseLazyLoadingProxies(true);
+                .UseLazyLoadingProxies(true);        
 
         }
 
-        public DbSet<Guild> Guilds { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<DiscordGuild> Guilds { get; set; }
+        public DbSet<DiscordUser> Users { get; set; }
 
         public async Task Migrate()
         {
