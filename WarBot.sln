@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub - Other", "GitHub - 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot 2.0", "WarBot.Main\WarBot 2.0.csproj", "{10389E14-F68D-4DEB-B495-8B5DF3235407}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HustleCastLoot", "HustleCastLoot", "{2A81D57F-1ECA-48A4-9DC8-7D6571B38758}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HustleCastLoot", "HustleCastLoot\HustleCastLoot.csproj", "{B9C45661-0BCB-4F96-80FC-6F18B8C47194}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_0 Dependancies", "_0 Dependancies", "{860CA6E2-99C5-40AE-96AC-6759CFD41FD6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DISCORD.NET", "DISCORD.NET", "{E2B08BC1-3254-48BF-A073-AB28BD480338}"
@@ -53,6 +57,10 @@ Global
 		{10389E14-F68D-4DEB-B495-8B5DF3235407}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10389E14-F68D-4DEB-B495-8B5DF3235407}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10389E14-F68D-4DEB-B495-8B5DF3235407}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9C45661-0BCB-4F96-80FC-6F18B8C47194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9C45661-0BCB-4F96-80FC-6F18B8C47194}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9C45661-0BCB-4F96-80FC-6F18B8C47194}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9C45661-0BCB-4F96-80FC-6F18B8C47194}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
