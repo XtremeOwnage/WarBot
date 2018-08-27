@@ -10,6 +10,8 @@ namespace WarBot.Core.ModuleType
 
         //Just another helper.
         public IWARBOT bot => this.Context.bot;
+
+        public RoleLevel UserRole => this.Context.GuildUser.GetRole(cfg);
     }
 }
 
