@@ -21,7 +21,7 @@ namespace WarBot.Storage.Models
             War2Enabled = true;
             War3Enabled = true;
             War4Enabled = true;
-            WarPrepAlmostOver = true;
+            WarPrepEnding = true;
             WarPrepEndingMessage = null;
             WarPrepStarted = true;
             WarPrepStartedMessage = null;
@@ -41,7 +41,7 @@ namespace WarBot.Storage.Models
 
 
         public bool WarPrepStarted { get; set; }
-        public bool WarPrepAlmostOver { get; set; }
+        public bool WarPrepEnding { get; set; }
         public bool WarStarted { get; set; }
         public bool War1Enabled { get; set; }
         public bool War2Enabled { get; set; }
