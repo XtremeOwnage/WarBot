@@ -33,6 +33,7 @@ namespace WarBot
         ILog IWARBOT.Log => this.Log;
         long IWARBOT.MessagesProcessed => this.MessagesProcessed;
         Core.Environment IWARBOT.Environment => this.Config.Environment;
+        CommandService IWARBOT.CommandService => this.commands;
         #endregion
 
         public long MessagesProcessed = 0;
@@ -119,7 +120,7 @@ namespace WarBot
             await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly);
 
             //Load the schedules to execute the war notifications.
-            WAR_Messages.ScheduleJobs(this.Jobs);
+            Util.WAR_Messages.ScheduleJobs(this.Jobs);
 
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.

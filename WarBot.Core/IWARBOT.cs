@@ -1,4 +1,5 @@
 using Discord;
+using Discord.Commands;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
 using WarBot.Core.JobScheduling;
@@ -49,5 +50,10 @@ namespace WarBot.Core
         /// <param name="Dialog"></param>
         /// <returns></returns>
         Task CloseDialog(SocketGuildDialogContextBase Dialog);
+
+        /// <summary>
+        /// Exposes the Command service.
+        /// </summary>
+        CommandService CommandService { get; }
     }
 }
