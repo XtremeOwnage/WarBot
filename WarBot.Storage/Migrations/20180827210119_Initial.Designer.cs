@@ -9,7 +9,7 @@ using WarBot.Storage;
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    [Migration("20180824201227_Initial")]
+    [Migration("20180827210119_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,7 +93,7 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<bool>("War4Enabled");
 
-                    b.Property<bool>("WarPrepAlmostOver");
+                    b.Property<bool>("WarPrepEnding");
 
                     b.Property<string>("WarPrepEndingMessage");
 

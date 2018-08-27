@@ -91,7 +91,7 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<bool>("War4Enabled");
 
-                    b.Property<bool>("WarPrepAlmostOver");
+                    b.Property<bool>("WarPrepEnding");
 
                     b.Property<string>("WarPrepEndingMessage");
 

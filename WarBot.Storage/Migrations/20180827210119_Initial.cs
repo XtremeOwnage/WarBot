@@ -14,7 +14,7 @@ namespace WarBot.Storage.Migrations
                     ID = table.Column<uint>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     WarPrepStarted = table.Column<bool>(nullable: false),
-                    WarPrepAlmostOver = table.Column<bool>(nullable: false),
+                    WarPrepEnding = table.Column<bool>(nullable: false),
                     WarStarted = table.Column<bool>(nullable: false),
                     War1Enabled = table.Column<bool>(nullable: false),
                     War2Enabled = table.Column<bool>(nullable: false),
