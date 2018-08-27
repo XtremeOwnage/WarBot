@@ -13,8 +13,9 @@ namespace WarBot.Modules.GuildCommandModules
     public class TemplateModule : GuildCommandModuleBase
     {
         [Command("command_goes_here"), Alias("add_alias")]
-        [RoleLevel(RoleLevel.Officer)]
-        [Summary("Change WARBot's nickname.")]
+        [Summary("Description goes here.")]
+        [CommandUsage("{prefix} command_here")]
+        [RoleLevel(RoleLevel.None, RoleMatchType.LESS_THEN)]
         [RequireBotPermission(GuildPermission.ChangeNickname)]
         public async Task TemplateTask([Remainder]string Nickname)
         {

@@ -17,8 +17,9 @@ namespace WarBot.Modules.GuildCommandModules
     public class ClearMessagesModule : GuildCommandModuleBase
     {
         [Command("clear messages"), Alias("clear", "purge")]
+        [CommandUsage("{prefix} clear messages [NonPinned, Pinned]")]
         [RoleLevel(RoleLevel.Leader)]
-        [Summary("Delete specified messages from a channel.")]
+        [Summary("Delete specified messages from a channel. Will exclude pinned messages unless specified.")]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
         ///action
         ///NonPinned = Only non-pinned messages
@@ -26,7 +27,7 @@ namespace WarBot.Modules.GuildCommandModules
         ///ALL = Everything!
         public async Task ClearMessages(string action = "NonPinned")
         {
-            bool SelectPinned = !action.Equals("NonPinned", StringComparison.OrdinalIgnoreCase);
+            bool SelectPinned = action.ToLowerInvariant().Contains("pinned");
 
             DateTimeOffset discordBulkCutoffDate = DateTimeOffset.Now.AddDays(-13);
             while (true)
@@ -53,7 +54,7 @@ namespace WarBot.Modules.GuildCommandModules
                     else
                         break;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw;
                 }

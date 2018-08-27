@@ -12,6 +12,7 @@ namespace WarBot.Modules.GuildCommandModules
         [Command("set website"), Alias("Website")]
         [RoleLevel(RoleLevel.Leader)]
         [Summary("Sets the website for this guild.")]
+        [CommandUsage("{prefix} set website (WebsiteURL)")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task SetWebsite([Remainder()] string Website)
         {

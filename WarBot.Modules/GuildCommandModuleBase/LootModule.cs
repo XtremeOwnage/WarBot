@@ -12,6 +12,7 @@ namespace WarBot.Modules.GuildCommandModules
         [Command("set loot"), Alias("loot")]
         [RoleLevel(RoleLevel.Leader)]
         [Summary("Sets the loot for this guild.")]
+        [CommandUsage("{prefix} set loot (Loot Details)")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task SetLoot([Remainder] string Loot)
         {

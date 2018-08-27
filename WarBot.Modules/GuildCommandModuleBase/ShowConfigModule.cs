@@ -14,7 +14,8 @@ namespace WarBot.Modules.GuildCommandModules
        // ~say hello -> hello
         [Command("show config"), Alias("config show")]
         [RoleLevel(RoleLevel.Officer)]
-        [Summary("Display command stats related to me.")]
+        [Summary("Display the configuration for this guild.")]
+        [CommandUsage("{prefix} show config [role, channel, notification, basic, ALL]")]
         [RequireBotPermission(Discord.ChannelPermission.SendMessages)]
         public async Task ShowConfig([Remainder]string Config = "ALL")
         {
