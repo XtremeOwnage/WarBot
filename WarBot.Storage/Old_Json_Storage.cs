@@ -35,7 +35,7 @@ namespace WarBot.Legacy
         public ulong ID { get; set; }
     }
 
-    public class NotificationSettings : INotificationSettings
+    public class NotificationSettings
     {
         public bool WarPrepStarted { get; set; } = true;
         public bool WarPrepAlmostOver { get; set; } = true;
