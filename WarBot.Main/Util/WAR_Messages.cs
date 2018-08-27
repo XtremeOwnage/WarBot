@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using WarBot.Core;
 using WarBot.Core.JobScheduling;
 
-namespace WarBot 2.0.Util
+namespace WarBot.Util
 {
     public class WAR_Messages
     {
