@@ -53,8 +53,8 @@ namespace WarBot.Modules.GuildCommandModules
                 StringBuilder sb = new StringBuilder();
                 //Was unable to parse a role level from the input text.
                 sb.AppendLine("I was unable to parse the desired environment from your input. The accepted values are:");
-                var validRoles = System.Enum.GetValues(typeof(WarBot.Core.Environment));
-                foreach (RoleLevel val in validRoles)
+                var validValues = System.Enum.GetValues(typeof(WarBot.Core.Environment));
+                foreach (Environment val in validValues)
                 {
                     sb.AppendLine($"\t{val.ToString()}");
                 }
