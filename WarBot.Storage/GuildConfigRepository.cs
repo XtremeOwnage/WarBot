@@ -31,8 +31,16 @@ namespace WarBot.Storage
 
         }
 
+        public IEnumerable<IGuildConfig> GetCachedConfigs() => configStore.Select(o => o.Value);
+
+        public void removeGuild(SocketGuild Guild)
+        {
+            if (configStore.ContainsKey(Guild.Id))
+                configStore.Remove(Guild.Id);
+        }
         public async Task<IGuildConfig> GetConfig(SocketGuild Guild)
             => await GetConfig(Guild, null);
+
         public async Task<IGuildConfig> GetConfig(SocketGuild Guild, Core.Environment? Environment)
         {
             //If no guild was passed in, return null.
@@ -111,7 +119,7 @@ namespace WarBot.Storage
                 newCfg.NotificationSettings.War2Enabled = oldCfg.Notifications.War2Enabled;
                 newCfg.NotificationSettings.War3Enabled = oldCfg.Notifications.War3Enabled;
                 newCfg.NotificationSettings.War4Enabled = oldCfg.Notifications.War4Enabled;
-                newCfg.NotificationSettings.WarPrepAlmostOver = oldCfg.Notifications.WarPrepAlmostOver;
+                newCfg.NotificationSettings.WarPrepEnding = oldCfg.Notifications.WarPrepAlmostOver;
                 newCfg.NotificationSettings.WarPrepEndingMessage = oldCfg.Notifications.WarPrepEndingMessage;
                 newCfg.NotificationSettings.WarPrepStarted = oldCfg.Notifications.WarPrepStarted;
                 newCfg.NotificationSettings.WarPrepStartedMessage = oldCfg.Notifications.WarPrepStartedMessage;
