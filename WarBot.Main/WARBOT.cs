@@ -119,7 +119,7 @@ namespace WarBot
             await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly);
 
             //Load the schedules to execute the war notifications.
-            WAR_Notifications.WAR_Messages.ScheduleJobs(this.Jobs);
+            WAR_Messages.ScheduleJobs(this.Jobs);
 
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.
