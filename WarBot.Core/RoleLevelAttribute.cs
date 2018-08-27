@@ -22,6 +22,40 @@ namespace WarBot.Attributes
             this.requiredRole = requiredRole;
             this.matchType = MatchType;
         }
+
+        public bool hasPermission(RoleLevel role)
+        {
+            switch (matchType)
+            {
+                case RoleMatchType.EQUALS:
+                    if (role == requiredRole)
+                        return true;
+                    return false;
+                case RoleMatchType.GREATER_THEN:
+                    if (role > requiredRole)
+                        return true;
+                    return false;
+                case RoleMatchType.GREATER_THEN_OR_EQUAL:
+                    if (role >= requiredRole)
+                        return true;
+                    return false;
+                case RoleMatchType.LESS_THEN:
+                    if (role < requiredRole)
+                        return true;
+                    return false;
+                case RoleMatchType.LESS_THEN_OR_EQUAL:
+                    if (role <= requiredRole)
+                        return true;
+                    return false;
+                case RoleMatchType.NOT_EQUAL:
+                    if (role != requiredRole)
+                        return true;
+                    return false;
+                default:
+                    throw new ArgumentOutOfRangeException("Unknown match type encountered.");
+            }
+
+        }
         public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             //If this a custom guild command context, get the config from the context.
@@ -29,43 +63,18 @@ namespace WarBot.Attributes
             {
                 RoleLevel role = gcc.GuildUser.GetRole(gcc.cfg);
 
-                switch (matchType)
-                {
-                    case RoleMatchType.EQUALS:
-                        if (role == requiredRole)
-                            return PreconditionResult.FromSuccess();
-                        return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
-                    case RoleMatchType.GREATER_THEN:
-                        if (role > requiredRole)
-                            return PreconditionResult.FromSuccess();
-                        return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
-                    case RoleMatchType.GREATER_THEN_OR_EQUAL:
-                        if (role >= requiredRole)
-                            return PreconditionResult.FromSuccess();
-                        return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
-                    case RoleMatchType.LESS_THEN:
-                        if (role < requiredRole)
-                            return PreconditionResult.FromSuccess();
-                        return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
-                    case RoleMatchType.LESS_THEN_OR_EQUAL:
-                        if (role <= requiredRole)
-                            return PreconditionResult.FromSuccess();
-                        return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
-                    case RoleMatchType.NOT_EQUAL:
-                        if (role != requiredRole)
-                            return PreconditionResult.FromSuccess();
-                        return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
-                }
+                if (hasPermission(role))
+                    return PreconditionResult.FromSuccess();
 
                 return new AccessDeniedPreconditionResult(role, matchType, requiredRole);
             }
             else
-            {                
+            {
                 await Task.FromResult(true);
-                throw new InvalidOperationException($"{nameof(RoleLevelAttribute)} is only valid on type {nameof(GuildCommandContext)}");                
+                throw new InvalidOperationException($"{nameof(RoleLevelAttribute)} is only valid on type {nameof(GuildCommandContext)}");
             }
 
-            
+
         }
 
         /// <summary>
