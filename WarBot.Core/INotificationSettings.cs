@@ -7,7 +7,7 @@ namespace WarBot.Core
         bool War2Enabled { get; set; }
         bool War3Enabled { get; set; }
         bool War4Enabled { get; set; }
-        bool WarPrepAlmostOver { get; set; }
+        bool WarPrepEnding { get; set; }
         string WarPrepEndingMessage { get; set; }
         bool WarPrepStarted { get; set; }
         string WarPrepStartedMessage { get; set; }
