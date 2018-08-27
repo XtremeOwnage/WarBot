@@ -107,7 +107,7 @@ namespace WarBot.Modules.GuildCommandModules
                     .WithTitle("Bot Configuration - War Notifications")
                     .AddField_ex("War Prep Started Enabled", cfg.Notifications.WarPrepStarted)
                     .AddField_ex("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
-                    .AddField_ex("War Prep Ending Enabled", cfg.Notifications.WarPrepAlmostOver)
+                    .AddField_ex("War Prep Ending Enabled", cfg.Notifications.WarPrepEnding)
                     .AddField_ex("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
                     .AddField_ex("War Started Enabled", cfg.Notifications.WarStarted)
                     .AddField_ex("War Started Message", cfg.Notifications.WarStartedMessage)
