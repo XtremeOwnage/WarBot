@@ -125,5 +125,8 @@ namespace WarBot.Core.JobScheduling
         //
         // Returns: Unique identifier of the created job.
         IJob Schedule(Expression<Action> methodCall, TimeSpan delay);
+
+        //Schedule recurring job.
+        void RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule);
     }
 }

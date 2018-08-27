@@ -30,5 +30,8 @@ namespace WarBot.Implementation
             => new Job(BackgroundJob.Schedule(methodCall, enqueueAt), this);
         IJob IJobScheduler.Schedule<T>(Expression<Action<T>> methodCall, TimeSpan delay)
             => new Job(BackgroundJob.Schedule(methodCall, delay), this);
+
+        void IJobScheduler.RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule)
+            => Hangfire.RecurringJob.AddOrUpdate(jobID, Expression, cronSchedule);
     }
 }
