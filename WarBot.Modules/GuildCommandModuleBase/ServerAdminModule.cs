@@ -12,24 +12,27 @@ namespace WarBot.Modules.GuildCommandModules
     public class ServerAdminModule : GuildCommandModuleBase
     {
 
-        [Command("leave"), Alias("Go Away"), Summary("I will leave the guild."), RequireBotPermission(ChannelPermission.SendMessages), Priority(5)]
+        [Command("leave"), Alias("Go Away"), Summary("I will leave the guild.")]
         public async Task Leave()
         {
+
             var eb = new EmbedBuilder()
                 .WithTitle("GoodBye 😭")
                 .WithDescription("I am sorry I did not meet the expectations of your guild. If you wish to invite me back, you may click this embed.")
                 .WithUrl("https://discordapp.com/oauth2/authorize?client_id=437983722193551363&scope=bot&permissions=0x00000008");
-            // ReplyAsync is a method on ModuleBase
-            await ReplyAsync("", embed: eb);
+
+
+            if (PermissionHelper.TestBotPermission(Context.GuildChannel, ChannelPermission.SendMessages))
+                await ReplyAsync("", embed: eb);
+            else
+            {
+                var DM = await Context.GuildUser.GetOrCreateDMChannelAsync();
+                await DM.SendMessageAsync("", embed: eb);
+            }
 
             await Context.Guild.LeaveAsync();
         }
 
-        [Command("leave"), Alias("Go Away"), Summary("I will leave the guild."), Priority(4)]
-        public async Task Leave_NoMessage()
-        {
-            await Context.Guild.LeaveAsync();
-        }
 
         [Command("set environment"), Summary("Choose the WARBot instance to use.")]
         public async Task SetEnvironment(string Environment)
