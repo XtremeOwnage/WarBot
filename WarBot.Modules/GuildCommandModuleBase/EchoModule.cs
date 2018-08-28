@@ -14,6 +14,7 @@ namespace WarBot.Modules.GuildCommandModules
     public class EchoModule : GuildCommandModuleBase
     {
         [Command("say"), Summary("Echos a message."), RequireBotPermission(Discord.GuildPermission.SendMessages)]
+        [Alias("echo", "repeat")]
         [RoleLevel(RoleLevel.None)]
         [CommandUsage("{prefix} say {Your text here}")]
         public async Task Say([Remainder, Summary("The text to echo")] string echo)
