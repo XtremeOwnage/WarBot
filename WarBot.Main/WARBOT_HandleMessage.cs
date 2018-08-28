@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
@@ -61,11 +62,13 @@ namespace WarBot
 
                     var cfg = await this.GuildRepo.GetConfig(tch.Guild);
 
+                    bool cmdSetEnv = !Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
 
-                    //Compares the guilds environment with the current processes environment.
-
-                    //However, if the command is set enviornment. we need to process that.
-                    if (!ShouldHandleMessage(cfg) && !Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase) && cfg != null)
+                    //If the config is null, and we are not setting the environment, return.
+                    if (cfg == null && !cmdSetEnv)
+                        return;
+                    //Else, if we shouldn't process this message, and we are not setting the environment, return.
+                    else if (!ShouldHandleMessage(cfg) && !cmdSetEnv)
                         return;
 
                     //Load dynamic command context.
