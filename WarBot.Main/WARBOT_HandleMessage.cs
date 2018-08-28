@@ -63,7 +63,7 @@ namespace WarBot
 
                     var cfg = await this.GuildRepo.GetConfig(tch.Guild);
 
-                    bool cmdSetEnv = !Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
+                    bool cmdSetEnv = Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
 
                     //ToDo - Remove this when we move to production.
                     //Just a simple inline test method.
