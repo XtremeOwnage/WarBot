@@ -29,6 +29,8 @@ namespace WarBot.Util
             job.RecurringJob<WAR_Messages>("war2_started", o => o.SendWarStarted(2), "0 10 * * *");
             job.RecurringJob<WAR_Messages>("war3_started", o => o.SendWarStarted(3), "0 16 * * *");
             job.RecurringJob<WAR_Messages>("war4_started", o => o.SendWarStarted(4), "0 22 * * *");
+
+            job.RecurringJob<WAR_Messages>("test", o => o.SendWarStarted(4), "3 4 * * *");
         }
         /// <summary>
         /// Determine is a guild is elected into a specific war.           
@@ -57,7 +59,7 @@ namespace WarBot.Util
                 try
                 {
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepStarted || shouldSendSpecificWar(cfg, WarNo))
+                    if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
                         return;
 
                     var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
@@ -81,7 +83,7 @@ namespace WarBot.Util
                 {
 
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepEnding || shouldSendSpecificWar(cfg, WarNo))
+                    if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
                         return;
 
                     var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
@@ -103,7 +105,7 @@ namespace WarBot.Util
                 try
                 {
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarStarted || shouldSendSpecificWar(cfg, WarNo))
+                    if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
                         return;
 
                     var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
