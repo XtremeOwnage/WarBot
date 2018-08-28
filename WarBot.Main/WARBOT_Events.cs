@@ -19,17 +19,19 @@ namespace WarBot
 
             try
             {
-                //There was an open dialog for this guild. Lets remove it.
-                if (this.Dialogs.Any(o => o.Value.Config == cfg))
+                var matchingDialogs = this.Dialogs
+                    .Where(o => o.Value is WarBot.Core.Dialogs.SocketGuildDialogContextBase sgd && sgd.Config == cfg)
+                    .ToDictionary(o => o.Key, o => (WarBot.Core.Dialogs.SocketGuildDialogContextBase)o.Value);
+
+                foreach (var Dialog in matchingDialogs)
                 {
-                    foreach (var Dialog in this.Dialogs.Where(o => o.Value.Config == cfg).ToArray())
-                    {
-                        //Send a message to the user/channel, that we are closing the dialog.
-                        await Dialog.Value.CloseDialog_GuildRemoved();
-                        //Remove the dialog from the stack.
-                        this.Dialogs.TryRemove(Dialog.Key, out var _);
-                    }
+                    //Send a message to the user/channel, that we are closing the dialog.
+                    await Dialog.Value.CloseDialog_GuildRemoved();
+
+                    //Remove the dialog from the stack.
+                    this.Dialogs.TryRemove(Dialog.Key, out var _);
                 }
+
             }
             catch (Exception ex)
             {
@@ -185,14 +187,10 @@ namespace WarBot
             #region Close any open dialogs in this channel.
             try
             {
-                //There was an open dialog for this guild. Lets remove it.
-                if (this.Dialogs.Any(o => o.Value.Channel == arg))
+                foreach (var Dialog in this.Dialogs.Where(o => o.Value.Channel == arg).ToArray())
                 {
-                    foreach (var Dialog in this.Dialogs.Where(o => o.Value.Channel == arg).ToArray())
-                    {
-                        //Remove the dialog from the stack.
-                        this.Dialogs.TryRemove(Dialog.Key, out var _);
-                    }
+                    //Remove the dialog from the stack.
+                    this.Dialogs.TryRemove(Dialog.Key, out var _);
                 }
             }
             catch (Exception ex)
