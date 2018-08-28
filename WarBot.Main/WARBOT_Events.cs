@@ -58,7 +58,7 @@ namespace WarBot
                     .AddField("Guild", arg.Name)
                     .AddField("Members", arg.Users.Count);
 
-                await Log.sendToChannel(LogChannel.GuildActivity, eb);
+                await Log.sendToChannel(LogChannel.GuildActivity, eb.Build());
             }
             catch (Exception ex)
             {
@@ -94,7 +94,7 @@ namespace WarBot
                     .AddField("Guild", arg.Name)
                     .AddField("Members", arg.Users.Count);
 
-                await Log.sendToChannel(LogChannel.GuildActivity, eb);
+                await Log.sendToChannel(LogChannel.GuildActivity, eb.Build());
             }
             catch (Exception ex)
             {
@@ -107,17 +107,18 @@ namespace WarBot
                 if (cfg.GetGuildChannel(WarBotChannelType.CH_New_Users).IsNotNull(out var CH))
                 {
                     //Publish a Welcome Message.
-                    var eb = new EmbedBuilder()
+
+                    var eb = new Discord.EmbedBuilder()
                         .WithTitle("WarBOT")
                         .WithColor(Color.Green)
                         .WithDescription("Thanks for inviting me to your server. I will send you notifications related to Hustle Castle war events.")
-                        .AddBlankLine()
+                        .AddBlankField()
                         .AddField("For Help", $"Just type 'bot, help' or {arg.CurrentUser.Mention} help")
                         .AddField("For Support", "Either click this message or contact <@381654208073433091>.")
                         .WithUrl("https://github.com/XtremeOwnage/WarBot")
                         .WithImageUrl("http://i1223.photobucket.com/albums/dd516/ericmck2000/download.jpg");
 
-                    await CH.SendMessageAsync("", embed: eb);
+                    await CH.SendMessageAsync(embed: eb.Build());
                 }
             }
             catch (Exception ex)
@@ -162,11 +163,11 @@ namespace WarBot
                         .WithDescription($"Role '{arg.Name}' was just deleted. This discord role was configured for these roles:");
 
                     foreach (var r in AffectedRoles)
-                        eb.AddField_ex("Role", r.Key.ToString());
+                        eb.AddField("Role", r.Key.ToString());
 
                     eb.WithDescription("I will remove this role from my configuration. Please update the configuration if you wish to use it again.");
 
-                    await ch.SendMessageAsync("", embed: eb);
+                    await ch.SendMessageAsync(embed: eb.Build());
                 }
             }
             catch (Exception ex)
@@ -222,22 +223,22 @@ namespace WarBot
                             .WithDescription($"Channel '#{sg.Name}' was just deleted. This channel was configured for these purposes:");
 
                         foreach (var r in AffectedChannels)
-                            eb.AddField_ex("Purpose", r.Key.ToString());
+                            eb.AddField("Purpose", r.Key.ToString());
 
-                        eb.AddField_ex("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", null);
+                        eb.AddField("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", null);
 
                         //It was the officers 
                         if (ch == sg)
                         {
                             //See if we can PM the discord owner.
                             var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
-                            await dm.SendMessageAsync(null, embed: eb);
+                            await dm.SendMessageAsync(embed: eb.Build());
 
                             await dm.SendMessageAsync("Since, this was also the channel configured for management messages, you will no longer see these types of messages until the configuration has been updated.");
                         }
                         else
                         {
-                            await ch.SendMessageAsync("", embed: eb);
+                            await ch.SendMessageAsync(embed: eb.Build());
                         }
                     }
                 }

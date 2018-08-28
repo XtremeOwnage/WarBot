@@ -20,7 +20,6 @@ using System.Runtime.CompilerServices;
 using Hangfire.MemoryStorage;
 using Hangfire;
 using WarBot.Core.JobScheduling;
-using WarBot.Modules.TypeReaders;
 
 namespace WarBot
 {
@@ -113,11 +112,9 @@ namespace WarBot
             //Initialize the config repository with an instance of the WarDB from the DI container.
             ((GuildConfigRepository)this.GuildRepo).Initialize(this, services.GetService<WarDB>());
 
-            //Add custom type readers.
-            commands.AddTypeReader<TimeSpanext>(new ImprovedTimeSpanTypeReader());
 
             //Initialize the commands.
-            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly);
+            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, this.services);
 
             //Load the schedules to execute the war notifications.
             Util.WAR_Messages.ScheduleJobs(this.Jobs);

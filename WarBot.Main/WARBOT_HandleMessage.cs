@@ -94,9 +94,9 @@ namespace WarBot
                 }
                 else if (message.Channel is SocketDMChannel dm)
                 {
-                    //Load dynamic command context.
-                    await dm.SendMessageAsync("Sorry, I don't yet support direct messages. My developer is working on this functionality though.");
-                    await dm.CloseAsync();
+                    var context = new Core.ModuleType.CommandContext(Client, message, this);
+
+                    var result = await commands.ExecuteAsync(context, Msg, services, MultiMatchHandling.Best);
                 }
             }
             catch (Exception ex)

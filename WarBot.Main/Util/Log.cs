@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Discord.Net;
-using Discord;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using Discord.WebSocket;
-using System.Linq;
-using WarBot.Storage;
+﻿using Discord;
 using Discord.Commands;
-using static WarBot.Attributes.RoleLevelAttribute;
+using Discord.WebSocket;
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using WarBot.Core;
+using static WarBot.Attributes.RoleLevelAttribute;
 
 namespace WarBot.Util
 {
@@ -74,7 +70,7 @@ namespace WarBot.Util
             //.AddField("Modules Loaded", bot.commands.ModuleCount)
             //.AddField("Commands Available", bot.commands.CommandCount);
 
-            await sendToChannel(LogChannel.Debug, eb);
+            await sendToChannel(LogChannel.Debug, eb.Build());
 
         }
 
@@ -99,12 +95,12 @@ namespace WarBot.Util
             EmbedBuilder eb = new EmbedBuilder()
                 .WithTitle("Guild Updated")
                 .WithColor(Color.Green)
-                .AddInlineField("Guild", cfg.Guild.Name)
-                .AddInlineField("Old Version", cfg.BotVersion)
-                .AddInlineField("New Version", newVersion)
-                .AddInlineField("Sent Update", UpdateSentToClan);
+                .AddField("Guild", cfg.Guild.Name, true)
+                .AddField("Old Version", cfg.BotVersion, true)
+                .AddField("New Version", newVersion, true)
+                .AddField("Sent Update", UpdateSentToClan, true);
 
-            await sendToChannel(LogChannel.Debug, eb);
+            await sendToChannel(LogChannel.Debug, eb.Build());
         }
 
         public async Task Error(IGuild guild, Exception ex, [CallerMemberName] string Method = "")
@@ -117,37 +113,37 @@ namespace WarBot.Util
         {
             EmbedBuilder eb = new EmbedBuilder()
                 .WithTitle(Guild.Name)
-                .AddInlineField("From", Message.Author.Username);
+                .AddField("From", Message.Author.Username, true);
 
             if (Message.Channel is ITextChannel)
-                eb.AddInlineField("Channel", Message.Channel.Name);
+                eb.AddField("Channel", Message.Channel.Name, true);
             else if (Message.Channel is IDMChannel)
-                eb.AddInlineField("Channel", "-DM-");
+                eb.AddField("Channel", "-DM-", true);
 
             if (Guild != null)
-                eb.AddField_ex("Guild", Guild.Name, true);
+                eb.AddField("Guild", Guild.Name, true);
 
-            eb.AddInlineField("Success", Result.IsSuccess);
+            eb.AddField("Success", Result.IsSuccess, true);
 
             if (Result.Error == CommandError.UnmetPrecondition && Result is AccessDeniedPreconditionResult accessDenied)
             {
                 eb.AddField("Error", "Access Denied")
-                    .AddInlineField("User Role", accessDenied.UserRole.ToString())
-                    .AddInlineField("Match Type", accessDenied.MatchType.ToString())
-                    .AddInlineField("Required Role", accessDenied.RequiredRole.ToString());
+                    .AddField("User Role", accessDenied.UserRole.ToString(), true)
+                    .AddField("Match Type", accessDenied.MatchType.ToString(), true)
+                    .AddField("Required Role", accessDenied.RequiredRole.ToString(), true);
 
             }
             else if (Result.Error == CommandError.ParseFailed && Result is ParseResult tr)
             {
                 eb.AddField("Error", "Parse Failed");
                 if (!string.IsNullOrEmpty(tr.ErrorReason))
-                    eb.AddInlineField("Error Message", tr.ErrorReason);
+                    eb.AddField("Error Message", tr.ErrorReason, true);
                 if (tr.ParamValues != null)
                     foreach (var pv in tr.ParamValues.Where(o => !o.IsSuccess))
                         foreach (var val in pv.Values)
                         {
-                            eb.AddField_ex("Value", val.Value, true)
-                                .AddField_ex("Score", val.Score, true);
+                            eb.AddField("Value", val.Value, true)
+                                .AddField("Score", val.Score, true);
                         }
 
             }
@@ -159,7 +155,7 @@ namespace WarBot.Util
             else
                 eb.AddField("Message", $"EMBED: {Message.Embeds.First().Title}");
 
-            await sendToChannel(LogChannel.Chat, eb);
+            await sendToChannel(LogChannel.Chat, eb.Build());
 
         }
 

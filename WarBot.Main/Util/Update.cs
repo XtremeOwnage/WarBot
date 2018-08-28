@@ -35,7 +35,7 @@ namespace WarBot.Util
                             .WithFooter("To view my patch notes, click this embed.")
                             .WithUrl(UpdateNotesURL);
 
-                        await CH.SendMessageAsync("", embed: eb);
+                        await CH.SendMessageAsync(embed: eb.Build());
                     }
 
                     await bot.Log.GuildUpdated(Cfg, CurrentVersion, UpdateSentToClan);
