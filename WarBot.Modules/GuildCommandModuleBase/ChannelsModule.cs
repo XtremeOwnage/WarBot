@@ -40,13 +40,6 @@ namespace WarBot.Modules.GuildCommandModules
                 }
                 else
                 {
-                    #region Check to ensure WarBOT can manage all of the configured roles
-                    var MyHighestRole = Me.Roles.Max(o => o.Position);
-
-                    if (Channel.Position >= MyHighestRole)
-                        sb.AppendLine($"Note: I will not be able to add or remove users from {Channel.Mention}, because this role is equal to, or above my current role. Please adjust my role position higher to compensate for this.");
-                    #endregion
-
                     cfg.SetGuildChannel(chType, Channel);
 
                     await cfg.SaveConfig();
