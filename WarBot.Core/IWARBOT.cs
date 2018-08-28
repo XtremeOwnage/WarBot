@@ -42,14 +42,14 @@ namespace WarBot.Core
         /// </summary>
         /// <param name="Dialog"></param>
         /// <returns></returns>
-        Task OpenDialog(SocketGuildDialogContextBase Dialog);
+        Task OpenDialog(SocketDialogContextBase Dialog);
 
         /// <summary>
         /// Closes a dialog.
         /// </summary>
         /// <param name="Dialog"></param>
         /// <returns></returns>
-        Task CloseDialog(SocketGuildDialogContextBase Dialog);
+        Task CloseDialog(SocketDialogContextBase Dialog);
 
         /// <summary>
         /// Exposes the Command service.

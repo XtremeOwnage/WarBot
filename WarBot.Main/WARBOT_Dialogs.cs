@@ -15,15 +15,15 @@ namespace WarBot
 
 
         //Keep track of current, open dialogs.
-        public ConcurrentDictionary<int, SocketGuildDialogContextBase> Dialogs = new ConcurrentDictionary<int, SocketGuildDialogContextBase>();
+        public ConcurrentDictionary<int, SocketDialogContextBase> Dialogs = new ConcurrentDictionary<int, SocketDialogContextBase>();
 
-        public async Task OpenDialog(SocketGuildDialogContextBase Dialog)
+        public async Task OpenDialog(SocketDialogContextBase Dialog)
         {
             await Dialog.OnCreated();
 
             this.Dialogs.TryAdd(Dialog.GetHashCode(), Dialog);
         }
-        public async Task CloseDialog(SocketGuildDialogContextBase Dialog)
+        public async Task CloseDialog(SocketDialogContextBase Dialog)
         {
             try
             {
