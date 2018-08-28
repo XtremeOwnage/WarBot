@@ -199,11 +199,15 @@ namespace WarBot.Modules.GuildCommandModules
                 sb.AppendLine("I was unable to parse the desired role from your input. The accepted values are:");
                 var validRoles = PermissionHelper.GetRoleValues()
                     .Where(o => o != RoleLevel.GlobalAdmin && o != RoleLevel.None)
-                    .OrderBy(o => (int)o);
-                foreach (RoleLevel val in validRoles)
-                {
-                    sb.AppendLine($"\t{val.ToString()}");
-                }
+                    .OrderBy(o => (int)o)
+                    .Select(o => new
+                    {
+                        Name = o.ToString(),
+                        Summary = o.GetEnumDescriptionAttribute()
+                    });
+
+                var table = TableHelper.FormatTable(validRoles);
+                sb.AppendLine($"```\r\n{table}\r\n```");
             }
 
             //Send the formatted return message.
