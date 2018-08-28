@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using WarBot.Core.ModuleType;
 using Humanizer;
 using System;
-using WarBot.Modules.TypeReaders;
 using WarBot.Core;
 
 //Disable async warning. Hangfire libarary will handle doing async automatically.
@@ -17,29 +16,29 @@ namespace WarBot.Modules.CommandModules
     {
         [RequireBotPermission(ChannelPermission.SendMessages)]
         [Command("remind me"), Alias("remind")]
-        public async Task RemindMe(TimeSpanext When, [Remainder]string Message)
+        public async Task RemindMe(TimeSpan When, [Remainder]string Message)
         {
             //Check if we have permissions in this channel. If not, we will DM the user.
             if (this.Context is GuildCommandContext gcc && WarBot.Core.PermissionHelper.TestBotPermission(gcc, ChannelPermission.SendMessages))
             {
-                await ReplyAsync($"I will remind you here in {When.Span.Humanize()}.");
-                this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_GuildChannel(gcc.User.Id, gcc.Channel.Id, Message), When.Span);
+                await ReplyAsync($"I will remind you here in {When.Humanize()}.");
+                this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_GuildChannel(gcc.User.Id, gcc.Channel.Id, Message), When);
             }
             else
             {
                 var DM = await Context.User.GetOrCreateDMChannelAsync();
-                await DM.SendMessageAsync($"I will remind you in {When.Span.Humanize()}, via DM.");
-                this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_DM(Context.User.Id, Message), When.Span);
+                await DM.SendMessageAsync($"I will remind you in {When.Humanize()}, via DM.");
+                this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_DM(Context.User.Id, Message), When);
             }
         }
 
         [Command("dm me"), Alias("remind", "remind me", "remind dm")]
 
-        public async Task RemindMe_DM(TimeSpanext When, [Remainder]string Message)
+        public async Task RemindMe_DM(TimeSpan When, [Remainder]string Message)
         {
             var DM = await Context.User.GetOrCreateDMChannelAsync();
-            await DM.SendMessageAsync($"I will remind you in {When.Span.Humanize()}, via DM.");
-            this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_DM(Context.User.Id, Message), When.Span);
+            await DM.SendMessageAsync($"I will remind you in {When.Humanize()}, via DM.");
+            this.bot.Jobs.Schedule<RemindMeStandAloneJob>(o => o.SendReminder_DM(Context.User.Id, Message), When);
         }
     }
 

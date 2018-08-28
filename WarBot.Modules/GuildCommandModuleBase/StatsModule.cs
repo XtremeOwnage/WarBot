@@ -21,13 +21,14 @@ namespace WarBot.Modules.GuildCommandModules
             var eb = new EmbedBuilder()
                 .WithTitle("WarBOT Statistics")
                 .AddField("Process Uptime", $"{ts.Hours} hours, {ts.Minutes} minutes and {ts.Seconds} seconds")
-                .AddInlineField("Loaded Commands", bot.LoadedCommands).AddInlineField("Loaded Modules", bot.LoadedModules)
-                .AddInlineField("Messages Processed", bot.MessagesProcessed)
+                .AddField("Loaded Commands", bot.LoadedCommands, true)
+                .AddField("Loaded Modules", bot.LoadedModules, true)
+                .AddField("Messages Processed", bot.MessagesProcessed, true)
                 .AddField("Guilds using WarBOT", Guilds.Count)
-                .AddInlineField("Environment", bot.Environment.ToString());
+                .AddField("Environment", bot.Environment.ToString(), true);
 
             // ReplyAsync is a method on ModuleBase
-            await ReplyAsync("", embed: eb);
+            await ReplyAsync(embed: eb.Build());
         }
     }
 }

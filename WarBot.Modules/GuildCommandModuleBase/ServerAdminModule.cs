@@ -22,11 +22,11 @@ namespace WarBot.Modules.GuildCommandModules
 
 
             if (PermissionHelper.TestBotPermission(Context.GuildChannel, ChannelPermission.SendMessages))
-                await ReplyAsync("", embed: eb);
+                await ReplyAsync(embed: eb.Build());
             else
             {
                 var DM = await Context.GuildUser.GetOrCreateDMChannelAsync();
-                await DM.SendMessageAsync("", embed: eb);
+                await DM.SendMessageAsync(embed: eb.Build());
             }
 
             await Context.Guild.LeaveAsync();

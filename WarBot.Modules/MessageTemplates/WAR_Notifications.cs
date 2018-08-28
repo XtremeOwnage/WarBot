@@ -29,7 +29,7 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Prep Started")
                 .WithDescription(Message);
 
-            await ch.SendMessageAsync("", embed: eb);
+            await ch.SendMessageAsync(embed: eb.Build());
         }
 
         public static async Task War_Prep_Ending(IGuildConfig cfg, ITextChannel ch)
@@ -51,7 +51,7 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Prep Ending")
                 .WithDescription(Message);
 
-            await ch.SendMessageAsync("", embed: eb);
+            await ch.SendMessageAsync(embed: eb.Build());
         }
 
         public static async Task War_Started(IGuildConfig cfg, ITextChannel ch)
@@ -73,7 +73,7 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Started")
                 .WithDescription(Message);
 
-            await ch.SendMessageAsync("", embed: eb);
+            await ch.SendMessageAsync(embed: eb.Build());
         }
     }
 }

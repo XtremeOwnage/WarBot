@@ -35,9 +35,9 @@ namespace WarBot.Modules.GuildCommandModules
                     .WithTitle("User Kicked")
                     .WithColor(Color.Red)
                     .WithDescription($"User {user.Mention} has been removed from this guild.")
-                    .AddField_ex("Reason", Message);
+                    .AddField("Reason", Message);
 
-                await ReplyAsync("", embed: eb);
+                await ReplyAsync(embed: eb.Build());
             }
         }
     }

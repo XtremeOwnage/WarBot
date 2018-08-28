@@ -32,8 +32,9 @@ namespace WarBot.Modules.GuildCommandModules
             DateTimeOffset discordBulkCutoffDate = DateTimeOffset.Now.AddDays(-13);
             while (true)
             {
-                var x = this.Context.Channel.GetMessagesAsync(500);
-                IEnumerable<IMessage> results = await x.Flatten();
+                var asyncresults = this.Context.Channel.GetMessagesAsync(500);
+                var results = await asyncresults.FlattenAsync();
+
 
                 var matchingResults = results
                     .Where(o => o.IsPinned == SelectPinned);
@@ -45,7 +46,7 @@ namespace WarBot.Modules.GuildCommandModules
                 {
                     //If there are messages to bulk delete, do it.
                     if (ToBulkDelete.Count() > 0)
-                        await Context.Channel.DeleteMessagesAsync(ToBulkDelete);
+                        await Context.GuildChannel.DeleteMessagesAsync(ToBulkDelete);
                     //Once everything has been bulk deleted, start deleting one by one.
                     else if (matchingResults.Count() > 0)
                         foreach (IMessage msg in matchingResults)

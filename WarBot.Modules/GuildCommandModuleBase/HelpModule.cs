@@ -61,11 +61,11 @@ namespace WarBot.Modules.GuildCommandModules
                     if (!string.IsNullOrEmpty(i.Usage))
                         desc.AppendLine("**Usage:** " + i.Usage);
 
-                    eb.AddField_ex(i.Name, desc.ToString(), false);
+                    eb.AddField(i.Name, desc.ToString());
                     count++;
                 }
 
-                await ReplyAsync("", embed: eb);
+                await ReplyAsync(embed: eb.Build());
                 page++;
             }
 

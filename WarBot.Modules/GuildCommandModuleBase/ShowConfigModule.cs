@@ -51,11 +51,11 @@ namespace WarBot.Modules.GuildCommandModules
             {
                 var embed = new EmbedBuilder()
                     .WithTitle("Bot Configuration - Basic")
-                    .AddField_ex("Website Text", cfg.Website)
-                    .AddField_ex("Loot Text", cfg.Loot)
-                    .AddField_ex("My Nickname", cfg.NickName);
+                    .AddField("Website Text", cfg.Website)
+                    .AddField("Loot Text", cfg.Loot)
+                    .AddField("My Nickname", cfg.NickName);
 
-                await ReplyAsync("", embed: embed);
+                await ReplyAsync(embed: embed.Build());
             }
             #endregion
             #region Show Roles Config
@@ -72,10 +72,10 @@ namespace WarBot.Modules.GuildCommandModules
                         .WithTitle($"Bot Configuration: Roles({RolePage})");
                     foreach (var role in roleGroup)
                         if (role.Value.IsMentionable)
-                            roleEmbed.AddField_ex($"Role {role.Key}", role.Value.Mention);
+                            roleEmbed.AddField($"Role {role.Key}", role.Value.Mention);
                         else
-                            roleEmbed.AddField_ex($"Role {role.Key}", role.Value.Name);
-                    await ReplyAsync("", embed: roleEmbed);
+                            roleEmbed.AddField($"Role {role.Key}", role.Value.Name);
+                    await ReplyAsync(embed: roleEmbed.Build());
                     //Aggregate the role page counter.
                     RolePage++;
                 }
@@ -93,8 +93,8 @@ namespace WarBot.Modules.GuildCommandModules
                     var channelsEmbed = new EmbedBuilder()
                         .WithTitle($"Bot Configuration: Channels({ChannelPage})");
                     foreach (var channel in channelGroup)
-                        channelsEmbed.AddField_ex($"Role {channel.Key}", channel.Value.Mention);
-                    await ReplyAsync("", embed: channelsEmbed);
+                        channelsEmbed.AddField($"Role {channel.Key}", channel.Value.Mention);
+                    await ReplyAsync(embed: channelsEmbed.Build());
                     //Aggregate the role page counter.
                     ChannelPage++;
                 }
@@ -105,18 +105,18 @@ namespace WarBot.Modules.GuildCommandModules
             {
                 var embed = new EmbedBuilder()
                     .WithTitle("Bot Configuration - War Notifications")
-                    .AddField_ex("War Prep Started Enabled", cfg.Notifications.WarPrepStarted)
-                    .AddField_ex("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
-                    .AddField_ex("War Prep Ending Enabled", cfg.Notifications.WarPrepEnding)
-                    .AddField_ex("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
-                    .AddField_ex("War Started Enabled", cfg.Notifications.WarStarted)
-                    .AddField_ex("War Started Message", cfg.Notifications.WarStartedMessage)
-                    .AddField_ex("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
-                    .AddField_ex("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
-                    .AddField_ex("War 3 Enabled (2pm CST)", cfg.Notifications.War3Enabled)
-                    .AddField_ex("War 4 Enabled (8pm CST)", cfg.Notifications.War4Enabled);
+                    .AddField("War Prep Started Enabled", cfg.Notifications.WarPrepStarted)
+                    .AddField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
+                    .AddField("War Prep Ending Enabled", cfg.Notifications.WarPrepEnding)
+                    .AddField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
+                    .AddField("War Started Enabled", cfg.Notifications.WarStarted)
+                    .AddField("War Started Message", cfg.Notifications.WarStartedMessage)
+                    .AddField("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
+                    .AddField("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
+                    .AddField("War 3 Enabled (2pm CST)", cfg.Notifications.War3Enabled)
+                    .AddField("War 4 Enabled (8pm CST)", cfg.Notifications.War4Enabled);
 
-                await ReplyAsync("", embed: embed);
+                await ReplyAsync(embed: embed.Build());
             }
             #endregion
         }
