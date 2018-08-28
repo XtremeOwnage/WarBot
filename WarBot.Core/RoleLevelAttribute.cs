@@ -56,7 +56,8 @@ namespace WarBot.Attributes
             }
 
         }
-        public async override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider services)
+
+        public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             //If this a custom guild command context, get the config from the context.
             if (context is GuildCommandContext gcc)
@@ -73,8 +74,6 @@ namespace WarBot.Attributes
                 await Task.FromResult(true);
                 throw new InvalidOperationException($"{nameof(RoleLevelAttribute)} is only valid on type {nameof(GuildCommandContext)}");
             }
-
-
         }
 
         /// <summary>
