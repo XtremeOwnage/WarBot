@@ -41,7 +41,7 @@ namespace WarBot.Storage
         public async Task<IGuildConfig> GetConfig(SocketGuild Guild)
             => await GetConfig(Guild, null);
 
-        public async Task<IGuildConfig> GetConfig(SocketGuild Guild, Core.Environment? Environment)
+        public async Task<IGuildConfig> GetConfig(SocketGuild Guild, Core.Environment? ForcedEnv)
         {
             //If no guild was passed in, return null.
             if (Guild == null)
@@ -76,15 +76,15 @@ namespace WarBot.Storage
             {
                 //If the old configuration's enviornment does not match the bot's current environment. Return.
                 //This will prevent the TEST bot, from creating channels for PRODUCTION guilds.
-                if (oldCfg.Environment != bot.Environment && !Environment.HasValue)
+                if (oldCfg.Environment != bot.Environment && !ForcedEnv.HasValue)
                     return null;
 
                 //Simple settings.
                 newCfg.BotVersion = oldCfg.BotVersion;
                 newCfg.WarBOTNickName = oldCfg.NickName;
 
-                if (Environment.HasValue)
-                    newCfg.Environment = Environment.Value;
+                if (ForcedEnv.HasValue)
+                    newCfg.Environment = ForcedEnv.Value;
                 else
                     newCfg.Environment = oldCfg.Environment ?? Core.Environment.PROD;
 
@@ -135,7 +135,7 @@ namespace WarBot.Storage
             {
                 //If this is not the production bot, do not create a new config.
                 //Reason: The set defaults method can and will create additional channels as required.
-                if (this.bot.Environment != Core.Environment.PROD)
+                if (this.bot.Environment != Core.Environment.PROD && !ForcedEnv.HasValue)
                     return null;
 
                 await newCfg.SetDefaults(Guild);
