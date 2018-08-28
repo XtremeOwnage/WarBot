@@ -1,45 +1,32 @@
+using System.ComponentModel;
+
 namespace WarBot.Core
 {
     public enum RoleLevel
     {
-        /// <summary>
-        /// Regular user in discord guild, without any clan-assigned roles.
-        /// </summary>
+
+        [Description("Regular user in discord guild, without any clan-assigned roles")]
         None = 0,
 
-        /// <summary>
-        /// A guest role.
-        /// </summary>
+        [Description("A role for guests. Does not grant member-specific commands.")]
         Guest = 5,
 
-        /// <summary>
-        /// User is in the member's role.
-        /// </summary>
+        [Description("A member of your guild.")]
         Member = 10,
 
-        /// <summary>
-        /// A distinguished member.
-        /// </summary>
+        [Description("A distinguished, non-officer member")]
         SuperMember = 20,
 
-        /// <summary>
-        /// User is in the Officer's role
-        /// </summary>
+        [Description("An officer. Grants basic management commands")]
         Officer = 30,
 
-        /// <summary>
-        /// User is in the leader's role
-        /// </summary>
+        [Description("A leader of your guild. Grants most management commands.")]
         Leader = 50,
 
-        /// <summary>
-        /// User contains the administrator permission for the server.
-        /// </summary>
+        [Description("Server Admin, Grants all management commands")]
         ServerAdmin = 100,
 
-        /// <summary>
-        /// This role, is for statically defined administrators of the bot. Grants the ability to manage GLOBAL settings for WarBOT.
-        /// </summary>
+        [Description("Secret role. Grants global bot-management commands.")]
         GlobalAdmin = 1000,
     }
 }
