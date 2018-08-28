@@ -3,6 +3,7 @@ using WarBot.Core;
 
 namespace WarBot.Core.ModuleType
 {
+    [RequireContext(ContextType.Guild)]
     public abstract class GuildCommandModuleBase : ModuleBase<GuildCommandContext>
     {
         ///Just a helper.

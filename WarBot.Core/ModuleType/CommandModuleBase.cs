@@ -2,6 +2,7 @@ using Discord.Commands;
 
 namespace WarBot.Core.ModuleType
 {
+    [RequireContext(ContextType.DM | ContextType.Group | ContextType.Guild)]
     /// <summary>
     /// Use as the default Modulebase type. Contains a reference to IWarBOT.
     /// </summary>
