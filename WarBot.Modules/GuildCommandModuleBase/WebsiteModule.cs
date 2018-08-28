@@ -6,11 +6,10 @@ using WarBot.Core;
 using WarBot.Core.ModuleType;
 namespace WarBot.Modules.GuildCommandModules
 {
-    [RequireContext(ContextType.Guild)]
     public class WebsiteModule : GuildCommandModuleBase
     {
-        [Command("set website"), Alias("Website")]
         [RoleLevel(RoleLevel.Leader)]
+        [Command("set website"), Alias("Website")]        
         [Summary("Sets the website for this guild.")]
         [CommandUsage("{prefix} set website (WebsiteURL)")]
         [RequireBotPermission(ChannelPermission.SendMessages)]

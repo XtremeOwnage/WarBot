@@ -9,10 +9,9 @@ namespace WarBot.Modules.GuildCommandModules
 {
     public class ServerAdminModule : GuildCommandModuleBase
     {
-
+        [RoleLevel(RoleLevel.ServerAdmin)]
         [Command("leave"), Alias("Go Away"), Summary("Warbot will leave the guild.")]
         [CommandUsage("{prefix} leave")]
-        [RoleLevel(RoleLevel.ServerAdmin)]
         public async Task Leave()
         {
 
@@ -34,9 +33,9 @@ namespace WarBot.Modules.GuildCommandModules
         }
 
 
+        [RoleLevel(RoleLevel.ServerAdmin)]
         [Command("set environment"), Summary("Choose the WARBot instance to use. This should only be used if you have specific instructions to use it.")]
         [CommandUsage("{prefix} set environment (PROD|NONPROD|LOCAL)")]
-        [RoleLevel(RoleLevel.ServerAdmin)]
         public async Task SetEnvironment(string Environment)
         {
             if (System.Enum.TryParse(Environment, true, out WarBot.Core.Environment Env))

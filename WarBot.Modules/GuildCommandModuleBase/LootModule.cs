@@ -6,11 +6,10 @@ using WarBot.Core;
 using WarBot.Core.ModuleType;
 namespace WarBot.Modules.GuildCommandModules
 {
-    [RequireContext(ContextType.Guild)]
     public class LootModule : GuildCommandModuleBase
     {
-        [Command("set loot"), Alias("loot")]
         [RoleLevel(RoleLevel.Leader)]
+        [Command("set loot"), Alias("loot")]
         [Summary("Sets the loot for this guild.")]
         [CommandUsage("{prefix} set loot (Loot Details)")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
@@ -21,8 +20,8 @@ namespace WarBot.Modules.GuildCommandModules
             await ReplyAsync("The loot value has been set.");
         }
 
-        [Command("show loot"), Alias("loot")]
         [RoleLevel(RoleLevel.Member)]
+        [Command("show loot"), Alias("loot")]
         [Summary("Display this guild's loot instructions, if set.")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task ShowLoot()

@@ -5,14 +5,12 @@ using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
 using WarBot.Core.ModuleType;
-using WarBot.Core.ModuleType;
 namespace WarBot.Modules.GuildCommandModules
 {
-    [RequireContext(ContextType.Guild)]
     public class NickNameModule : GuildCommandModuleBase
     {
-        [Command("set nickname"), Alias("nickname")]
         [RoleLevel(RoleLevel.Officer)]
+        [Command("set nickname"), Alias("nickname")]
         [Summary("Change WARBot's nickname.")]
         [CommandUsage("{prefix}, set nickname (NickName)")]
         [RequireBotPermission(GuildPermission.ChangeNickname)]
@@ -39,8 +37,8 @@ namespace WarBot.Modules.GuildCommandModules
             await ReplyAsync($"I have changed my nickname.");
         }
 
-        [Command("set nickname"), Alias("nickname")]
         [RoleLevel(RoleLevel.Officer)]
+        [Command("set nickname"), Alias("nickname")]
         [Summary("Change a user's nickname.")]
         [CommandUsage("{prefix}, set nickname @User (NickName)")]
         [RequireBotPermission(GuildPermission.ManageNicknames)]

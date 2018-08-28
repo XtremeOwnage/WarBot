@@ -8,14 +8,13 @@ using WarBot.Core.ModuleType;
 
 namespace WarBot.Modules.GuildCommandModules
 {
-    [RequireContext(ContextType.Guild)]
     public class KickBanModule : GuildCommandModuleBase
     {
-        [Command("kick"), Alias("remove")]
         [RoleLevel(RoleLevel.Leader)]
+        [Command("kick"), Alias("remove")]       
         [Summary("Remove a user from this guild.")]
         [CommandUsage("{prefix} kick @User (Reason)")]
-        [RequireBotPermission(GuildPermission.KickMembers)]
+        [RequireBotPermission(GuildPermission.KickMembers | GuildPermission.SendMessages)]
         public async Task Kick(SocketGuildUser user, [Remainder]string Message = "An admin determined your services were no longer required.")
         {
             var Me = Context.Guild.CurrentUser;

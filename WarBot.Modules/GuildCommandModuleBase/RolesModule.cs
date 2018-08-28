@@ -14,9 +14,6 @@ namespace WarBot.Modules.GuildCommandModules
     /// <summary>
     /// This module manages a user's roles.
     /// </summary>
-    //Required chat context type.
-    [RequireContext(ContextType.Guild)]
-
     public class RolesModule : GuildCommandModuleBase
     {
         [Command("demote")]

@@ -14,7 +14,6 @@ namespace WarBot.Modules.GuildCommandModules
         [Command("stats"), Alias("uptime", "show stats", "show uptime"), Summary("Display command stats related to me.")]
         [RoleLevel(RoleLevel.None)]
         [RequireBotPermission(ChannelPermission.SendMessages)]
-        [RequireContext(ContextType.Guild)]
         public async Task Stats_GUILD()
         {
             var Guilds = await bot.Client.GetGuildsAsync();

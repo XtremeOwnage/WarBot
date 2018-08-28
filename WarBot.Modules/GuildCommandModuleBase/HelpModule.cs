@@ -10,8 +10,7 @@ using WarBot.Core.ModuleType;
 
 namespace WarBot.Modules.GuildCommandModules
 {
-    //Required chat context type.
-    [RequireContext(ContextType.Guild)]
+
     public class HelpModule : GuildCommandModuleBase
     {
 
