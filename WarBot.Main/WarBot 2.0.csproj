@@ -19,6 +19,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="%2a%2a\**" />
+    <EmbeddedResource Remove="%2a%2a\**" />
+    <None Remove="%2a%2a\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DiscordBotsList.Api.Adapter.Discord.Net" Version="1.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.6.20" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.5.2" />
@@ -26,12 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="bin\Users\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="bin\Config\BotConfig" />
-    <None Include="bin\Guilds\381654582444687370" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +42,16 @@
     <ProjectReference Include="..\WarBot.Core\WarBot.Core.csproj" />
     <ProjectReference Include="..\WarBot.Modules\WarBot.Modules.csproj" />
     <ProjectReference Include="..\WarBot.Storage\WarBot.Storage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Guilds\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Launch.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 
