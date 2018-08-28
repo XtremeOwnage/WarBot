@@ -80,57 +80,7 @@ SetCommandHandler(RoleLevel.None, "stats", cmd_Show_My_Stats);
 SetCommandHandler(RoleLevel.None, "show stats", cmd_Show_My_Stats);
 SetCommandHandler(RoleLevel.None, "uptime", cmd_Show_My_Stats);
 
-async function cmd_Kick(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.KickMember(cfg, msg);
-}
-async function cmd_Set_Channel_Member(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (msg.mentions.channels.first() != null) {
-        cfg.CH_Members = msg.mentions.channels.first();
-        await msg.reply("Members channel has been set to: " + cfg.CH_Members);
-    } else {
-        await msg.reply("In order to set the members channel, you must mention a channel name.");
-    }
-}
-async function cmd_Set_Channel_Officer(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (msg.mentions.channels.first() != null) {
-        cfg.CH_Officers = msg.mentions.channels.first();
-        await msg.reply("Officers channel has been set to: " + cfg.CH_Officers);
-    } else {
-        await msg.reply("In order to set the officers channel, you must mention a channel name.");
-    }
-}
-async function cmd_Set_Role_Admin(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (msg.mentions.roles.first() != null) {
-        cfg.Role_Admins = msg.mentions.roles.first();
-        await msg.reply("Admin role has been set to: " + cfg.Role_Admins);
-    } else {
-        await msg.reply("You must mention the role, to configure as the admin role.");
-    }
-}
-async function cmd_Set_Role_Leader(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (msg.mentions.roles.first() != null) {
-        cfg.Role_Leaders = msg.mentions.roles.first();
-        await msg.reply("Leader role has been set to: " + cfg.Role_Leaders);
-    } else {
-        await msg.reply("In order to set the Leader role, you must mention the role.");
-    }
-}
-async function cmd_Set_Role_Officer(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (msg.mentions.roles.first() != null) {
-        cfg.Role_Officers = msg.mentions.roles.first();
-        await msg.reply("Officer role has been set to: " + cfg.Role_Officers);
-    } else {
-        await msg.reply("In order to set the Officer's role, you must mention the role.");
-    }
-}
-async function cmd_Set_Role_Member(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    if (msg.mentions.roles.first() != null) {
-        cfg.Role_Members = msg.mentions.roles.first();
-        await msg.reply("Member role has been set to: " + cfg.Role_Members);
-    } else {
-        await msg.reply("In order to set the member's role, you must mention the role.");
-    }
-}
+
 async function cmd_Set_Message_WarPrepStarted(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     if (Parameters.length > 1) {
         cfg.Notifications.WarPrepStartedMessage = Parameters;
@@ -215,18 +165,7 @@ async function cmd_Notification_SpecificWar_Disable(Parameters: string, msg: Mes
             await msg.reply("Please specify 1,2,3 or 4");
     }
 }
-async function cmd_SetRole_Member(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.SetRoleLevel(RoleLevel.Member, cfg, msg);
-}
-async function cmd_SetRole_Officer(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.SetRoleLevel(RoleLevel.Officer, cfg, msg);
-}
-async function cmd_SetRole_Leader(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.SetRoleLevel(RoleLevel.Leader, cfg, msg);
-}
-async function cmd_Change_My_NickName(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.SetNickName(cfg, msg, Parameters);
-}
+
 async function cmd_WhoIsAwesome_Hidden(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('<@381654208073433091> of course. He is the greatest. He created me.');
 }
@@ -235,9 +174,6 @@ async function cmd_PING(Parameters: string, msg: Message, cfg: BotCommonConfig) 
 }
 async function cmd_Say_Thanks(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('No problem. I am always glad to help.');
-}
-async function cmd_Show_My_Stats(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.channel.send(Messages.Statistics(cfg));
 }
 
 async function cmd_ResetConfig(Parameters: string, msg: Message, cfg: BotCommonConfig) {
@@ -254,9 +190,7 @@ async function cmd_TestMessages(Parameters: string, msg: Message, cfg: BotCommon
     await Actions.WarStarted_Members_async(cfg);
     await Actions.WarStarted_Officers_async(cfg);
 }
-async function cmd_ClearMessages(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await Actions.ClearMessages_async(msg.channel);
-}
+
 async function cmd_Notifications_ALL_Disable(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     cfg.Notifications.WarPrepStarted = false;
     cfg.Notifications.WarPrepAlmostOver = false;
@@ -314,34 +248,7 @@ async function cmd_Notification_WarStarted_Disable(Parameters: string, msg: Mess
     msg.reply("Done.");
 }
 
-//async function cmd_MassMessage(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-//    await Actions.MassNotify(cfg, Parameters);
-//}
-async function cmd_GoDie(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.reply("I am sorry I did not live up to your expectations. Goodbye world.").then(() => process.exit());
-}
-async function cmd_Help_GlobalAdmin(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.channel.send(Messages.Commands_GlobalAdmin());
-    await cmd_Help_ServerAdmin(Parameters, msg, cfg);
-}
-async function cmd_Help_ServerAdmin(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.channel.send(Messages.Commands_ServerAdmin());
-    await cmd_Help_Leader(Parameters, msg, cfg);
-}
-async function cmd_Help_Leader(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.channel.send(Messages.Commands_Leader());
-    await cmd_Help_Officer(Parameters, msg, cfg);
-}
-async function cmd_Help_Officer(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await cmd_Help_Member(Parameters, msg, cfg);
-}
-async function cmd_Help_Member(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.channel.send(Messages.Commands_Member());
-    await cmd_Help_Everyone(Parameters, msg, cfg);
-}
-async function cmd_Help_Everyone(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.channel.send(Messages.Commands_Everybody());
-}
+
 async function cmd_ShowGuilds(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     let embeds: RichEmbed[] = Messages.ShowGuilds(cfg.Bot);
     await async.each(embeds, async function (embed: RichEmbed) {
