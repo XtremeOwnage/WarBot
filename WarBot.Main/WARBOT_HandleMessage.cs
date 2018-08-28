@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using System;
 using System.Linq;
+using WarBot.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
@@ -45,7 +46,7 @@ namespace WarBot
                 #endregion
 
                 //Start actual processing logic.              
-                var UserChannelHash = SocketGuildDialogContextBase.GetHashCode(message.Channel, message.Author);
+                var UserChannelHash = SocketDialogContextBase.GetHashCode(message.Channel, message.Author);
                 //Check if there is an open dialog.
                 //ToDo - If the hash logic is perfectly sound, we can remove the second check to improve performance.
                 //This case, is outside of the channel type comparison, because a dialog can occur in many multiple channel types.
@@ -64,6 +65,19 @@ namespace WarBot
 
                     bool cmdSetEnv = !Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
 
+                    //ToDo - Remove this when we move to production.
+                    //Just a simple inline test method.
+                    if (Msg.Equals("TEST", StringComparison.OrdinalIgnoreCase) && cfg != null && ((SocketGuildUser)message.Author).GetRole(cfg) == RoleLevel.GlobalAdmin)
+                    {
+                        await message.Channel.SendMessageAsync("Executing test methods.");
+                        var x = new Util.WAR_Messages(this);
+                        await x.SendWarPrepStarted(1);
+                        await x.SendWarPrepEnding(1);
+                        await x.SendWarStarted(1);
+
+                        return;
+
+                    }
                     //If the config is null, and we are not setting the environment, return.
                     if (cfg == null && !cmdSetEnv)
                         return;
