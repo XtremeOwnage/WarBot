@@ -6,9 +6,9 @@ using WarBot.Core.ModuleType;
 
 namespace WarBot.Modules.Dialogs
 {
-    public class MimicMeDialog : SocketGuildDialogContextBase
+    public class MimicMeDialog : SocketDialogContextBase
     {
-        public MimicMeDialog(GuildCommandContext Context)
+        public MimicMeDialog(CommandContext Context)
             : base(Context) { }
 
         public async override Task ProcessMessage(SocketUserMessage input)

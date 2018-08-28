@@ -13,7 +13,7 @@ using WarBot.Core;
 namespace WarBot.Modules.CommandModules
 {
     [Summary("Send a reminder message.")]
-    public class RemindMeModule : CommandModuleBase
+    public class RemindMeModule : WarBot.Core.ModuleType.CommandModuleBase
     {
         [RequireBotPermission(ChannelPermission.SendMessages)]
         [Command("remind me"), Alias("remind")]
