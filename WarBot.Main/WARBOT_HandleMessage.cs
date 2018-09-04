@@ -70,8 +70,6 @@ namespace WarBot
                     else if (!(HasStringPrefix || HasBotPrefix))
                         return;
 
-
-
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);
 
