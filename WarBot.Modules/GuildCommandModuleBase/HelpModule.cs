@@ -54,12 +54,12 @@ namespace WarBot.Modules.GuildCommandModules
                     var desc = new StringBuilder();
 
                     if (!String.IsNullOrEmpty(i.Summary))
-                        desc.AppendLine("**Summary:** " + i.Summary);
+                        desc.AppendLine("    **Summary:** " + i.Summary);
                     if (i.Aliases.Count() > 0)
                         foreach (var a in i.Aliases)
-                            desc.AppendLine($"**Alias:** {a}");
+                            desc.AppendLine($"    **Alias:** {a}");
                     if (!string.IsNullOrEmpty(i.Usage))
-                        desc.AppendLine("**Usage:** " + i.Usage);
+                        desc.AppendLine("    **Usage:** " + i.Usage);
 
                     eb.AddField(i.Name, desc.ToString());
                     count++;
