@@ -5,6 +5,9 @@ namespace WarBot.Core
 {
     /// <summary>
     /// Gives a usage example.
+    /// Valid replacements:
+    /// {command} - Will be replaced with the command name.
+    /// {prefix} - Will be replaced with the bot's configured prefix.
     /// </summary>
     public class CommandUsageAttribute : Attribute
     {
