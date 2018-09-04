@@ -140,7 +140,20 @@ namespace WarBot
             if (!ShouldHandleMessage(cfg))
                 return;
 
-           
+            //Send welcome message
+            try
+            {
+                //Guild must have configured both a new user greeting channel, as well as a greeting message.
+                if (cfg.Notifications.NewUserGreeting != null && cfg.GetGuildChannel(WarBotChannelType.CH_New_Users).IsNotNull(out var ch))
+                {
+                    await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg.Notifications.NewUserGreeting}");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Log.Error(arg.Guild, ex);
+            }
+
         }
 
         private async Task Client_UserLeft(SocketGuildUser arg)
@@ -280,7 +293,7 @@ namespace WarBot
                     {
                         o.Nickname = cfg.NickName;
                     });
-                }               
+                }
                 else if (!arg.CurrentUser.Nickname.Equals(cfg.NickName) && arg.CurrentUser.GuildPermissions.ChangeNickname == true)
                 {
                     await arg.CurrentUser.ModifyAsync(o =>
