@@ -35,16 +35,6 @@ namespace WarBot
                 if (Log.IsLoggingChannel(message.Channel.Id))
                     return;
 
-
-                #region Parse out command from prefix.
-                int argPos = 0;
-                bool HasStringPrefix = message.HasStringPrefix("bot,", ref argPos, StringComparison.OrdinalIgnoreCase);
-                bool HasBotPrefix = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
-
-                //Substring containing only the desired commands.
-                string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
-                #endregion
-
                 //Start actual processing logic.              
                 var UserChannelHash = SocketDialogContextBase.GetHashCode(message.Channel, message.Author);
                 //Check if there is an open dialog.
@@ -57,27 +47,23 @@ namespace WarBot
                 //Socket GUILD TEXT Channel.
                 else if (message.Channel is SocketTextChannel tch)
                 {
+                    var cfg = await this.GuildRepo.GetConfig(tch.Guild);
+
+                    #region Parse out command from prefix.
+                    int argPos = 0;
+                    bool HasStringPrefix = message.HasStringPrefix(cfg.Prefix, ref argPos, StringComparison.OrdinalIgnoreCase);
+                    bool HasBotPrefix = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
+
+                    //Substring containing only the desired commands.
+                    string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
+                    #endregion
+
                     //If the message was not to me, Ignore it.
                     if (!(HasStringPrefix || HasBotPrefix))
-                        return;
-
-                    var cfg = await this.GuildRepo.GetConfig(tch.Guild);
+                        return;                  
 
                     bool cmdSetEnv = Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
 
-                    //ToDo - Remove this when we move to production.
-                    //Just a simple inline test method.
-                    if (Msg.Equals("TEST", StringComparison.OrdinalIgnoreCase) && cfg != null && ((SocketGuildUser)message.Author).GetRole(cfg) == RoleLevel.GlobalAdmin)
-                    {
-                        await message.Channel.SendMessageAsync("Executing test methods.");
-                        var x = new Util.WAR_Messages(this);
-                        await x.SendWarPrepStarted(1);
-                        await x.SendWarPrepEnding(1);
-                        await x.SendWarStarted(1);
-
-                        return;
-
-                    }
                     //If the config is null, and we are not setting the environment, return.
                     if (cfg == null && !cmdSetEnv)
                         return;
@@ -96,7 +82,7 @@ namespace WarBot
                 {
                     var context = new Core.ModuleType.CommandContext(Client, message, this);
 
-                    var result = await commands.ExecuteAsync(context, Msg, sc, MultiMatchHandling.Best);
+                    var result = await commands.ExecuteAsync(context, socketMessage.Content, sc, MultiMatchHandling.Best);
                 }
             }
             catch (Exception ex)
