@@ -13,7 +13,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RoleLevel(RoleLevel.Leader)]
         [Command("kick"), Alias("remove")]       
         [Summary("Remove a user from this guild.")]
-        [CommandUsage("{prefix} kick @User (Reason)")]
+        [CommandUsage("{prefix} {command} @User (Reason)")]
         [RequireBotPermission(GuildPermission.KickMembers | GuildPermission.SendMessages)]
         public async Task Kick(SocketGuildUser user, [Remainder]string Message = "An admin determined your services were no longer required.")
         {

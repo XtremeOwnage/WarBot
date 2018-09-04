@@ -18,7 +18,7 @@ namespace WarBot.Modules.GuildCommandModules
     {
         [Command("demote")]
         [Summary("Demote user[s] to the previous role."), RoleLevel(RoleLevel.Officer), RequireBotPermission(GuildPermission.ManageRoles)]
-        [CommandUsage("{prefix}, demote @User @User2....")]
+        [CommandUsage("{prefix} {command} @User @User2....")]
         public async Task DemoteUser(params SocketGuildUser[] Users)
         {
             var Me = Context.Guild.CurrentUser;
@@ -63,7 +63,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         [Command("promote")]
         [Summary("Promote user[s] to the next available role."), RoleLevel(RoleLevel.Officer), RequireBotPermission(GuildPermission.ManageRoles)]
-        [CommandUsage("{prefix}, promote @User @User1....")]
+        [CommandUsage("{prefix} {command} @User @User1....")]
         public async Task PromoteUser(params SocketGuildUser[] Users)
         {
             var Me = Context.Guild.CurrentUser;
@@ -111,7 +111,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         [Command("set role"), Alias("add role", "remove role")]
         [Summary("Set user[s]'s role."), RoleLevel(RoleLevel.Officer), RequireBotPermission(GuildPermission.ManageRoles)]
-        [CommandUsage("{prefix}, set role (Role) @User @User1....")]
+        [CommandUsage("{prefix} {command} (Role) @User @User1....")]
         public async Task SetRole_User(string Role, params SocketGuildUser[] Users)
         {
             var Me = Context.Guild.CurrentUser;
@@ -159,7 +159,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         [Command("set role")]
         [Summary("Updates the discord role mapping."), RoleLevel(RoleLevel.ServerAdmin), RequireBotPermission(GuildPermission.SendMessages)]
-        [CommandUsage("{prefix}, set role (Role) @DiscordRole")]
+        [CommandUsage("{prefix} {command} (Role) @DiscordRole")]
         public async Task SetRoleInConfig(string Role = "INVALID ROLE", SocketRole RoleTag = null)
         {
             var Me = Context.Guild.CurrentUser;

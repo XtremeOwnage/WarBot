@@ -16,7 +16,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         [Command("show help"), Alias("?", "help")]
         [Summary("Show commands you have access to. This is the command you are currently using.")]
-        [CommandUsage("{prefix} help")]
+        [CommandUsage("{prefix} {command}")]
         [RoleLevel(RoleLevel.None)]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task Help()

@@ -19,7 +19,7 @@ namespace WarBot.Modules.GuildCommandModules
     {
         [Command("set channel")]
         [Summary("Updates my channel mappings"), RoleLevel(RoleLevel.Leader), RequireBotPermission(GuildPermission.SendMessages)]
-        [CommandUsage("{prefix}, set channel (Channel) #Channel")]
+        [CommandUsage("{prefix} {command} (Channel) #Channel")]
         public async Task UpdateChannel(string Role = "INVALID CHANNEL", SocketTextChannel Channel = null)
         {
             var Me = Context.Guild.CurrentUser;

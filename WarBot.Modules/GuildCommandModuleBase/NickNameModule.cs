@@ -12,7 +12,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RoleLevel(RoleLevel.Officer)]
         [Command("set nickname"), Alias("nickname")]
         [Summary("Change WARBot's nickname.")]
-        [CommandUsage("{prefix}, set nickname (NickName)")]
+        [CommandUsage("{prefix} {command} (NickName)")]
         [RequireBotPermission(GuildPermission.ChangeNickname)]
         public async Task SetNickName_Me(string Nickname)
         {
@@ -40,7 +40,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RoleLevel(RoleLevel.Officer)]
         [Command("set nickname"), Alias("nickname")]
         [Summary("Change a user's nickname.")]
-        [CommandUsage("{prefix}, set nickname @User (NickName)")]
+        [CommandUsage("{prefix} {command} @User (NickName)")]
         [RequireBotPermission(GuildPermission.ManageNicknames)]
         public async Task SetNickName_Other(SocketGuildUser user, string Nickname)
         {
