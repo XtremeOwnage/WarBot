@@ -11,7 +11,7 @@ namespace WarBot.Modules.GuildCommandModules
     {
         [RoleLevel(RoleLevel.ServerAdmin)]
         [Command("leave"), Alias("Go Away"), Summary("Warbot will leave the guild.")]
-        [CommandUsage("{prefix} leave")]
+        [CommandUsage("{prefix} {command}")]
         public async Task Leave()
         {
 
@@ -35,7 +35,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         [RoleLevel(RoleLevel.ServerAdmin)]
         [Command("set environment"), Summary("Choose the WARBot instance to use. This should only be used if you have specific instructions to use it.")]
-        [CommandUsage("{prefix} set environment (PROD|NONPROD|LOCAL)")]
+        [CommandUsage("{prefix} {command} (PROD|NONPROD|LOCAL)")]
         public async Task SetEnvironment(string Environment)
         {
             if (System.Enum.TryParse(Environment, true, out WarBot.Core.Environment Env))
@@ -64,6 +64,30 @@ namespace WarBot.Modules.GuildCommandModules
                 }
                 await ReplyAsync(sb.ToString());
             }
+        }
+
+        [RoleLevel(RoleLevel.ServerAdmin)]
+        [Command("set prefix")]
+        [Summary("Change the prefix to address me.")]
+        [CommandUsage("{prefix} {command} bot,")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task SetPrefix(string Prefix)
+        {
+            var Me = Context.Guild.CurrentUser;
+
+            if (string.IsNullOrEmpty(Prefix))
+            {
+                await ReplyAsync("The provided prefix was not valid. The value has been set to 'bot,'");
+                cfg.Prefix = "bot,";
+                await cfg.SaveConfig();
+                return;
+            }
+
+            //Update the config.
+            cfg.Prefix = Prefix;
+            await cfg.SaveConfig();
+
+            await ReplyAsync($"My prefix has been set to '{Prefix}'");
         }
     }
 }
