@@ -53,7 +53,8 @@ namespace WarBot.Modules.GuildCommandModules
                     .WithTitle("Bot Configuration - Basic")
                     .AddField("Website Text", cfg.Website)
                     .AddField("Loot Text", cfg.Loot)
-                    .AddField("My Nickname", cfg.NickName);
+                    .AddField("My Nickname", cfg.NickName)
+                    .AddField("Prefix", cfg.Prefix);
 
                 await ReplyAsync(embed: embed.Build());
             }
