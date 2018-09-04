@@ -27,7 +27,7 @@ namespace WarBot.Modules.GuildCommandModules
         ///ALL = Everything!
         public async Task ClearMessages(string action = "NonPinned")
         {
-            bool SelectPinned = action.ToLowerInvariant().Contains("pinned");
+            bool SelectPinned = action.ToLowerInvariant().Equals("pinned");
 
             DateTimeOffset discordBulkCutoffDate = DateTimeOffset.Now.AddDays(-13);
             while (true)
@@ -35,22 +35,20 @@ namespace WarBot.Modules.GuildCommandModules
                 var asyncresults = this.Context.Channel.GetMessagesAsync(500);
                 var results = await asyncresults.FlattenAsync();
 
-
-                var matchingResults = results
-                    .Where(o => o.IsPinned == SelectPinned);
-
-                var ToBulkDelete = matchingResults
-                    .Where(o => o.CreatedAt > discordBulkCutoffDate);
+                var ToBulkDelete = results
+                    .Where(o => o.IsPinned == SelectPinned)
+                    .Where(o => o.CreatedAt > discordBulkCutoffDate)
+                    .ToList();
 
                 try
                 {
                     //If there are messages to bulk delete, do it.
-                    if (ToBulkDelete.Count() > 0)
+                    if (ToBulkDelete.Count > 0)
                         await Context.GuildChannel.DeleteMessagesAsync(ToBulkDelete);
                     //Once everything has been bulk deleted, start deleting one by one.
-                    else if (matchingResults.Count() > 0)
-                        foreach (IMessage msg in matchingResults)
-                            await msg.DeleteAsync();
+                    //else if (matchingResults.Count() > 0)
+                    //    foreach (IMessage msg in matchingResults)
+                    //        await msg.DeleteAsync();
                     //If nothing else to delete, stop deleting stuff.
                     else
                         break;
