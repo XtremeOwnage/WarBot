@@ -65,10 +65,12 @@ namespace WarBot.Util
                 .WithTitle("Process Started")
                 .WithCurrentTimestamp()
                 .WithColor(Color.LightOrange)
-                .AddField("UserName", bot.Client.CurrentUser?.Username)
-                .AddField("Type", "WarBot.NET");
-            //.AddField("Modules Loaded", bot.commands.ModuleCount)
-            //.AddField("Commands Available", bot.commands.CommandCount);
+                .AddField("UserName", bot.Client.CurrentUser?.Username, true)
+                .AddField("Host", System.Environment.MachineName, true)
+                .AddField("Environment", bot.Config.Environment.ToString(), true)
+                .AddField("Type", "WarBot.NET", true)
+                .AddField("Modules Loaded", bot.commands.Modules.Count(), true)
+                .AddField("Commands Available", bot.commands.Commands.Count(), true);
 
             await sendToChannel(LogChannel.Debug, eb.Build());
 
