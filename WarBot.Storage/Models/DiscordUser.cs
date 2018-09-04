@@ -35,5 +35,15 @@ namespace WarBot.Storage.Models
         /// This user's SELECTED character.
         /// </summary>
         public virtual HustleUser SelectedCharacter => Characters.FirstOrDefault(o => o.IsActiveCharacter == true);
+
+        /// <summary>
+        /// The last time this user was seen online.
+        /// </summary>
+        public DateTimeOffset? LastOnline { get; set; } = null;
+
+        /// <summary>
+        /// The last time a message was seen by this user.
+        /// </summary>
+        public DateTimeOffset? LastActivity { get; set; } = null;
     }
 }

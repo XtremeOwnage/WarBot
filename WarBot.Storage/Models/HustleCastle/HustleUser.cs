@@ -48,5 +48,10 @@ namespace WarBot.Storage.Models.HustleCastle
         /// A reference to the season's this user has participated in.
         /// </summary>
         public virtual List<HustleGuildSeason> Seasons { get; } = new List<HustleGuildSeason>();
+
+        /// <summary>
+        /// When did this user join their current guild?
+        /// </summary>
+        public DateTimeOffset JoinDate { get; set; }
     }
 }

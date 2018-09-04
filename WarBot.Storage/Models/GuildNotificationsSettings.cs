@@ -28,6 +28,7 @@ namespace WarBot.Storage.Models
             WarStarted = true;
             WarStartedMessage = null;
             SendUpdateMessage = true;
+            GreetingMessage = null;
             return this;
         }
 
@@ -51,5 +52,10 @@ namespace WarBot.Storage.Models
         public string WarPrepEndingMessage { get; set; }
         public string WarStartedMessage { get; set; }
         public bool SendUpdateMessage { get; set; }
+
+        /// <summary>
+        /// Welcome message for new players joining the discord guild.
+        /// </summary>
+        public string GreetingMessage { get; set; }
     }
 }
