@@ -13,19 +13,12 @@ namespace WarBot.Storage
             : base(options)
         { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder
-                .UseSqlite("Data Source=warBOT.db")
-                .UseLazyLoadingProxies(true);        
-
-        }
-
         public DbSet<DiscordGuild> Guilds { get; set; }
         public DbSet<DiscordUser> Users { get; set; }
 
         public async Task Migrate()
         {
+            //Perform migrations as needed.
             var Migrations = await this.Database.GetPendingMigrationsAsync();
             if (Migrations.Count() == 0)
             {
@@ -71,14 +64,14 @@ namespace WarBot.Storage
         }
     }
 
-    public class BloggingContextFactory : IDesignTimeDbContextFactory<WarDB>
-    {
-        public WarDB CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<WarDB>();
-            optionsBuilder.UseSqlite("Data Source=warBOT.db");
+    //public class BloggingContextFactory : IDesignTimeDbContextFactory<WarDB>
+    //{
+    //    public WarDB CreateDbContext(string[] args)
+    //    {
+    //        var optionsBuilder = new DbContextOptionsBuilder<WarDB>();
+    //        optionsBuilder.UseSqlite("Data Source=warBOT.db");
 
-            return new WarDB(optionsBuilder.Options);
-        }
-    }
+    //        return new WarDB(optionsBuilder.Options);
+    //    }
+    //}
 }

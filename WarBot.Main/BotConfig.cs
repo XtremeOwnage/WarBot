@@ -98,6 +98,16 @@ namespace WarBot
             }
         }
 
+        public string ConnString
+        {
+            get => db_Connection_String;
+            set
+            {
+                this.db_Connection_String = value;
+                PropertyChanged(nameof(ConnString));
+            }
+        }
+
 
         #region Private Fields
         private bool ConfigLoaded = false;
@@ -106,6 +116,7 @@ namespace WarBot
         private ulong botID;
         private string guildConfigPath;
         private Core.Environment environment;
+        private string db_Connection_String;
         #endregion
     }
 }

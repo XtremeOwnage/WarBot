@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using DiscordBotsList.Api;
 using Hangfire;
 using Hangfire.MemoryStorage;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -66,11 +67,6 @@ namespace WarBot
 
         public async Task Start()
         {
-            using (WarDB db = new WarDB(new Microsoft.EntityFrameworkCore.DbContextOptions<WarDB>()))
-            {
-                await db.Migrate();
-            }
-
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
             var sc = new ServiceCollection();
@@ -79,11 +75,21 @@ namespace WarBot
             sc.AddSingleton<ILog>(Log);
             sc.AddSingleton(GuildRepo);
             sc.AddSingleton<IWARBOT>(this);
-            sc.AddDbContext<WarDB>(ServiceLifetime.Singleton);
+            sc.AddDbContext<WarDB>(opt =>
+            {
+                opt.UseMySql(this.Config.ConnString);
+                opt.UseLazyLoadingProxies(true);
+            });
 
             sc.AddSingleton(o => new Modules.CommandModules.RemindMeStandAloneJob(this));
             services = sc.BuildServiceProvider();
 
+            #endregion
+
+            #region Create/Migration Database, if required.
+            var db = services.GetService<WarDB>();
+
+            await db.Migrate();
             #endregion
             #region Background Job Processing
             //Initialize Hangfire (Background Job Server)
