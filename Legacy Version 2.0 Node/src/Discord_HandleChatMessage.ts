@@ -169,9 +169,7 @@ async function cmd_Notification_SpecificWar_Disable(Parameters: string, msg: Mes
 async function cmd_WhoIsAwesome_Hidden(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('<@381654208073433091> of course. He is the greatest. He created me.');
 }
-async function cmd_PING(Parameters: string, msg: Message, cfg: BotCommonConfig) {
-    await msg.reply('Pong!');
-}
+
 async function cmd_Say_Thanks(Parameters: string, msg: Message, cfg: BotCommonConfig) {
     await msg.reply('No problem. I am always glad to help.');
 }
