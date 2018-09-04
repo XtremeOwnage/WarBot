@@ -8,6 +8,10 @@ namespace WarBot.Core
 {
     public interface IGuildConfig
     {
+        /// <summary>
+        /// The prefix to which warbot will respond to.
+        /// </summary>
+        string Prefix { get; set; }
         string Website { get; set; }
         string Loot { get; set; }
         /// <summary>

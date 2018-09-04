@@ -27,8 +27,9 @@ namespace WarBot.Storage.Models
                 Value = Guild,
                 BotVersion = "2.5",
                 Environment = Core.Environment.PROD,
-                WarBOTNickName = "WarBOT",
+                WarBOT_NickName = "WarBOT",
                 NotificationSettings = GuildNotificationsSettings.CreateNew(),
+                WarBOT_Prefix = "bot,"
             };
         }
 
@@ -49,7 +50,15 @@ namespace WarBot.Storage.Models
         [NotMapped]
         private Func<IGuildConfig, Task> saveFunc;
 
-        public string WarBOTNickName;
+        /// <summary>
+        /// The bot's nickname, for a given guild.
+        /// </summary>
+        public string WarBOT_NickName { get; set; }
+
+        /// <summary>
+        /// The prefix to which warbot will respond to.
+        /// </summary>
+        public string WarBOT_Prefix { get; set; }
         /// <summary>
         /// Which environment does this guild belong to? 
         /// Used to keep PROD guilds running on the prod process, and to allow DEV/Nonprod to run on the non-prod bot.
@@ -138,6 +147,11 @@ namespace WarBot.Storage.Models
             get => this.Website;
             set => this.Website = value;
         }
+        string IGuildConfig.Prefix
+        {
+            get => string.IsNullOrEmpty(WarBOT_Prefix) ? "bot," : WarBOT_Prefix;
+            set => this.WarBOT_Prefix = value;
+        }
         string IGuildConfig.Loot
         {
             get => this.Loot;
@@ -159,8 +173,8 @@ namespace WarBot.Storage.Models
         SocketGuildUser IGuildConfig.CurrentUser => this.Value.CurrentUser;
         string IGuildConfig.NickName
         {
-            get => this.WarBOTNickName;
-            set => this.WarBOTNickName = value;
+            get => String.IsNullOrEmpty(this.WarBOT_NickName) ? "WarBOT" : this.WarBOT_NickName;
+            set => this.WarBOT_NickName = value;
         }
 
         INotificationSettings IGuildConfig.Notifications => this.NotificationSettings;
@@ -237,7 +251,7 @@ namespace WarBot.Storage.Models
             SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, adminChannel);
             SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, defaultChannel);
 
-            WarBOTNickName = "WarBOT";
+            WarBOT_NickName = "WarBOT";
             NotificationSettings.setDefaults();
         }
         #endregion

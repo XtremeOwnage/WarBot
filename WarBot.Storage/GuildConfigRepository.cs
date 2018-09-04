@@ -81,7 +81,7 @@ namespace WarBot.Storage
 
                 //Simple settings.
                 newCfg.BotVersion = oldCfg.BotVersion;
-                newCfg.WarBOTNickName = oldCfg.NickName;
+                newCfg.WarBOT_NickName = oldCfg.NickName;
 
                 if (ForcedEnv.HasValue)
                     newCfg.Environment = ForcedEnv.Value;

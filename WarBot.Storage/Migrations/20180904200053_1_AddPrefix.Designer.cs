@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WarBot.Storage;
 
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    partial class WarDBModelSnapshot : ModelSnapshot
+    [Migration("20180904200053_1_AddPrefix")]
+    partial class _1_AddPrefix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
