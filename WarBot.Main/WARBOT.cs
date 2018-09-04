@@ -3,9 +3,10 @@ using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBotsList.Api;
 using Hangfire;
-using Hangfire.MemoryStorage;
+using Hangfire.MySql.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ninject;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -36,19 +37,18 @@ namespace WarBot
         public Util.Log Log { get; private set; }
         public CancellationTokenSource botRunning { get; private set; } = new CancellationTokenSource();
         public IDblSelfBot botListMe { get; set; }
-        //Simple, stupid dependancy injection.
-        public IServiceProvider services;
-        //Container to keep track of cached guild configs.
-        public IGuildConfigRepository GuildRepo { get; }
+        public IKernel sc { get; private set; }
+        public GuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
         public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(15);
 
+        IGuildConfigRepository IWARBOT.GuildRepo => this.GuildRepo;
 
         /// <summary>
         /// Just need to keep an instance of the background job server, for background jobs to process.
         /// </summary>
-        private BackgroundJobServer jobServer;
+        private BackgroundJobServer jobServer { get; set; }
 
 
         public WARBOT()
@@ -69,37 +69,42 @@ namespace WarBot
         {
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
-            var sc = new ServiceCollection();
-            sc.AddSingleton(this); //add WARBOT.
-            sc.AddSingleton<IDiscordClient>(Client);
-            sc.AddSingleton<ILog>(Log);
-            sc.AddSingleton(GuildRepo);
-            sc.AddSingleton<IWARBOT>(this);
-            sc.AddDbContext<WarDB>(opt =>
+            this.sc = new StandardKernel();
+            sc.Bind<IWARBOT>().ToConstant(this);
+            sc.Bind<IDiscordClient>().ToConstant(this.Client);
+            sc.Bind<ILog>().ToConstant(this.Log);
+            sc.Bind<IGuildConfigRepository>().ToConstant(this.GuildRepo);
+            sc.Bind<WarDB>().ToMethod(o =>
             {
-                opt.UseMySql(this.Config.ConnString);
+                var opt = new DbContextOptionsBuilder<WarDB>();
                 opt.UseLazyLoadingProxies(true);
-            });
-
-            sc.AddSingleton(o => new Modules.CommandModules.RemindMeStandAloneJob(this));
-            services = sc.BuildServiceProvider();
-
+                opt.UseMySql(this.Config.ConnString);
+                return new WarDB(opt.Options);
+            }).InThreadScope();
             #endregion
 
             #region Create/Migration Database, if required.
-            var db = services.GetService<WarDB>();
+            var db = sc.Get<WarDB>();
 
             await db.Migrate();
             #endregion
             #region Background Job Processing
             //Initialize Hangfire (Background Job Server)
             //ToDo - Replace this with a stateful MySql database, if available.
-            GlobalConfiguration.Configuration.UseMemoryStorage();
+            GlobalConfiguration.Configuration.UseStorage(
+                new MySqlStorage(Config.ConnString,
+                new MySqlStorageOptions
+                {
+                    PrepareSchemaIfNecessary = true,
+                    QueuePollInterval = jobPollingInterval,
+                }));
 
             BackgroundJobServerOptions options = new BackgroundJobServerOptions()
             {
-                Activator = new Implementation.HangfireActivator(this.services),
+                Activator = new NinjectJobActivator(sc),
                 SchedulePollingInterval = jobPollingInterval,
+                WorkerCount = 15,
+                ServerCheckInterval = jobPollingInterval,
             };
 
             this.jobServer = new BackgroundJobServer(options);
@@ -109,11 +114,11 @@ namespace WarBot
             #endregion
 
             //Initialize the config repository with an instance of the WarDB from the DI container.
-            ((GuildConfigRepository)this.GuildRepo).Initialize(this, services.GetService<WarDB>());
+            this.GuildRepo.Initialize(this, db);
 
 
             //Initialize the commands.
-            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, this.services);
+            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, sc);
 
             //Load the schedules to execute the war notifications.
             Util.WAR_Messages.ScheduleJobs(this.Jobs);
