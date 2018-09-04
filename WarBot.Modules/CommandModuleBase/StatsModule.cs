@@ -3,16 +3,12 @@ using Discord.Commands;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using WarBot.Attributes;
-using WarBot.Core;
-using WarBot.Core.ModuleType;
 
-namespace WarBot.Modules.GuildCommandModules
+namespace WarBot.Modules.CommandModules
 {
-    public class StatsModule : GuildCommandModuleBase
+    public class StatsModule : WarBot.Core.ModuleType.CommandModuleBase
     {
         [Command("stats"), Alias("uptime", "show stats", "show uptime"), Summary("Display command stats related to me.")]
-        [RoleLevel(RoleLevel.None)]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task Stats_GUILD()
         {

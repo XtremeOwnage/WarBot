@@ -1,25 +1,18 @@
-﻿using DiscordBotsList.Api;
-using Discord.Net;
-using Discord;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using WarBot.Storage;
+﻿using Discord;
 using Discord.Commands;
-using System.Reflection;
-using System.Linq;
-
-using Microsoft.Extensions.DependencyInjection;
-using WarBot.Core;
-using System.Collections.Concurrent;
-using WarBot.Core.Dialogs;
-using System.Runtime.CompilerServices;
-using Hangfire.MemoryStorage;
+using Discord.WebSocket;
+using DiscordBotsList.Api;
 using Hangfire;
+using Hangfire.MemoryStorage;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using WarBot.Core;
 using WarBot.Core.JobScheduling;
+using WarBot.Storage;
 
 namespace WarBot
 {
