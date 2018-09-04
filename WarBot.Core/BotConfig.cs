@@ -14,11 +14,22 @@ namespace WarBot
         };
         public static BotConfig Load()
         {
-            var Text = File.ReadAllText("./Config/BotConfig");
-            var Cfg = JsonConvert.DeserializeObject<BotConfig>(Text, storageSettings);
-            Cfg.OnConfigLoaded();
+            try
+            {
+                var Text = File.ReadAllText("./Config/BotConfig");
+                var Cfg = JsonConvert.DeserializeObject<BotConfig>(Text, storageSettings);
+                Cfg.OnConfigLoaded();
 
-            return Cfg;
+                return Cfg;
+            }
+            catch
+            {
+                var Text = File.ReadAllText("./bin/Config/BotConfig");
+                var Cfg = JsonConvert.DeserializeObject<BotConfig>(Text, storageSettings);
+                Cfg.OnConfigLoaded();
+
+                return Cfg;
+            }
         }
         public void Save()
         {

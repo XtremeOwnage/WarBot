@@ -40,18 +40,6 @@ namespace WarBot.Storage
             {
                 await this.SaveChangesAsync();
             }
-            //catch (DbEntityValidationException e)
-            //{
-            //    foreach (var eve in e.EntityValidationErrors)
-            //    {
-            //        await Console.Out.WriteLineAsync("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:", eve.Entry.Entity.GetType().Name, eve.Entry.State);
-            //        foreach (var ve in eve.ValidationErrors)
-            //        {
-            //            await Console.Out.WriteLineAsync("- Property: \"{0}\", Error: \"{1}\"", ve.PropertyName, ve.ErrorMessage);
-            //        }
-            //    }
-            //    throw;
-            //}
             catch (DbUpdateException ex)
             {
                 await Console.Out.WriteLineAsync(ex.InnerException.ToString());
@@ -64,14 +52,16 @@ namespace WarBot.Storage
         }
     }
 
-    //public class BloggingContextFactory : IDesignTimeDbContextFactory<WarDB>
-    //{
-    //    public WarDB CreateDbContext(string[] args)
-    //    {
-    //        var optionsBuilder = new DbContextOptionsBuilder<WarDB>();
-    //        optionsBuilder.UseSqlite("Data Source=warBOT.db");
+    public class BloggingContextFactory : IDesignTimeDbContextFactory<WarDB>
+    {
 
-    //        return new WarDB(optionsBuilder.Options);
-    //    }
-    //}
+        public WarDB CreateDbContext(string[] args)
+        {
+            var Config = BotConfig.Load();
+            var optionsBuilder = new DbContextOptionsBuilder<WarDB>();
+            optionsBuilder.UseMySql(Config.ConnString);
+
+            return new WarDB(optionsBuilder.Options);
+        }
+    }
 }

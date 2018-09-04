@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WarBot.Storage.Migrations
@@ -12,7 +13,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<uint>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     WarPrepStarted = table.Column<bool>(nullable: false),
                     WarPrepEnding = table.Column<bool>(nullable: false),
                     WarStarted = table.Column<bool>(nullable: false),
@@ -35,7 +36,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     EntityId = table.Column<ulong>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
@@ -49,7 +50,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     EntityId = table.Column<ulong>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Environment = table.Column<int>(nullable: false),
@@ -74,7 +75,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     EntityId = table.Column<ulong>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     GuildID = table.Column<int>(nullable: true),
@@ -96,7 +97,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     EntityId = table.Column<ulong>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Level = table.Column<int>(nullable: false),
@@ -118,7 +119,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     DiscordGuildId = table.Column<int>(nullable: true)
                 },
@@ -138,7 +139,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CharacterName = table.Column<string>(maxLength: 20, nullable: false),
                     ThroneRoomLevel = table.Column<byte>(nullable: false),
                     SquadPower = table.Column<uint>(nullable: false),
@@ -168,7 +169,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     DateEnd = table.Column<DateTime>(nullable: false),
                     MinimumGuildGlory = table.Column<uint>(nullable: false),
                     MinimumGameGlory = table.Column<uint>(nullable: false),
@@ -198,7 +199,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     SeasonID = table.Column<int>(nullable: true),
                     UserID = table.Column<int>(nullable: true),
                     Glory = table.Column<uint>(nullable: false)
@@ -225,7 +226,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     WinningUserID = table.Column<int>(nullable: true),

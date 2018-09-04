@@ -9,14 +9,15 @@ using WarBot.Storage;
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    [Migration("20180827210119_Initial")]
+    [Migration("20180904181041_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846");
+                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("WarBot.Storage.Models.DiscordGuild", b =>
                 {

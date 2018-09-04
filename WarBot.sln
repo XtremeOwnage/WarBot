@@ -43,6 +43,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Rest", "..\..\D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tababular", "..\..\Tababular\Tababular\Tababular.csproj", "{C4F988DB-1778-4009-BC05-406504F8FD31}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{213AE0C6-F9BE-4B5E-9158-37B44718B49B}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\AddInitialMigration.cmd = Scripts\AddInitialMigration.cmd
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
