@@ -7,6 +7,10 @@ namespace WarBot
 {
     public static class ScheduledJobs
     {
+        /// <summary>
+        /// Schedule all of the recurring jobs.
+        /// </summary>
+        /// <param name="job"></param>
         public static void ScheduleJobs(IJobScheduler job)
         {
             //Delete all current jobs.
