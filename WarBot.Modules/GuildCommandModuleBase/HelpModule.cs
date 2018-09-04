@@ -33,7 +33,7 @@ namespace WarBot.Modules.GuildCommandModules
                 {
                     o.Name,
                     o.Summary,
-                    o.Attributes.OfType<CommandUsageAttribute>().FirstOrDefault()?.Usage,
+                    Usage = o.Attributes.OfType<CommandUsageAttribute>().FirstOrDefault()?.GetUsage(o, Context.cfg),
                     Aliases = o.Aliases.Skip(1)
                 })
                 .ToArray();
