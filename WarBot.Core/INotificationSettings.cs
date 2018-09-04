@@ -13,5 +13,7 @@ namespace WarBot.Core
         string WarPrepStartedMessage { get; set; }
         bool WarStarted { get; set; }
         string WarStartedMessage { get; set; }
+
+        string NewUserGreeting { get; set; }
     }
 }
