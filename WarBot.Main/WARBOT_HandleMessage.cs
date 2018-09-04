@@ -1,8 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
-using System.Linq;
-using WarBot.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;

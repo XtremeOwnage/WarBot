@@ -57,5 +57,14 @@ namespace WarBot.Storage.Models
         /// Welcome message for new players joining the discord guild.
         /// </summary>
         public string GreetingMessage { get; set; }
+
+
+        #region INotificationSettings
+        string INotificationSettings.NewUserGreeting
+        {
+            get => string.IsNullOrEmpty(GreetingMessage) ? null : GreetingMessage;
+            set => GreetingMessage = value;
+        }
+        #endregion
     }
 }
