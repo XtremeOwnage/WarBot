@@ -1,4 +1,7 @@
+using Hangfire;
+using Hangfire.Storage;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WarBot.Core;
 using WarBot.Core.JobScheduling;
@@ -13,25 +16,6 @@ namespace WarBot.Util
             this.bot = Bot;
         }
 
-        public static void ScheduleJobs(IJobScheduler job)
-        {
-            job.RecurringJob<WAR_Messages>("war1_prep_started", o => o.SendWarPrepStarted(1), "0 2 * * *");
-            job.RecurringJob<WAR_Messages>("war2_prep_started", o => o.SendWarPrepStarted(2), "0 8 * * *");
-            job.RecurringJob<WAR_Messages>("war3_prep_started", o => o.SendWarPrepStarted(3), "0 14 * * *");
-            job.RecurringJob<WAR_Messages>("war4_prep_started", o => o.SendWarPrepStarted(4), "0 20 * * *");
-
-            job.RecurringJob<WAR_Messages>("war1_prep_ending", o => o.SendWarPrepEnding(1), "45 3 * * *");
-            job.RecurringJob<WAR_Messages>("war2_prep_ending", o => o.SendWarPrepEnding(2), "45 9 * * *");
-            job.RecurringJob<WAR_Messages>("war3_prep_ending", o => o.SendWarPrepEnding(3), "45 15 * * *");
-            job.RecurringJob<WAR_Messages>("war4_prep_ending", o => o.SendWarPrepEnding(4), "45 21 * * *");
-
-            job.RecurringJob<WAR_Messages>("war1_started", o => o.SendWarStarted(1), "0 4 * * *");
-            job.RecurringJob<WAR_Messages>("war2_started", o => o.SendWarStarted(2), "0 10 * * *");
-            job.RecurringJob<WAR_Messages>("war3_started", o => o.SendWarStarted(3), "0 16 * * *");
-            job.RecurringJob<WAR_Messages>("war4_started", o => o.SendWarStarted(4), "0 22 * * *");
-
-            job.RecurringJob<WAR_Messages>("test", o => o.SendWarStarted(4), "3 4 * * *");
-        }
         /// <summary>
         /// Determine is a guild is elected into a specific war.           
         /// </summary>
@@ -54,6 +38,7 @@ namespace WarBot.Util
 
         public async Task SendWarPrepStarted(byte WarNo)
         {
+            List<Task> Tasks = new List<Task>();
             foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
             {
                 try
@@ -65,18 +50,20 @@ namespace WarBot.Util
                     var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
 
                     //Send the message.
-                    await WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, ch);
-
+                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, ch));
                 }
                 catch (Exception ex)
                 {
                     await bot.Log.Error(cfg.Guild, ex);
                 }
             }
+
+            Task.WaitAll(Tasks.ToArray());
         }
 
         public async Task SendWarPrepEnding(byte WarNo)
         {
+            List<Task> Tasks = new List<Task>();
             foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
             {
                 try
@@ -89,17 +76,19 @@ namespace WarBot.Util
                     var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
 
                     //Send the message.
-                    await WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, ch);
+                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, ch));
                 }
                 catch (Exception ex)
                 {
                     await bot.Log.Error(cfg.Guild, ex);
                 }
             }
+            Task.WaitAll(Tasks.ToArray());
         }
 
         public async Task SendWarStarted(byte WarNo)
         {
+            List<Task> Tasks = new List<Task>();
             foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
             {
                 try
@@ -111,14 +100,14 @@ namespace WarBot.Util
                     var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
 
                     //Send the message.
-                    await WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg, ch);
+                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg, ch));
                 }
                 catch (Exception ex)
                 {
                     await bot.Log.Error(cfg.Guild, ex);
                 }
             }
-
+            Task.WaitAll(Tasks.ToArray());
         }
     }
 }
