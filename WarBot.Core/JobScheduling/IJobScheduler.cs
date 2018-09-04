@@ -128,5 +128,7 @@ namespace WarBot.Core.JobScheduling
 
         //Schedule recurring job.
         void RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule);
+
+        void RecurringJob(string jobID, Expression<Action> Expression, string cronSchedule);
     }
 }
