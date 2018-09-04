@@ -34,7 +34,7 @@ namespace WarBot.Modules.GuildCommandModules
                 var eb = new EmbedBuilder()
                     .WithTitle("User Kicked")
                     .WithColor(Color.Red)
-                    .WithDescription($"User {user.Mention} has been removed from this guild.")
+                    .WithDescription($"User {user.Mention} has been removed from this guild by {Context.GuildUser.Mention}.")
                     .AddField("Reason", Message);
 
                 await ReplyAsync(embed: eb.Build());
