@@ -51,16 +51,12 @@ namespace WarBot
 
                     #region Parse out command from prefix.
                     int argPos = 0;
-                    bool HasStringPrefix = message.HasStringPrefix(cfg.Prefix, ref argPos, StringComparison.OrdinalIgnoreCase);
+                    bool HasStringPrefix = message.HasStringPrefix(cfg?.Prefix ?? "bot,", ref argPos, StringComparison.OrdinalIgnoreCase);
                     bool HasBotPrefix = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
 
                     //Substring containing only the desired commands.
                     string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
                     #endregion
-
-                    //If the message was not to me, Ignore it.
-                    if (!(HasStringPrefix || HasBotPrefix))
-                        return;                  
 
                     bool cmdSetEnv = Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
 
@@ -70,6 +66,11 @@ namespace WarBot
                     //Else, if we shouldn't process this message, and we are not setting the environment, return.
                     else if (!ShouldHandleMessage(cfg) && !cmdSetEnv)
                         return;
+                    //If the message was not to me, Ignore it.
+                    else if (!(HasStringPrefix || HasBotPrefix))
+                        return;
+
+
 
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);
