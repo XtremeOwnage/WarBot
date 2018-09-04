@@ -136,7 +136,11 @@ namespace WarBot
 
         private async Task Client_UserJoined(SocketGuildUser arg)
         {
+            var cfg = await this.GuildRepo.GetConfig(arg.Guild);
+            if (!ShouldHandleMessage(cfg))
+                return;
 
+           
         }
 
         private async Task Client_UserLeft(SocketGuildUser arg)
