@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Linq;
 using System.Text;
@@ -19,26 +20,30 @@ namespace WarBot.Modules.GuildCommandModules
         [CommandUsage("{prefix} {command}")]
         [RoleLevel(RoleLevel.None)]
         [RequireBotPermission(ChannelPermission.SendMessages)]
-        public async Task Help()
+        public async Task Help(string CH = "")
         {
             var Userrole = Context.GuildUser.GetRole(Context.cfg);
             var Commands = bot.CommandService.Commands;
 
+            IMessageChannel ch = Context.GuildChannel as IMessageChannel;
+            if (!CH.Equals("CH", StringComparison.OrdinalIgnoreCase))
+                ch = await Context.GuildUser.GetOrCreateDMChannelAsync() as IMessageChannel;
+
             //Find commands, to which the user has access to.
             var matchedCommands = Commands
-                .Where(o =>
-                    (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true)
-                    || (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault() == null)
-                    )
-                .OrderBy(o => o.Name)
-                .Select(o => new
-                {
-                    o.Name,
-                    o.Summary,
-                    Usage = o.Attributes.OfType<CommandUsageAttribute>().FirstOrDefault()?.GetUsage(o, Context.cfg),
-                    Aliases = o.Aliases.Skip(1)
-                })
-                .ToArray();
+            .Where(o =>
+                (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true)
+                || (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault() == null)
+                )
+            .OrderBy(o => o.Name)
+            .Select(o => new
+            {
+                o.Name,
+                o.Summary,
+                Usage = o.Attributes.OfType<CommandUsageAttribute>().FirstOrDefault()?.GetUsage(o, Context.cfg),
+                Aliases = o.Aliases.Skip(1)
+            })
+            .ToArray();
 
 
             int count = 0;
@@ -66,8 +71,8 @@ namespace WarBot.Modules.GuildCommandModules
                     eb.AddField(i.Name, desc.ToString());
                     count++;
                 }
+                await ch.SendMessageAsync(embed: eb.Build());
 
-                await ReplyAsync(embed: eb.Build());
                 page++;
             }
 
