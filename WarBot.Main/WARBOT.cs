@@ -53,7 +53,12 @@ namespace WarBot
         {
             this.Config = BotConfig.Load();
             this.Client = new DiscordSocketClient();
-            this.commands = new CommandService();
+            this.commands = new CommandService(new CommandServiceConfig
+            {
+                DefaultRunMode = RunMode.Async,
+                CaseSensitiveCommands = false,
+                IgnoreExtraArgs = true,                
+            });
             this.BotListAPI = new AuthDiscordBotListApi(Config.BotId, Config.BotList_API_Token);
             this.Log = new Util.Log(this);
             this.GuildRepo = new GuildConfigRepository();
@@ -86,6 +91,7 @@ namespace WarBot
 
             await db.Migrate();
             #endregion
+
             #region Background Job Processing
             //Initialize Hangfire (Background Job Server)
             //ToDo - Replace this with a stateful MySql database, if available.
@@ -121,8 +127,6 @@ namespace WarBot
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.
             Client.ChannelDestroyed += Client_ChannelDestroyed;
-            Client.Connected += Client_Connected;
-            Client.Disconnected += Client_Disconnected;
             Client.GuildAvailable += Client_GuildAvailable;
             Client.JoinedGuild += Client_JoinedGuild;
             Client.LeftGuild += Client_LeftGuild;
@@ -145,23 +149,12 @@ namespace WarBot
             await Client.StartAsync();
         }
 
-        private async Task Client_Disconnected(Exception arg)
-        {
-            await Log.Error(null, arg);
-        }
-
-        private async Task Client_Connected()
-        {
-            await Log.Debug("Client Connected.");
-        }
-
         private async Task Client_Ready()
         {
             await UpdateBotStats();
 
             //Set status to online.
             await Client.SetStatusAsync(UserStatus.Online);
-            await Log.Debug("Discord Ready");
         }
 
         private async Task UpdateBotStats()
