@@ -233,7 +233,7 @@ namespace WarBot
                 {
                     //Determine if there is an officers channel configured. If so, lets send a message.
                     //Secondary check to validate it was not the officer's channel which was deleted.
-                    if (AffectedChannels.Count() > 0 && cfg.GetGuildChannel(WarBotChannelType.CH_Officers).IsNotNull(out var ch) && sg != ch)
+                    if (AffectedChannels.Count() > 0)
                     {
                         var eb = new EmbedBuilder()
                             .WithTitle("Error: Channel Deleted")
@@ -244,18 +244,19 @@ namespace WarBot
 
                         eb.AddField("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", null);
 
+                        var OfficersChannel = cfg.GetGuildChannel(WarBotChannelType.CH_Officers);
                         //It was the officers 
-                        if (ch == sg)
+                        if (OfficersChannel != null && sg.Id != OfficersChannel.Id)
+                        {
+                            await OfficersChannel.SendMessageAsync(embed: eb.Build());
+                        }
+                        else
                         {
                             //See if we can PM the discord owner.
                             var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
                             await dm.SendMessageAsync(embed: eb.Build());
 
                             await dm.SendMessageAsync("Since, this was also the channel configured for management messages, you will no longer see these types of messages until the configuration has been updated.");
-                        }
-                        else
-                        {
-                            await ch.SendMessageAsync(embed: eb.Build());
                         }
                     }
                 }
