@@ -23,6 +23,9 @@ Warbot is a discord bot designed around the Hustle Castle mobile game. While, ma
 ### Cleaning up channels
 * You can use WarBOT to delete messages from a channel, with the option to filter on pinned, nonpinned, or all messages.
 
+### New Member Welcome Messages
+* WarBOT can send a greeting message to new users.
+
 ## Hustle Castle - Specific Features
 
 ### WAR Prep / War Prep Ending / War Started Reminders
