@@ -8,9 +8,9 @@ namespace WarBot.Util
 
     public class Update
     {
-        public const string CurrentVersion = "2.0";
-        const bool SendUpdateNotificationForCurrentVersion = false;
-        const string UpdateNotesURL = "https://websiteGoesHere/";
+        public const string CurrentVersion = "2.1";
+        const bool SendUpdateNotificationForCurrentVersion = true;
+        const string UpdateNotesURL = "https://github.com/XtremeOwnage/WarBot/blob/version_3_0/version3.md";
 
         public static async Task UpdateCheck(IGuildConfig Cfg, WARBOT bot)
         {
@@ -30,8 +30,8 @@ namespace WarBot.Util
                     {
                         UpdateSentToClan = true;
                         var eb = new EmbedBuilder()
-                            .WithTitle("WarBot Updates")
-                            .WithDescription($"I have been udpated to version {CurrentVersion} 👏")
+                            .WithTitle($"WarBot updated to version {CurrentVersion}")
+                            .WithDescription($"I have been updated to version {CurrentVersion} 👏")
                             .WithFooter("To view my patch notes, click this embed.")
                             .WithUrl(UpdateNotesURL);
 
