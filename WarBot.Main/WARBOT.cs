@@ -141,7 +141,7 @@ namespace WarBot
             Client.ReactionAdded += Client_ReactionAdded;
             Client.ReactionRemoved += Client_ReactionRemoved;
             Client.MessageDeleted += Client_MessageDeleted_Poll;
-            Client.MessageUpdated += Client_MessageUpdated_Poll;
+            
             //Open the bot list API.
             botListMe = await BotListAPI.GetMeAsync();
 

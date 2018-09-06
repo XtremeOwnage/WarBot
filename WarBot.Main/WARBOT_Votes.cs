@@ -40,14 +40,6 @@ namespace WarBot
         }
 
 
-        private async Task Client_MessageUpdated_Poll(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
-        {
-            if (!ActivePolls.ContainsKey(arg1.Id))
-                return;
-            //ToDo - Check if this message affects the polls.
-
-        }
-
         private async Task Client_MessageDeleted_Poll(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
         {
             if (!ActivePolls.ContainsKey(arg1.Id))
