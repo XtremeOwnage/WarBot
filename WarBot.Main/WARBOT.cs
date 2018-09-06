@@ -3,9 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBotsList.Api;
 using Hangfire;
-using Hangfire.MySql.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Ninject;
 using System;
 using System.Linq;
@@ -41,7 +39,7 @@ namespace WarBot
         public GuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
-        public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(15);
+        public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(2);
 
         IGuildConfigRepository IWARBOT.GuildRepo => this.GuildRepo;
 
@@ -78,7 +76,7 @@ namespace WarBot
             {
                 var opt = new DbContextOptionsBuilder<WarDB>();
                 opt.UseLazyLoadingProxies(true);
-                opt.UseMySql(this.Config.ConnString);
+                opt.UseSqlServer(this.Config.ConnString);
                 return new WarDB(opt.Options);
             }).InThreadScope();
             #endregion
@@ -91,20 +89,17 @@ namespace WarBot
             #region Background Job Processing
             //Initialize Hangfire (Background Job Server)
             //ToDo - Replace this with a stateful MySql database, if available.
-            GlobalConfiguration.Configuration.UseStorage(
-                new MySqlStorage(Config.ConnString,
-                new MySqlStorageOptions
-                {
-                    PrepareSchemaIfNecessary = true,
-                    QueuePollInterval = jobPollingInterval,
-                }));
+            GlobalConfiguration.Configuration.UseSqlServerStorage(Config.ConnString, new Hangfire.SqlServer.SqlServerStorageOptions
+            {
+                QueuePollInterval = jobPollingInterval,
+                SchemaName = "HangFire"
+            });
 
             BackgroundJobServerOptions options = new BackgroundJobServerOptions()
             {
                 Activator = new NinjectJobActivator(sc),
+                WorkerCount = System.Environment.ProcessorCount * 2,
                 SchedulePollingInterval = jobPollingInterval,
-                WorkerCount = 15,
-                ServerCheckInterval = jobPollingInterval,
             };
 
             this.jobServer = new BackgroundJobServer(options);
@@ -141,7 +136,7 @@ namespace WarBot
             Client.ReactionAdded += Client_ReactionAdded;
             Client.ReactionRemoved += Client_ReactionRemoved;
             Client.MessageDeleted += Client_MessageDeleted_Poll;
-            
+
             //Open the bot list API.
             botListMe = await BotListAPI.GetMeAsync();
 

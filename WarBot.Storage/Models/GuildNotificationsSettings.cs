@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using WarBot.Core;
 
 namespace WarBot.Storage.Models
@@ -32,7 +33,7 @@ namespace WarBot.Storage.Models
             return this;
         }
 
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public uint ID { get; set; }
 
         /// <summary>

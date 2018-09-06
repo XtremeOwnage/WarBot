@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WarBot.Storage;
@@ -9,24 +10,27 @@ using WarBot.Storage;
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    [Migration("20180904181041_Initial")]
-    partial class Initial
+    [Migration("20180906163708_0_Initial_MSSQL")]
+    partial class _0_Initial_MSSQL
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "2.2.0-preview1-35029")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("WarBot.Storage.Models.DiscordGuild", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("BotVersion");
 
-                    b.Property<ulong>("EntityId");
+                    b.Property<decimal>("EntityId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int>("Environment");
 
@@ -34,7 +38,11 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<uint?>("NotificationSettingsID");
+                    b.Property<long?>("NotificationSettingsID");
+
+                    b.Property<string>("WarBOT_NickName");
+
+                    b.Property<string>("WarBOT_Prefix");
 
                     b.Property<string>("Website");
 
@@ -48,9 +56,15 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.DiscordUser", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<ulong>("EntityId");
+                    b.Property<decimal>("EntityId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<DateTimeOffset?>("LastActivity");
+
+                    b.Property<DateTimeOffset?>("LastOnline");
 
                     b.Property<string>("Name");
 
@@ -62,11 +76,13 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.GuildChannel", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ChannelType");
 
-                    b.Property<ulong>("EntityId");
+                    b.Property<decimal>("EntityId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int?>("GuildID");
 
@@ -81,8 +97,9 @@ namespace WarBot.Storage.Migrations
 
             modelBuilder.Entity("WarBot.Storage.Models.GuildNotificationsSettings", b =>
                 {
-                    b.Property<uint>("ID")
-                        .ValueGeneratedOnAdd();
+                    b.Property<long>("ID");
+
+                    b.Property<string>("GreetingMessage");
 
                     b.Property<bool>("SendUpdateMessage");
 
@@ -114,9 +131,11 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.GuildRole", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<ulong>("EntityId");
+                    b.Property<decimal>("EntityId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.Property<int?>("GuildID");
 
@@ -134,7 +153,8 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.HustleCastle.HustleGuild", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("DiscordGuildId");
 
@@ -143,7 +163,8 @@ namespace WarBot.Storage.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("DiscordGuildId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[DiscordGuildId] IS NOT NULL");
 
                     b.ToTable("HustleGuild");
                 });
@@ -151,7 +172,8 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.HustleCastle.HustleGuildSeason", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Active");
 
@@ -161,9 +183,9 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<int?>("HustleUserID");
 
-                    b.Property<uint>("MinimumGameGlory");
+                    b.Property<long>("MinimumGameGlory");
 
-                    b.Property<uint>("MinimumGuildGlory");
+                    b.Property<long>("MinimumGuildGlory");
 
                     b.HasKey("ID");
 
@@ -177,7 +199,8 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.HustleCastle.HustleUser", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CharacterName")
                         .IsRequired()
@@ -187,7 +210,9 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<bool>("IsActiveCharacter");
 
-                    b.Property<uint>("SquadPower");
+                    b.Property<DateTimeOffset>("JoinDate");
+
+                    b.Property<long>("SquadPower");
 
                     b.Property<byte>("ThroneRoomLevel");
 
@@ -205,9 +230,10 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.HustleCastle.HustleUserSeason", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<uint>("Glory");
+                    b.Property<long>("Glory");
 
                     b.Property<int?>("SeasonID");
 
@@ -225,7 +251,8 @@ namespace WarBot.Storage.Migrations
             modelBuilder.Entity("WarBot.Storage.Models.HustleCastle.LootItem", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description");
 

@@ -59,7 +59,7 @@ namespace WarBot.Storage
         {
             var Config = BotConfig.Load();
             var optionsBuilder = new DbContextOptionsBuilder<WarDB>();
-            optionsBuilder.UseMySql(Config.ConnString);
+            optionsBuilder.UseSqlServer(Config.ConnString);
 
             return new WarDB(optionsBuilder.Options);
         }

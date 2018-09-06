@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WarBot.Storage.Migrations
 {
-    public partial class Initial : Migration
+    public partial class _0_Initial_MSSQL : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +12,7 @@ namespace WarBot.Storage.Migrations
                 name: "GuildNotificationsSettings",
                 columns: table => new
                 {
-                    ID = table.Column<uint>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ID = table.Column<long>(nullable: false),
                     WarPrepStarted = table.Column<bool>(nullable: false),
                     WarPrepEnding = table.Column<bool>(nullable: false),
                     WarStarted = table.Column<bool>(nullable: false),
@@ -24,7 +23,8 @@ namespace WarBot.Storage.Migrations
                     WarPrepStartedMessage = table.Column<string>(nullable: true),
                     WarPrepEndingMessage = table.Column<string>(nullable: true),
                     WarStartedMessage = table.Column<string>(nullable: true),
-                    SendUpdateMessage = table.Column<bool>(nullable: false)
+                    SendUpdateMessage = table.Column<bool>(nullable: false),
+                    GreetingMessage = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -36,9 +36,11 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    EntityId = table.Column<ulong>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    EntityId = table.Column<decimal>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    LastOnline = table.Column<DateTimeOffset>(nullable: true),
+                    LastActivity = table.Column<DateTimeOffset>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -50,11 +52,13 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    EntityId = table.Column<ulong>(nullable: false),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    EntityId = table.Column<decimal>(nullable: false),
                     Name = table.Column<string>(nullable: true),
+                    WarBOT_NickName = table.Column<string>(nullable: true),
+                    WarBOT_Prefix = table.Column<string>(nullable: true),
                     Environment = table.Column<int>(nullable: false),
-                    NotificationSettingsID = table.Column<uint>(nullable: true),
+                    NotificationSettingsID = table.Column<long>(nullable: true),
                     BotVersion = table.Column<string>(nullable: true),
                     Website = table.Column<string>(nullable: true),
                     Loot = table.Column<string>(nullable: true)
@@ -75,8 +79,8 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    EntityId = table.Column<ulong>(nullable: false),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    EntityId = table.Column<decimal>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     GuildID = table.Column<int>(nullable: true),
                     ChannelType = table.Column<int>(nullable: false)
@@ -97,8 +101,8 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    EntityId = table.Column<ulong>(nullable: false),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    EntityId = table.Column<decimal>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Level = table.Column<int>(nullable: false),
                     GuildID = table.Column<int>(nullable: true)
@@ -119,7 +123,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     DiscordGuildId = table.Column<int>(nullable: true)
                 },
@@ -139,12 +143,13 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CharacterName = table.Column<string>(maxLength: 20, nullable: false),
                     ThroneRoomLevel = table.Column<byte>(nullable: false),
-                    SquadPower = table.Column<uint>(nullable: false),
+                    SquadPower = table.Column<long>(nullable: false),
                     UserID = table.Column<int>(nullable: false),
                     IsActiveCharacter = table.Column<bool>(nullable: false),
+                    JoinDate = table.Column<DateTimeOffset>(nullable: false),
                     HustleGuildID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -169,10 +174,10 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     DateEnd = table.Column<DateTime>(nullable: false),
-                    MinimumGuildGlory = table.Column<uint>(nullable: false),
-                    MinimumGameGlory = table.Column<uint>(nullable: false),
+                    MinimumGuildGlory = table.Column<long>(nullable: false),
+                    MinimumGameGlory = table.Column<long>(nullable: false),
                     Active = table.Column<bool>(nullable: false),
                     HustleGuildID = table.Column<int>(nullable: true),
                     HustleUserID = table.Column<int>(nullable: true)
@@ -199,10 +204,10 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     SeasonID = table.Column<int>(nullable: true),
                     UserID = table.Column<int>(nullable: true),
-                    Glory = table.Column<uint>(nullable: false)
+                    Glory = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -226,7 +231,7 @@ namespace WarBot.Storage.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     WinningUserID = table.Column<int>(nullable: true),
@@ -282,7 +287,8 @@ namespace WarBot.Storage.Migrations
                 name: "IX_HustleGuild_DiscordGuildId",
                 table: "HustleGuild",
                 column: "DiscordGuildId",
-                unique: true);
+                unique: true,
+                filter: "[DiscordGuildId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HustleGuildSeason_HustleGuildID",
