@@ -16,6 +16,8 @@ namespace WarBot.Modules.CommandModules
     {
         [RequireBotPermission(ChannelPermission.SendMessages)]
         [Command("remind me"), Alias("remind")]
+        [Summary("Warbot will send you a remindar via this channel, after the timespan has passed.")]
+        [CommandUsage("{prefix} {command} 1m Remind me about something in one minute!")]
         public async Task RemindMe(TimeSpan When, [Remainder]string Message)
         {
             //Check if we have permissions in this channel. If not, we will DM the user.
@@ -32,8 +34,9 @@ namespace WarBot.Modules.CommandModules
             }
         }
 
-        [Command("dm me"), Alias("remind", "remind me", "remind dm")]
-
+        [Command("remind dm"), Alias("remind", "remind me")]
+        [Summary("Warbot will send you a remindar via DM, after the timespan has passed.")]
+        [CommandUsage("{prefix} {command} 1m Remind me about something in one minute!")]
         public async Task RemindMe_DM(TimeSpan When, [Remainder]string Message)
         {
             var DM = await Context.User.GetOrCreateDMChannelAsync();
