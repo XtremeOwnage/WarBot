@@ -18,9 +18,15 @@ namespace WarBot.Core.Dialogs
             : base(Context)
         {
             this.Config = Context.cfg;
+            this.Guild = Context.Guild;
+            this.Channel = Context.GuildChannel;
+            this.User = Context.GuildUser;
         }
 
         public IGuildConfig Config { get; }
+        public SocketGuild Guild { get; }
+        public new SocketTextChannel Channel { get; }
+        public new SocketGuildUser User { get; }
 
 
         /// <summary>
@@ -32,11 +38,6 @@ namespace WarBot.Core.Dialogs
             if (Channel is SocketGuildChannel)
             {
                 return;
-            }
-            else if (Channel is SocketDMChannel dm)
-            {
-                await dm.SendMessageAsync($"Discord guild {Config.Guild.Name} has removed me. This dialog will now be closed.");
-                await dm.CloseAsync();
             }
         }
     }

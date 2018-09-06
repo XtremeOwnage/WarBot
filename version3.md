@@ -24,6 +24,20 @@ Instead of a member's channel, officer's channel, etc... You now have:
 
 # New Commands / Updated Commands
 
+### Voting
+- You can now initiate votes, with up to 10 options.
+```
+bot, vote 5m Should we release warbot 3.0?
+Yes
+No
+done
+```
+
+### Adjustable Prefix
+```
+bot, set prefix !
+```
+If you forget the Prefix, you can always address warbot by doing @WarBot, help!
 ### Remind Me
 - Ever want a reminder for something? WARBot can assist with that now!
 ```

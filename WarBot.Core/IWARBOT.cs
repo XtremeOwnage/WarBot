@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using System;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
 using WarBot.Core.JobScheduling;
@@ -55,5 +56,17 @@ namespace WarBot.Core
         /// Exposes the Command service.
         /// </summary>
         CommandService CommandService { get; }
+
+        /// <summary>
+        /// Adds a poll to the bot.
+        /// </summary>
+        /// <param name="Poll"></param>
+        Task AddPoll(Voting.Poll Poll, TimeSpan WhenDone);
+
+        /// <summary>
+        /// Ends a poll.
+        /// </summary>
+        /// <param name="MessageId"></param>
+        Task EndPoll(ulong MessageId);
     }
 }
