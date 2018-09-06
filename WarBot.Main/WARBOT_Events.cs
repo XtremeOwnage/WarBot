@@ -233,7 +233,7 @@ namespace WarBot
                 {
                     //Determine if there is an officers channel configured. If so, lets send a message.
                     //Secondary check to validate it was not the officer's channel which was deleted.
-                    if (cfg.GetGuildChannel(WarBotChannelType.CH_Officers).IsNotNull(out var ch) && sg != ch)
+                    if (AffectedChannels.Count() > 0 && cfg.GetGuildChannel(WarBotChannelType.CH_Officers).IsNotNull(out var ch) && sg != ch)
                     {
                         var eb = new EmbedBuilder()
                             .WithTitle("Error: Channel Deleted")
