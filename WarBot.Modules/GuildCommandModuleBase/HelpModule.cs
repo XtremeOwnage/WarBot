@@ -27,7 +27,9 @@ namespace WarBot.Modules.GuildCommandModules
             //Find commands, to which the user has access to.
             var matchedCommands = Commands
                 .Where(o =>
-                    (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true))
+                    (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true)
+                    || (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault() == null)
+                    )
                 .OrderBy(o => o.Name)
                 .Select(o => new
                 {
