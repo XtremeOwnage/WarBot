@@ -10,7 +10,7 @@ using WarBot.Storage;
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    [Migration("20180906163708_0_Initial_MSSQL")]
+    [Migration("20180906174151_0_Initial_MSSQL")]
     partial class _0_Initial_MSSQL
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,7 +38,7 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long?>("NotificationSettingsID");
+                    b.Property<int?>("NotificationSettingsID");
 
                     b.Property<string>("WarBOT_NickName");
 
@@ -97,7 +97,9 @@ namespace WarBot.Storage.Migrations
 
             modelBuilder.Entity("WarBot.Storage.Models.GuildNotificationsSettings", b =>
                 {
-                    b.Property<long>("ID");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("GreetingMessage");
 

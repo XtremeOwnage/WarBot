@@ -51,11 +51,5 @@
     <Folder Include="bin\Guilds\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Launch.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 
 </Project>

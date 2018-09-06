@@ -12,7 +12,8 @@ namespace WarBot.Storage.Migrations
                 name: "GuildNotificationsSettings",
                 columns: table => new
                 {
-                    ID = table.Column<long>(nullable: false),
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     WarPrepStarted = table.Column<bool>(nullable: false),
                     WarPrepEnding = table.Column<bool>(nullable: false),
                     WarStarted = table.Column<bool>(nullable: false),
@@ -58,7 +59,7 @@ namespace WarBot.Storage.Migrations
                     WarBOT_NickName = table.Column<string>(nullable: true),
                     WarBOT_Prefix = table.Column<string>(nullable: true),
                     Environment = table.Column<int>(nullable: false),
-                    NotificationSettingsID = table.Column<long>(nullable: true),
+                    NotificationSettingsID = table.Column<int>(nullable: true),
                     BotVersion = table.Column<string>(nullable: true),
                     Website = table.Column<string>(nullable: true),
                     Loot = table.Column<string>(nullable: true)

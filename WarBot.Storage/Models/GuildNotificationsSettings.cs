@@ -33,8 +33,8 @@ namespace WarBot.Storage.Models
             return this;
         }
 
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public uint ID { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
 
         /// <summary>
         /// This config is always associated with a DiscordGuild.
