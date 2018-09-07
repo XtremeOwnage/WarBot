@@ -26,9 +26,18 @@ namespace WarBot.Core.Voting
         public IUserMessage Message { get; set; }
         public ulong MessageId => Message.Id;
 
+        public async Task RecountVotes()
+        {
+            UserVotes.Clear();
+            foreach (IEmote opt in EmojiOption.Keys)
+                foreach (IUser user in await Message.GetReactionUsersAsync(opt, 500).FlattenAsync())
+                    UserVotes.GetOrAdd(user.Id, opt);
+
+        }
 
         public async Task End()
         {
+            await RecountVotes();
             var eb = new EmbedBuilder()
                 .WithTitle($"Poll Results: {Question}");
 
