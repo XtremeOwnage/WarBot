@@ -57,8 +57,7 @@ namespace WarBot.Util
                     await bot.Log.Error(cfg.Guild, ex);
                 }
             }
-
-            Task.WaitAll(Tasks.ToArray());
+            await Task.WhenAll(Tasks);
         }
 
         public async Task SendWarPrepEnding(byte WarNo)
@@ -83,7 +82,7 @@ namespace WarBot.Util
                     await bot.Log.Error(cfg.Guild, ex);
                 }
             }
-            Task.WaitAll(Tasks.ToArray());
+            await Task.WhenAll(Tasks);
         }
 
         public async Task SendWarStarted(byte WarNo)
@@ -107,7 +106,7 @@ namespace WarBot.Util
                     await bot.Log.Error(cfg.Guild, ex);
                 }
             }
-            Task.WaitAll(Tasks.ToArray());
+            await Task.WhenAll(Tasks);
         }
     }
 }
