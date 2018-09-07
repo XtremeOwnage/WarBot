@@ -57,7 +57,7 @@ namespace WarBot
             {
                 DefaultRunMode = RunMode.Async,
                 CaseSensitiveCommands = false,
-                IgnoreExtraArgs = true,                
+                IgnoreExtraArgs = true,
             });
             this.BotListAPI = new AuthDiscordBotListApi(Config.BotId, Config.BotList_API_Token);
             this.Log = new Util.Log(this);
@@ -136,7 +136,7 @@ namespace WarBot
             Client.RoleDeleted += Client_RoleDeleted;
             Client.UserJoined += Client_UserJoined;
             Client.UserLeft += Client_UserLeft;
-
+            Client.Disconnected += Client_Disconnected;
             Client.ReactionAdded += Client_ReactionAdded;
             Client.ReactionRemoved += Client_ReactionRemoved;
             Client.MessageDeleted += Client_MessageDeleted_Poll;
@@ -147,6 +147,14 @@ namespace WarBot
             ////Login  and start discord api.
             await Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true);
             await Client.StartAsync();
+        }
+
+        private async Task Client_Disconnected(Exception arg)
+        {
+            await Console.Out.WriteLineAsync(arg.Message);
+
+            //Connection helper will force the bot to restart, if it remains in a disconnected state.
+            Jobs.Schedule<Util.ConnectionHelper>(o => o.EnsureConnectedOrExit(), TimeSpan.FromSeconds(2));
         }
 
         private async Task Client_Ready()
