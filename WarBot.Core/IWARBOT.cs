@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Commands;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
 using WarBot.Core.JobScheduling;
@@ -68,5 +69,10 @@ namespace WarBot.Core
         /// </summary>
         /// <param name="MessageId"></param>
         Task EndPoll(ulong MessageId);
+
+        /// <summary>
+        /// This token keeps the bot running. If cancellation is requested, entire application will stop.
+        /// </summary>
+        CancellationTokenSource StopToken { get; }
     }
 }

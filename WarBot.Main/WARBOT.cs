@@ -33,7 +33,7 @@ namespace WarBot
         public AuthDiscordBotListApi BotListAPI { get; private set; }
         public DiscordSocketClient Client { get; private set; }
         public Util.Log Log { get; private set; }
-        public CancellationTokenSource botRunning { get; private set; } = new CancellationTokenSource();
+        public CancellationTokenSource StopToken { get; private set; } = new CancellationTokenSource();
         public IDblSelfBot botListMe { get; set; }
         public IKernel sc { get; private set; }
         public GuildConfigRepository GuildRepo { get; }
@@ -152,9 +152,34 @@ namespace WarBot
         private async Task Client_Disconnected(Exception arg)
         {
             await Console.Out.WriteLineAsync(arg.Message);
+            try
+            {
+                while (true)
+                {
+                    switch (Client.ConnectionState)
+                    {
+                        case Discord.ConnectionState.Connected:
+                            //Good to go.
+                            return;
+                        case Discord.ConnectionState.Disconnecting:
+                        case Discord.ConnectionState.Connecting:
+                            //Try again, in 4 seconds.
+                            await Task.Delay(TimeSpan.FromSeconds(4), StopToken.Token);
+                            return;
+                        case Discord.ConnectionState.Disconnected:
+                            StopToken.Cancel();
+                            return;
 
-            //Connection helper will force the bot to restart, if it remains in a disconnected state.
-            Jobs.Schedule<Util.ConnectionHelper>(o => o.EnsureConnectedOrExit(), TimeSpan.FromSeconds(2));
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Write exception to console, force bot to stop.
+                Console.WriteLine(ex.Message);
+                StopToken.Cancel();
+            }
         }
 
         private async Task Client_Ready()
