@@ -38,6 +38,7 @@ namespace WarBot.Core.Voting
         public async Task End()
         {
             await RecountVotes();
+
             var eb = new EmbedBuilder()
                 .WithTitle($"Poll Results: {Question}");
 

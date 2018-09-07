@@ -18,6 +18,7 @@ namespace WarBot
             {
                 //Block the main thread, until the bot stops.
                 Task.Delay(-1, Bot.StopToken.Token).Wait();
+                Console.WriteLine("Exiting WARBOT.");
             }
             catch(Exception ex)
             {
