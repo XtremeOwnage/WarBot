@@ -10,12 +10,14 @@ namespace WarBot.Storage
 {
     public partial class WarDB : DbContext
     {
-        public WarDB(DbContextOptions<WarDB> options)
-            : base(options)
-        { }
         public DbSet<Poll> Polls { get; set; }
         public DbSet<DiscordGuild> Guilds { get; set; }
         public DbSet<DiscordUser> Users { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Data Source=warbot.db");
+        }
 
         public async Task Migrate()
         {
@@ -58,11 +60,7 @@ namespace WarBot.Storage
 
         public WarDB CreateDbContext(string[] args)
         {
-            var Config = BotConfig.Load();
-            var optionsBuilder = new DbContextOptionsBuilder<WarDB>();
-            optionsBuilder.UseSqlServer(Config.ConnString);
-
-            return new WarDB(optionsBuilder.Options);
+            return new WarDB();
         }
     }
 }
