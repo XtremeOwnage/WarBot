@@ -1,39 +1,91 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ninject;
+using Quartz;
+using Quartz.Impl;
+using System;
+using System.Collections.Specialized;
 using System.Linq.Expressions;
-using System.Text;
-using WarBot.Core;
+using System.Threading.Tasks;
 using WarBot.Core.JobScheduling;
 
 namespace WarBot.Implementation
 {
-    public class HangfireJobScheduler : IJobScheduler
+    public class QuartzJobScheduler : IJobScheduler
     {
-        bool IJobScheduler.Delete(string jobId) => BackgroundJob.Delete(jobId);
-        bool IJobScheduler.Delete(string jobId, string fromState) => BackgroundJob.Delete(jobId, fromState);
-        bool IJobScheduler.Requeue(string jobId) => BackgroundJob.Requeue(jobId);
-        bool IJobScheduler.Requeue(string jobId, string fromState) => BackgroundJob.Requeue(jobId, fromState);
-        IJob IJobScheduler.ContinueWith(string parentId, Expression<Action> methodCall)
-            => new Job(BackgroundJob.ContinueWith(parentId, methodCall, JobContinuationOptions.OnAnyFinishedState), this);
-        IJob IJobScheduler.ContinueWith<T>(string parentId, Expression<Action<T>> methodCall)
-            => new Job(BackgroundJob.ContinueWith<T>(parentId, methodCall), this);
-        IJob IJobScheduler.Enqueue(Expression<Action> methodCall)
-            => new Job(BackgroundJob.Enqueue(methodCall), this);
-        IJob IJobScheduler.Enqueue<T>(Expression<Action<T>> methodCall)
-            => new Job(BackgroundJob.Enqueue(methodCall), this);
-        IJob IJobScheduler.Schedule(Expression<Action> methodCall, DateTimeOffset enqueueAt)
-            => new Job(BackgroundJob.Schedule(methodCall, enqueueAt), this);
-        IJob IJobScheduler.Schedule(Expression<Action> methodCall, TimeSpan delay)
-            => new Job(BackgroundJob.Schedule(methodCall, delay), this);
-        IJob IJobScheduler.Schedule<T>(Expression<Action<T>> methodCall, DateTimeOffset enqueueAt)
-            => new Job(BackgroundJob.Schedule(methodCall, enqueueAt), this);
-        IJob IJobScheduler.Schedule<T>(Expression<Action<T>> methodCall, TimeSpan delay)
-            => new Job(BackgroundJob.Schedule(methodCall, delay), this);
+        IScheduler scheduler;
+        IKernel kernel;
+        public QuartzJobScheduler(WARBOT bot)
+        {
+            // Grab the Scheduler instance from the Factory
+            NameValueCollection props = new NameValueCollection
+                {
+                    { "quartz.serializer.type", "binary" }
+                };
+            StdSchedulerFactory factory = new StdSchedulerFactory(props);
+            scheduler = factory.GetScheduler().Result;
 
-        void IJobScheduler.RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule)
-            => Hangfire.RecurringJob.AddOrUpdate(jobID, Expression, cronSchedule, TimeZoneInfo.Local);
+            scheduler.Start(bot.StopToken.Token);
+        }
 
-        void IJobScheduler.RecurringJob(string jobID, Expression<Action> Expression, string cronSchedule)
-            => Hangfire.RecurringJob.AddOrUpdate(jobID, Expression, cronSchedule, TimeZoneInfo.Local);
+
+        class RunActionJob : Quartz.IJob
+        {
+            IKernel kernel;
+
+
+            public Task Execute(IJobExecutionContext context)
+            {
+                var action = context.MergedJobDataMap["action"] as Action;
+                return Task.Run(action);
+            }
+        }
+
+        Task<bool> IJobScheduler.Delete(string jobId) => scheduler.DeleteJob(JobKey.Create(jobId));
+        Task<bool> IJobScheduler.Delete(Core.JobScheduling.IJob job) => scheduler.DeleteJob(JobKey.Create(job.ID));
+
+        public async Task<Core.JobScheduling.IJob> Schedule<T>(Expression<Action<T>> methodCall, TimeSpan delay)
+        {
+            var Action = methodCall.Compile();
+
+            var job = Job_Action<T>.Create(Action);
+            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                .ForJob(job)
+                .StartAt(DateTime.UtcNow.Add(delay))
+                .Build();
+
+            await scheduler.ScheduleJob(trigger);
+
+            return new Job(job, this);
+        }
+
+        public async Task<Core.JobScheduling.IJob> RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule)
+        {
+            var Action = Expression.Compile();
+
+            var job = Job_Action<T>.Create(Action);
+            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                .ForJob(job)
+                .WithCronSchedule(cronSchedule)
+                .Build();
+
+            await scheduler.ScheduleJob(trigger);
+
+            return new Job(job, this);
+        }
+
+        public async Task<Core.JobScheduling.IJob> RecurringJob(string jobID, Expression<Action> Expression, string cronSchedule)
+        {
+            var Action = Expression.Compile();
+
+            var job = Job_Action.Create(Action);
+
+            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                .ForJob(job)
+                .WithCronSchedule(cronSchedule)
+                .Build();
+
+            await scheduler.ScheduleJob(trigger);
+
+            return new Job(job, this);
+        }
     }
 }

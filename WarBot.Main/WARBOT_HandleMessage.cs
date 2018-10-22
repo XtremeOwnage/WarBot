@@ -71,7 +71,7 @@ namespace WarBot
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);
 
-                    var result = await commands.ExecuteAsync(context, Msg, sc, MultiMatchHandling.Best);
+                    var result = await commands.ExecuteAsync(context, Msg, kernel, MultiMatchHandling.Best);
 
                     await Log.ChatMessage(message, tch.Guild, result);
                 }
@@ -79,7 +79,7 @@ namespace WarBot
                 {
                     var context = new Core.ModuleType.CommandContext(Client, message, this);
 
-                    var result = await commands.ExecuteAsync(context, socketMessage.Content, sc, MultiMatchHandling.Best);
+                    var result = await commands.ExecuteAsync(context, socketMessage.Content, kernel, MultiMatchHandling.Best);
                 }
             }
             catch (Exception ex)

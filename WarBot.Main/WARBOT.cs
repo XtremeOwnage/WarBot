@@ -30,7 +30,9 @@ namespace WarBot
         public DiscordSocketClient Client { get; private set; }
         public Util.Log Log { get; private set; }
         public CancellationTokenSource StopToken { get; private set; } = new CancellationTokenSource();
-        public IKernel sc { get; private set; }
+
+        //Kernel is static- because I have not yet implemented a method for sharing it to the Quartz scheduler.
+        public static IKernel kernel { get; private set; }
         public GuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
@@ -61,16 +63,16 @@ namespace WarBot
         {
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
-            this.sc = new StandardKernel();
-            sc.Bind<IWARBOT>().ToConstant(this);
-            sc.Bind<IDiscordClient>().ToConstant(this.Client);
-            sc.Bind<ILog>().ToConstant(this.Log);
-            sc.Bind<IGuildConfigRepository>().ToConstant(this.GuildRepo);
-            sc.Bind<WarDB>().ToSelf().InThreadScope();
+            kernel = new StandardKernel();
+            kernel.Bind<IWARBOT>().ToConstant(this);
+            kernel.Bind<IDiscordClient>().ToConstant(this.Client);
+            kernel.Bind<ILog>().ToConstant(this.Log);
+            kernel.Bind<IGuildConfigRepository>().ToConstant(this.GuildRepo);
+            kernel.Bind<WarDB>().ToSelf().InThreadScope();
             #endregion
 
             #region Create/Migration Database, if required.
-            var db = sc.Get<WarDB>();
+            var db = kernel.Get<WarDB>();
 
             await db.Migrate();
             #endregion
@@ -102,7 +104,7 @@ namespace WarBot
 
 
             //Initialize the commands.
-            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, sc);
+            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, kernel);
 
             //Load the schedules to execute the war notifications.
             ScheduledJobs.ScheduleJobs(this.Jobs);
