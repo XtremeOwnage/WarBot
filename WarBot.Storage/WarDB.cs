@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using WarBot.Core.Voting;
 using WarBot.Storage.Models;
+using WarBot.Storage.Models.Voting;
 
 namespace WarBot.Storage
 {
