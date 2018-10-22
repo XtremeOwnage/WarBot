@@ -26,19 +26,6 @@ namespace WarBot.Implementation
             scheduler.Start(bot.StopToken.Token);
         }
 
-
-        class RunActionJob : Quartz.IJob
-        {
-            IKernel kernel;
-
-
-            public Task Execute(IJobExecutionContext context)
-            {
-                var action = context.MergedJobDataMap["action"] as Action;
-                return Task.Run(action);
-            }
-        }
-
         Task<bool> IJobScheduler.Delete(string jobId) => scheduler.DeleteJob(JobKey.Create(jobId));
         Task<bool> IJobScheduler.Delete(Core.JobScheduling.IJob job) => scheduler.DeleteJob(JobKey.Create(job.ID));
 
