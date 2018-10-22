@@ -38,16 +38,6 @@ namespace WarBot
                 await Log.Error(arg, ex);
             }
 
-            //Update the DBL stats.
-            try
-            {
-                await UpdateBotStats();
-            }
-            catch (Exception ex)
-            {
-                await Log.Error(arg, ex);
-            }
-
             //Log a message to the logging server.
             try
             {
@@ -75,16 +65,7 @@ namespace WarBot
             await Log.ConsoleOUT($"New Guild: {arg.Name}");
 
 
-            //Update the DBL stats.
-            try
-            {
-                await UpdateBotStats();
-            }
-            catch (Exception ex)
-            {
-                await Log.Error(arg, ex);
-            }
-            //Log a message to the logging server.
+           //Log a message to the logging server.
             try
             {
                 //Build embed.
