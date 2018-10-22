@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using WarBot.Core.Voting;
 using WarBot.Storage.Models;
 
 namespace WarBot.Storage
@@ -12,7 +13,7 @@ namespace WarBot.Storage
         public WarDB(DbContextOptions<WarDB> options)
             : base(options)
         { }
-
+        public DbSet<Poll> Polls { get; set; }
         public DbSet<DiscordGuild> Guilds { get; set; }
         public DbSet<DiscordUser> Users { get; set; }
 
