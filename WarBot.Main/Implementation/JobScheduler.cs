@@ -31,17 +31,23 @@ namespace WarBot.Implementation
 
         public async Task<Core.JobScheduling.IJob> Schedule<T>(Expression<Action<T>> methodCall, TimeSpan delay)
         {
-            var Action = methodCall.Compile();
+            try
+            {
+                var Action = methodCall.Compile();
 
-            var job = Job_Action<T>.Create(Action);
-            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                .ForJob(job)
-                .StartAt(DateTime.UtcNow.Add(delay))
-                .Build();
+                var job = Job_Action<T>.Create(Action);
+                ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                    .StartAt(DateTime.UtcNow.Add(delay))
+                    .Build();
 
-            await scheduler.ScheduleJob(trigger);
+                await scheduler.ScheduleJob(job, trigger);
 
-            return new Job(job, this);
+                return new Job(job, this);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<Core.JobScheduling.IJob> RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule)
