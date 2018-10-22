@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,6 +21,11 @@ namespace WarBot.Storage.Models
         public DiscordUser() { }
 
         public DiscordUser(SocketUser User)
+        {
+            this.EntityId = User.Id;
+            this.Name = User.Username;
+        }
+        public DiscordUser(IUser User)
         {
             this.EntityId = User.Id;
             this.Name = User.Username;
