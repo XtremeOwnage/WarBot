@@ -28,8 +28,6 @@
     <PackageReference Include="DiscordBotsList.Api.Adapter.Discord.Net" Version="1.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.6.20" />
     <PackageReference Include="HangFire.Ninject" Version="1.2.0" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.6.20" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Ninject" Version="3.3.4" />
   </ItemGroup>
