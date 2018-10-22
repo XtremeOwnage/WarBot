@@ -84,25 +84,25 @@ namespace WarBot
             #endregion
 
             #region Background Job Processing
-            //Initialize Hangfire (Background Job Server)
-            //ToDo - Replace this with a stateful MySql database, if available.
-            GlobalConfiguration.Configuration.UseSqlServerStorage(Config.ConnString, new Hangfire.SqlServer.SqlServerStorageOptions
-            {
-                QueuePollInterval = jobPollingInterval,
-                SchemaName = "HangFire"
-            });
+            ////Initialize Hangfire (Background Job Server)
+            ////ToDo - Replace this with a stateful MySql database, if available.
+            //GlobalConfiguration.Configuration.UseSqlServerStorage(Config.ConnString, new Hangfire.SqlServer.SqlServerStorageOptions
+            //{
+            //    QueuePollInterval = jobPollingInterval,
+            //    SchemaName = "HangFire"
+            //});
 
-            BackgroundJobServerOptions options = new BackgroundJobServerOptions()
-            {
-                Activator = new NinjectJobActivator(sc),
-                WorkerCount = System.Environment.ProcessorCount * 2,
-                SchedulePollingInterval = jobPollingInterval,
-            };
+            //BackgroundJobServerOptions options = new BackgroundJobServerOptions()
+            //{
+            //    Activator = new NinjectJobActivator(sc),
+            //    WorkerCount = System.Environment.ProcessorCount * 2,
+            //    SchedulePollingInterval = jobPollingInterval,
+            //};
 
-            this.jobServer = new BackgroundJobServer(options);
+            //this.jobServer = new BackgroundJobServer(options);
 
-            //Hangfire uses a lot of static methods, so, we just have to create the placeholder task.
-            this.Jobs = new Implementation.HangfireJobScheduler();
+            ////Hangfire uses a lot of static methods, so, we just have to create the placeholder task.
+            //this.Jobs = new Implementation.HangfireJobScheduler();
             #endregion
 
             //Initialize the config repository with an instance of the WarDB from the DI container.
