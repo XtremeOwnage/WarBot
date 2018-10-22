@@ -71,7 +71,6 @@ namespace WarBot.Storage.Migrations
                     Name = table.Column<string>(nullable: true),
                     WarBOT_NickName = table.Column<string>(nullable: true),
                     WarBOT_Prefix = table.Column<string>(nullable: true),
-                    Environment = table.Column<int>(nullable: false),
                     NotificationSettingsID = table.Column<int>(nullable: true),
                     BotVersion = table.Column<string>(nullable: true),
                     Website = table.Column<string>(nullable: true),
