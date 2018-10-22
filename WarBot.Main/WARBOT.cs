@@ -30,11 +30,9 @@ namespace WarBot
 
         public long MessagesProcessed = 0;
         public CommandService commands;
-        public AuthDiscordBotListApi BotListAPI { get; private set; }
         public DiscordSocketClient Client { get; private set; }
         public Util.Log Log { get; private set; }
         public CancellationTokenSource StopToken { get; private set; } = new CancellationTokenSource();
-        public IDblSelfBot botListMe { get; set; }
         public IKernel sc { get; private set; }
         public GuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
@@ -59,7 +57,6 @@ namespace WarBot
                 CaseSensitiveCommands = false,
                 IgnoreExtraArgs = true,
             });
-            this.BotListAPI = new AuthDiscordBotListApi(Config.BotId, Config.BotList_API_Token);
             this.Log = new Util.Log(this);
             this.GuildRepo = new GuildConfigRepository();
         }
@@ -77,13 +74,7 @@ namespace WarBot
             sc.Bind<IDiscordClient>().ToConstant(this.Client);
             sc.Bind<ILog>().ToConstant(this.Log);
             sc.Bind<IGuildConfigRepository>().ToConstant(this.GuildRepo);
-            sc.Bind<WarDB>().ToMethod(o =>
-            {
-                var opt = new DbContextOptionsBuilder<WarDB>();
-                opt.UseLazyLoadingProxies(true);
-                opt.UseSqlServer(this.Config.ConnString);
-                return new WarDB(opt.Options);
-            }).InThreadScope();
+            sc.Bind<WarDB>().ToSelf().InThreadScope();
             #endregion
 
             #region Create/Migration Database, if required.
@@ -141,9 +132,6 @@ namespace WarBot
             Client.ReactionRemoved += Client_ReactionRemoved;
             Client.MessageDeleted += Client_MessageDeleted_Poll;
 
-            //Open the bot list API.
-            botListMe = await BotListAPI.GetMeAsync();
-
             ////Login  and start discord api.
             await Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true);
             await Client.StartAsync();
@@ -184,15 +172,8 @@ namespace WarBot
 
         private async Task Client_Ready()
         {
-            await UpdateBotStats();
-
             //Set status to online.
             await Client.SetStatusAsync(UserStatus.Online);
-        }
-
-        private async Task UpdateBotStats()
-        {
-            await botListMe.UpdateStatsAsync(Client.Guilds.Count);
         }
     }
 }
