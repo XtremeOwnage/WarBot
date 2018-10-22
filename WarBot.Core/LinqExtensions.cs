@@ -13,11 +13,11 @@ namespace WarBot.Core
         /// <param name="Input"></param>
         /// <param name="Output"></param>
         /// <returns></returns>
-        //public static bool IsNotNull<T>(this T Input, out T Output)
-        //{
-        //    Output = Input;
-        //    return Input != null;
-        //}
+        public static bool IsNotNull<T>(this T Input, out T Output)
+        {
+            Output = Input;
+            return Input != null;
+        }
 
         public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> source, int batchSize)
         {
