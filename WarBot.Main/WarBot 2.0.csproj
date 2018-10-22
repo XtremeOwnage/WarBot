@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DiscordBotsList.Api.Adapter.Discord.Net" Version="1.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.6.20" />
     <PackageReference Include="HangFire.Ninject" Version="1.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.4" />
