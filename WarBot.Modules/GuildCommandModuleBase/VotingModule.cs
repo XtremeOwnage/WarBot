@@ -1,7 +1,7 @@
-﻿using Humanizer;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Humanizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
 using WarBot.Core.ModuleType;
-using WarBot.Core.Voting;
+using WarBot.Storage.Models.Voting;
 
 namespace WarBot.Modules.GuildCommandModules
 {
