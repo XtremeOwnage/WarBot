@@ -12,7 +12,7 @@ namespace WarBot
         {
             var Bot = new WARBOT();
 
-            Bot.Start().Wait();
+            Bot.Start();
 
             try
             {
@@ -20,12 +20,12 @@ namespace WarBot
                 Task.Delay(-1, Bot.StopToken.Token).Wait();
                 Console.WriteLine("Exiting WARBOT.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
     }
 
- 
+
 }

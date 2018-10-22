@@ -20,22 +20,22 @@ namespace WarBot.Storage
             optionsBuilder.UseLazyLoadingProxies(true);
         }
 
-        public async Task Migrate()
+        public void Migrate()
         {
             //Perform migrations as needed.
-            var Migrations = await this.Database.GetPendingMigrationsAsync();
+            var Migrations = this.Database.GetPendingMigrations();
             if (Migrations.Count() == 0)
             {
-                await Console.Out.WriteLineAsync("WarDB is up to date.");
+                Console.WriteLine("WarDB is up to date.");
                 return;
             }
             foreach (var m in Migrations)
             {
-                await Console.Out.WriteLineAsync("WarDB Migration Pending: " + m);
+                Console.WriteLine("WarDB Migration Pending: " + m);
             }
-            await Console.Out.WriteLineAsync("Applying Migrations");
+            Console.WriteLine("Applying Migrations");
 
-            await this.Database.MigrateAsync();
+            this.Database.Migrate();
         }
 
         public async Task SaveWithOutput()

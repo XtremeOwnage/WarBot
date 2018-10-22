@@ -54,7 +54,7 @@ namespace WarBot
             this.GuildRepo = new GuildConfigRepository();
         }
 
-        public async Task Start()
+        public void Start()
         {
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
@@ -69,7 +69,7 @@ namespace WarBot
             #region Create/Migration Database, if required.
             var db = kernel.Get<WarDB>();
 
-            await db.Migrate();
+            db.Migrate();
             #endregion
 
             #region Background Job Processing
@@ -99,7 +99,7 @@ namespace WarBot
 
 
             //Initialize the commands.
-            await commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, kernel);
+            var discord_1 = commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, kernel).Result;
 
             //Load the schedules to execute the war notifications.
             ScheduledJobs.ScheduleJobs(this.Jobs);
@@ -122,8 +122,8 @@ namespace WarBot
             Client.MessageDeleted += Client_MessageDeleted_Poll;
 
             ////Login  and start discord api.
-            await Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true);
-            await Client.StartAsync();
+             Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true).RunSynchronously();
+             Client.StartAsync().RunSynchronously();
         }
 
         private async Task Client_Disconnected(Exception arg)
