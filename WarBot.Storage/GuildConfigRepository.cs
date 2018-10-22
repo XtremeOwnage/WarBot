@@ -1,15 +1,13 @@
 using Discord;
+using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using WarBot.Core;
-using WarBot.Storage;
-using WarBot.Storage.Models;
-using Microsoft.EntityFrameworkCore;
-using Discord.WebSocket;
-using System.Linq;
+using WarBot.Storage.Models.Voting;
 
 namespace WarBot.Storage
 {
