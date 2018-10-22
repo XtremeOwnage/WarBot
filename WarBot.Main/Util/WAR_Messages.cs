@@ -1,10 +1,7 @@
-using Hangfire;
-using Hangfire.Storage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WarBot.Core;
-using WarBot.Core.JobScheduling;
 
 namespace WarBot.Util
 {

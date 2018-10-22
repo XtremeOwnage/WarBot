@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using Hangfire.Storage;
-using WarBot.Core.JobScheduling;
+﻿using WarBot.Core.JobScheduling;
 using WarBot.Util;
 
 namespace WarBot
@@ -13,16 +11,6 @@ namespace WarBot
         /// <param name="job"></param>
         public static void ScheduleJobs(IJobScheduler job)
         {
-            //Delete all current jobs.
-            using (var connection = JobStorage.Current.GetConnection())
-            {
-                foreach (var recurringJob in connection.GetRecurringJobs())
-                {
-                    RecurringJob.RemoveIfExists(recurringJob.Id);
-                }
-            }
-
-
             job.RecurringJob<WAR_Messages>("war1_prep_started", o => o.SendWarPrepStarted(1), "0 2 * * *");
             job.RecurringJob<WAR_Messages>("war2_prep_started", o => o.SendWarPrepStarted(2), "0 8 * * *");
             job.RecurringJob<WAR_Messages>("war3_prep_started", o => o.SendWarPrepStarted(3), "0 14 * * *");

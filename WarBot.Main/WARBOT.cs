@@ -1,9 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using DiscordBotsList.Api;
-using Hangfire;
-using Microsoft.EntityFrameworkCore;
 using Ninject;
 using System;
 using System.Linq;
@@ -40,11 +37,6 @@ namespace WarBot
         public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(2);
 
         IGuildConfigRepository IWARBOT.GuildRepo => this.GuildRepo;
-
-        /// <summary>
-        /// Just need to keep an instance of the background job server, for background jobs to process.
-        /// </summary>
-        private BackgroundJobServer jobServer { get; set; }
 
 
         public WARBOT()
