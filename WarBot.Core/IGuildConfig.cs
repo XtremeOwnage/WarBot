@@ -28,10 +28,7 @@ namespace WarBot.Core
         /// The current guild user for WarBot.
         /// </summary>
         SocketGuildUser CurrentUser { get; }
-        /// <summary>
-        /// This is the nickname the bot will assume when it joins.
-        /// </summary>
-        string NickName { get; set; }
+
         /// <summary>
         /// Common notification settings.
         /// </summary>

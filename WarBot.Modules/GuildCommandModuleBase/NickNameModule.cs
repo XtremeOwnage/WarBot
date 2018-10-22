@@ -24,10 +24,6 @@ namespace WarBot.Modules.GuildCommandModules
                 return;
             }
 
-            //Update the config.
-            cfg.NickName = Nickname;
-            await cfg.SaveConfig();
-
             //Update my nickname.
             await Me.ModifyAsync(o =>
             {

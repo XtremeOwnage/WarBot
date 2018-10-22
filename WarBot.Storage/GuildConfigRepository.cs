@@ -72,7 +72,6 @@ namespace WarBot.Storage
             {
                 //Simple settings.
                 newCfg.BotVersion = oldCfg.BotVersion;
-                newCfg.WarBOT_NickName = oldCfg.NickName;
                 newCfg.Website = oldCfg.WebsiteURL;
                 newCfg.Loot = oldCfg.LootURL;
 

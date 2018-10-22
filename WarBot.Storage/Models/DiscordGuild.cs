@@ -26,7 +26,6 @@ namespace WarBot.Storage.Models
                 Name = Guild.Name,
                 Value = Guild,
                 BotVersion = "2.5",
-                WarBOT_NickName = "WarBOT",
                 NotificationSettings = GuildNotificationsSettings.CreateNew(),
                 WarBOT_Prefix = "bot,"
             };
@@ -48,11 +47,6 @@ namespace WarBot.Storage.Models
         /// </summary>
         [NotMapped]
         private Func<IGuildConfig, Task> saveFunc;
-
-        /// <summary>
-        /// The bot's nickname, for a given guild.
-        /// </summary>
-        public string WarBOT_NickName { get; set; }
 
         /// <summary>
         /// The prefix to which warbot will respond to.
@@ -159,11 +153,6 @@ namespace WarBot.Storage.Models
 
         SocketGuild IGuildConfig.Guild => this.Value;
         SocketGuildUser IGuildConfig.CurrentUser => this.Value.CurrentUser;
-        string IGuildConfig.NickName
-        {
-            get => String.IsNullOrEmpty(this.WarBOT_NickName) ? "WarBOT" : this.WarBOT_NickName;
-            set => this.WarBOT_NickName = value;
-        }
 
         INotificationSettings IGuildConfig.Notifications => this.NotificationSettings;
 
@@ -237,7 +226,6 @@ namespace WarBot.Storage.Models
             SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, adminChannel);
             SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, defaultChannel);
 
-            WarBOT_NickName = "WarBOT";
             NotificationSettings.setDefaults();
         }
         #endregion
