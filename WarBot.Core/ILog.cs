@@ -12,6 +12,5 @@ namespace WarBot.Core
         Task ConsoleOUT(string Message);
         Task Debug(string Message, IGuild Guild = null);
         Task Error(IGuild guild, Exception ex, [CallerMemberName] string Method = "");
-        bool IsLoggingChannel(ulong CHID);
     }
 }

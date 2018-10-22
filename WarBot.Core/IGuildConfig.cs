@@ -20,10 +20,6 @@ namespace WarBot.Core
         string BotVersion { get; set; }
 
         /// <summary>
-        /// Which environment is this bot? Used to keep prod/nonprod/other instances seperate.
-        /// </summary>
-        Environment Environment { get; set; }
-        /// <summary>
         /// The guild, this config belongs to.
         /// This value is mainly, to make the config files readable.
         /// </summary>

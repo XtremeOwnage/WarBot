@@ -12,9 +12,6 @@ namespace WarBot
         private async Task Client_LeftGuild(SocketGuild arg)
         {
             var cfg = await this.GuildRepo.GetConfig(arg);
-            if (!ShouldHandleMessage(cfg))
-                return;
-
             await Log.ConsoleOUT($"Removed Guild: {arg.Name}");
 
             try
@@ -59,9 +56,6 @@ namespace WarBot
         private async Task Client_JoinedGuild(SocketGuild arg)
         {
             var cfg = await this.GuildRepo.GetConfig(arg);
-            if (!ShouldHandleMessage(cfg))
-                return;
-
             await Log.ConsoleOUT($"New Guild: {arg.Name}");
 
 
@@ -118,8 +112,6 @@ namespace WarBot
         private async Task Client_UserJoined(SocketGuildUser arg)
         {
             var cfg = await this.GuildRepo.GetConfig(arg.Guild);
-            if (!ShouldHandleMessage(cfg))
-                return;
 
             //Send welcome message
             try
@@ -145,8 +137,6 @@ namespace WarBot
         private async Task Client_RoleDeleted(SocketRole arg)
         {
             var cfg = await this.GuildRepo.GetConfig(arg.Guild);
-            if (!ShouldHandleMessage(cfg))
-                return;
 
             //We need to validate this role was not configured as any of this guild's current roles.
             var AffectedRoles = cfg.GetRoleMap().Where(o => o.Value.Id == arg.Id);
@@ -203,9 +193,6 @@ namespace WarBot
             {
                 var cfg = await this.GuildRepo.GetConfig(sg.Guild);
 
-                if (!ShouldHandleMessage(cfg))
-                    return;
-
                 #region Check if this channel was configured as any of the guild's targets.
                 //We need to validate this role was not configured as any of this guild's current roles.
                 var AffectedChannels = cfg.GetChannelMap().Where(o => o.Value == sg);
@@ -260,9 +247,6 @@ namespace WarBot
             try
             {
                 var cfg = await this.GuildRepo.GetConfig(arg);
-                if (!ShouldHandleMessage(cfg))
-                    return;
-
                 await Log.Debug("Guild Available", arg);
 
                 //Do update check.

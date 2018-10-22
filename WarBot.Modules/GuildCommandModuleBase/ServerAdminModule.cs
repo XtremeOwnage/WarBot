@@ -34,39 +34,6 @@ namespace WarBot.Modules.GuildCommandModules
 
 
         [RoleLevel(RoleLevel.ServerAdmin)]
-        [Command("set environment"), Summary("Choose the WARBot instance to use. This should only be used if you have specific instructions to use it.")]
-        [CommandUsage("{prefix} {command} (PROD|NONPROD|LOCAL)")]
-        public async Task SetEnvironment(string Environment)
-        {
-            if (System.Enum.TryParse(Environment, true, out WarBot.Core.Environment Env))
-            {
-                IGuildConfig CFG;
-                if (this.cfg == null)
-                    CFG = await bot.GuildRepo.GetConfig(Context.Guild, bot.Environment);
-                else
-                    CFG = cfg;
-
-                //Update the config.
-                CFG.Environment = Env;
-                await CFG.SaveConfig();
-
-                await ReplyAsync("This guild has been updated to use environment " + Env.ToString());
-            }
-            else
-            {
-                StringBuilder sb = new StringBuilder();
-                //Was unable to parse a role level from the input text.
-                sb.AppendLine("I was unable to parse the desired environment from your input. The accepted values are:");
-                var validValues = System.Enum.GetValues(typeof(WarBot.Core.Environment));
-                foreach (Environment val in validValues)
-                {
-                    sb.AppendLine($"\t{val.ToString()}");
-                }
-                await ReplyAsync(sb.ToString());
-            }
-        }
-
-        [RoleLevel(RoleLevel.ServerAdmin)]
         [Command("set prefix")]
         [Summary("Change the prefix to address me.")]
         [CommandUsage("{prefix} {command} bot,")]

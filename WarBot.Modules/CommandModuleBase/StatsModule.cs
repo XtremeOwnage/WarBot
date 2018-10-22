@@ -20,8 +20,7 @@ namespace WarBot.Modules.CommandModules
                 .AddField("Loaded Commands", bot.LoadedCommands, true)
                 .AddField("Loaded Modules", bot.LoadedModules, true)
                 .AddField("Messages Processed", bot.MessagesProcessed, true)
-                .AddField("Guilds using WarBOT", Guilds.Count)
-                .AddField("Environment", bot.Environment.ToString(), true);
+                .AddField("Guilds using WarBOT", Guilds.Count);
 
             // ReplyAsync is a method on ModuleBase
             await ReplyAsync(embed: eb.Build());

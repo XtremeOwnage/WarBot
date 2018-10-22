@@ -8,16 +8,13 @@ namespace WarBot.Core
 {
     public interface IGuildConfigRepository
     {
-        Task<IGuildConfig> GetConfig(SocketGuild Guild);
-
         /// <summary>
         /// Force a config to load as the specified environment.
         /// This should almost never be used.
         /// </summary>
         /// <param name="Guild"></param>
-        /// <param name="Environment"></param>
         /// <returns></returns>
-        Task<IGuildConfig> GetConfig(SocketGuild Guild, Environment? Environment);
+        Task<IGuildConfig> GetConfig(SocketGuild Guild);
 
         /// <summary>
         /// Returns a list of all active, cached configs.

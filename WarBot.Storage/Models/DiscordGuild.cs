@@ -26,7 +26,6 @@ namespace WarBot.Storage.Models
                 Name = Guild.Name,
                 Value = Guild,
                 BotVersion = "2.5",
-                Environment = Core.Environment.PROD,
                 WarBOT_NickName = "WarBOT",
                 NotificationSettings = GuildNotificationsSettings.CreateNew(),
                 WarBOT_Prefix = "bot,"
@@ -59,11 +58,6 @@ namespace WarBot.Storage.Models
         /// The prefix to which warbot will respond to.
         /// </summary>
         public string WarBOT_Prefix { get; set; }
-        /// <summary>
-        /// Which environment does this guild belong to? 
-        /// Used to keep PROD guilds running on the prod process, and to allow DEV/Nonprod to run on the non-prod bot.
-        /// </summary>
-        public Core.Environment Environment { get; set; }
 
         /// <summary>
         /// Common notification settings.
@@ -163,12 +157,6 @@ namespace WarBot.Storage.Models
             set => this.BotVersion = value;
         }
 
-        Core.Environment IGuildConfig.Environment
-        {
-            get => this.Environment;
-            set => this.Environment = value;
-        }
-
         SocketGuild IGuildConfig.Guild => this.Value;
         SocketGuildUser IGuildConfig.CurrentUser => this.Value.CurrentUser;
         string IGuildConfig.NickName
@@ -228,8 +216,6 @@ namespace WarBot.Storage.Models
 
             var adminChannel = await ChannelHelper
                 .findFirstAdminChannel(Guild);
-
-            this.Environment = Core.Environment.PROD;
 
             //These two roles should never be set, Just a sanity check to ensure they are empty.
             SetGuildRole(RoleLevel.GlobalAdmin, null);

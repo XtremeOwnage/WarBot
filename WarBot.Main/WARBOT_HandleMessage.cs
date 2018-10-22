@@ -29,10 +29,6 @@ namespace WarBot
                 if (message.Author.Id == Client.CurrentUser.Id)
                     return;
 
-                //If the message came from a logging channel, ignore it.
-                if (Log.IsLoggingChannel(message.Channel.Id))
-                    return;
-
                 //Start actual processing logic.              
                 var UserChannelHash = SocketDialogContextBase.GetHashCode(message.Channel, message.Author);
                 //Check if there is an open dialog.
@@ -56,13 +52,9 @@ namespace WarBot
                     string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
                     #endregion
 
-                    bool cmdSetEnv = Msg.StartsWith("SET ENVIRONMENT", StringComparison.OrdinalIgnoreCase);
 
                     //If the config is null, and we are not setting the environment, return.
-                    if (cfg == null && !cmdSetEnv)
-                        return;
-                    //Else, if we shouldn't process this message, and we are not setting the environment, return.
-                    else if (!ShouldHandleMessage(cfg) && !cmdSetEnv)
+                    if (cfg == null)
                         return;
                     //If the message was not to me, Ignore it.
                     else if (!(HasStringPrefix || HasBotPrefix))

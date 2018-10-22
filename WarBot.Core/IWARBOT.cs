@@ -21,11 +21,6 @@ namespace WarBot.Core
         ILog Log { get; }
 
         /// <summary>
-        /// The current "Environment" of this process.
-        /// </summary>
-        Environment Environment { get; }
-
-        /// <summary>
         /// Responsible for managing scheduled jobs and tasks.
         /// </summary>
         IJobScheduler Jobs { get; }

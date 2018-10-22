@@ -12,8 +12,11 @@ namespace WarBot.Util
 {
     public class Log : ILog
     {
+        private SocketTextChannel Channels_Chat { get; set; }
+        private SocketTextChannel Channels_Error { get; set; }
+        private SocketTextChannel Channels_Activity { get; set; }
+        private SocketTextChannel Channels_Debug { get; set; }
 
-        private LoggingChannels Channels = new LoggingChannels();
         private WARBOT bot;
         public Log(WARBOT Discord)
         {
@@ -27,33 +30,18 @@ namespace WarBot.Util
 
             try
             {
-                //Add the channel combinations to the helper class.
-                Channels.AddLoggingChannel(Core.Environment.LOCAL, LogChannel.Chat, 459028214145220618);
-                Channels.AddLoggingChannel(Core.Environment.LOCAL, LogChannel.Debug, 469900793764380674);
-                Channels.AddLoggingChannel(Core.Environment.LOCAL, LogChannel.Errors, 469890596752982026);
-                Channels.AddLoggingChannel(Core.Environment.LOCAL, LogChannel.GuildActivity, 469887501310623746);
-                Channels.AddLoggingChannel(Core.Environment.NONPROD, LogChannel.Chat, 459028214145220618);
-                Channels.AddLoggingChannel(Core.Environment.NONPROD, LogChannel.Debug, 469900793764380674);
-                Channels.AddLoggingChannel(Core.Environment.NONPROD, LogChannel.Errors, 469890596752982026);
-                Channels.AddLoggingChannel(Core.Environment.NONPROD, LogChannel.GuildActivity, 469887501310623746);
-                Channels.AddLoggingChannel(Core.Environment.PROD, LogChannel.Chat, 459028171199610881);
-                Channels.AddLoggingChannel(Core.Environment.PROD, LogChannel.Debug, 469900766736285696);
-                Channels.AddLoggingChannel(Core.Environment.PROD, LogChannel.Errors, 469890564800774164);
-                Channels.AddLoggingChannel(Core.Environment.PROD, LogChannel.GuildActivity, 469887501310623746);
+                Channels_Chat = bot.Client.GetChannel(this.bot.Config.Log_CH_Chat) as SocketTextChannel;
+                Channels_Error = bot.Client.GetChannel(this.bot.Config.Log_CH_Debug) as SocketTextChannel;
+                Channels_Debug = bot.Client.GetChannel(this.bot.Config.Log_CH_Errors) as SocketTextChannel;
+                Channels_Activity = bot.Client.GetChannel(this.bot.Config.Log_CH_Guilds) as SocketTextChannel;
 
-
-                Channels.Chat = bot.Client.GetChannel(Channels.GetChannelID(bot.Config.Environment, LogChannel.Chat)) as SocketTextChannel;
-                Channels.Error = bot.Client.GetChannel(Channels.GetChannelID(bot.Config.Environment, LogChannel.Errors)) as SocketTextChannel;
-                Channels.Debug = bot.Client.GetChannel(Channels.GetChannelID(bot.Config.Environment, LogChannel.Debug)) as SocketTextChannel;
-                Channels.Activity = bot.Client.GetChannel(Channels.GetChannelID(bot.Config.Environment, LogChannel.GuildActivity)) as SocketTextChannel;
-
-                if (Channels.Chat == null)
+                if (Channels_Chat == null)
                     await this.Error(null, new NullReferenceException("Unable to locate chat output channel"));
-                if (Channels.Error == null)
+                if (Channels_Error == null)
                     await this.Error(null, new NullReferenceException("Unable to locate error output channel"));
-                if (Channels.Debug == null)
+                if (Channels_Debug == null)
                     await this.Error(null, new NullReferenceException("Unable to locate debug output channel"));
-                if (Channels.Activity == null)
+                if (Channels_Activity == null)
                     await this.Error(null, new NullReferenceException("Unable to locate guild activity channel"));
             }
             catch (Exception ex)
@@ -67,7 +55,6 @@ namespace WarBot.Util
                 .WithColor(Color.LightOrange)
                 .AddField("UserName", bot.Client.CurrentUser?.Username, true)
                 .AddField("Host", System.Environment.MachineName, true)
-                .AddField("Environment", bot.Config.Environment.ToString(), true)
                 .AddField("Type", "WarBot.NET", true)
                 .AddField("Modules Loaded", bot.commands.Modules.Count(), true)
                 .AddField("Commands Available", bot.commands.Commands.Count(), true);
@@ -75,8 +62,6 @@ namespace WarBot.Util
             await sendToChannel(LogChannel.Debug, eb.Build());
 
         }
-
-        public bool IsLoggingChannel(ulong CHID) => Channels.IsLoggingChannel(CHID);
 
         public async Task Debug(string Message, IGuild Guild = null)
         {
@@ -188,13 +173,13 @@ namespace WarBot.Util
             switch (ch)
             {
                 case LogChannel.Chat:
-                    return Channels.Chat;
+                    return Channels_Chat;
                 case LogChannel.Errors:
-                    return Channels.Error;
+                    return Channels_Error;
                 case LogChannel.Debug:
-                    return Channels.Debug;
+                    return Channels_Debug;
                 case LogChannel.GuildActivity:
-                    return Channels.Activity;
+                    return Channels_Activity;
                 default:
                     return null;
             }

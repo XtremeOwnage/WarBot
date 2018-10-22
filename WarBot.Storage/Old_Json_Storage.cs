@@ -24,7 +24,6 @@ namespace WarBot.Legacy
         public string NickName { get; set; }
         public NotificationSettings Notifications { get; set; }
         public string BotVersion { get; set; }
-        public Core.Environment? Environment { get; set; }
         public string LootURL { get; set; }
         public string WebsiteURL { get; set; }
     }

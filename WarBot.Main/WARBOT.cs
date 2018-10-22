@@ -21,7 +21,6 @@ namespace WarBot
         int IWARBOT.LoadedModules => this.commands.Modules.Count();
         ILog IWARBOT.Log => this.Log;
         long IWARBOT.MessagesProcessed => this.MessagesProcessed;
-        Core.Environment IWARBOT.Environment => this.Config.Environment;
         CommandService IWARBOT.CommandService => this.commands;
         #endregion
 
@@ -54,10 +53,6 @@ namespace WarBot
             this.Log = new Util.Log(this);
             this.GuildRepo = new GuildConfigRepository();
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool ShouldHandleMessage(IGuildConfig Cfg)
-                    => Cfg != null && Cfg.Environment == this.Config.Environment;
 
         public async Task Start()
         {
