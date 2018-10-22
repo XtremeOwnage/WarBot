@@ -35,6 +35,12 @@ namespace WarBot.Storage.Models.Voting
             this.channel = await Client.GetChannelAsync(this.ChannelId, CacheMode.AllowDownload) as ITextChannel;
             this.message = await channel.GetMessageAsync(this.MessageId, CacheMode.AllowDownload) as IUserMessage;
         }
+
+        public Task End()
+        {
+            throw new NotImplementedException();
+        }
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; private set; }
 
