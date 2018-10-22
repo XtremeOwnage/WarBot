@@ -58,11 +58,11 @@ namespace WarBot.Core
         /// </summary>
         CommandService CommandService { get; }
 
-        /// <summary>
-        /// Adds a poll to the bot.
-        /// </summary>
-        /// <param name="Poll"></param>
-        Task AddPoll(Voting.Poll Poll, TimeSpan WhenDone);
+        ///// <summary>
+        ///// Adds a poll to the bot.
+        ///// </summary>
+        ///// <param name="Poll"></param>
+        //Task AddPoll(IPoll Poll, TimeSpan WhenDone);
 
         /// <summary>
         /// Ends a poll.
