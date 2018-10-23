@@ -59,7 +59,7 @@ namespace WarBot.Modules.GuildCommandModules
         #endregion
         #region Commands to CLEAR/RESET messages
         [RoleLevel(RoleLevel.Leader)]
-        [Command("clear war prep started")]
+        [Command("set war prep started")]
         [Summary("Reset the war prep started message to defaults.")]
         [CommandUsage("{prefix} {command}")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
@@ -71,7 +71,7 @@ namespace WarBot.Modules.GuildCommandModules
         }
 
         [RoleLevel(RoleLevel.Leader)]
-        [Command("clear war prep ending")]
+        [Command("set war prep ending")]
         [Summary("Reset the war prep ending message to defaults.")]
         [CommandUsage("{prefix} {command}")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
@@ -83,7 +83,7 @@ namespace WarBot.Modules.GuildCommandModules
         }
 
         [RoleLevel(RoleLevel.Leader)]
-        [Command("clear war started")]
+        [Command("set war started")]
         [Summary("Reset the war started message to defaults.")]
         [CommandUsage("{prefix} {command}")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
@@ -93,6 +93,10 @@ namespace WarBot.Modules.GuildCommandModules
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
+        #endregion
+        #region Enable / Disable notifications
+
+
         #endregion
         [RoleLevel(RoleLevel.Leader)]
         [Command("test messages")]
