@@ -166,6 +166,80 @@ namespace WarBot.Modules.GuildCommandModules
         }
 
         #endregion
+        #region Enable / Disable Specific Notifications
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable war prep started")]
+        [Summary("Disables notifications when war prep starts.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task DisableWarPrepStarted()
+        {
+            cfg.Notifications.WarPrepStarted = false;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will no longer send a message when war prep starts.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable war prep started")]
+        [Summary("Enables notifications when war prep starts.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableWarPrepStarted()
+        {
+            cfg.Notifications.WarPrepStarted = true;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will send a message when the war prep starts.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable war prep ending")]
+        [Summary("Disables notifications when war prep is ending.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task DisableWarPrepEnding()
+        {
+            cfg.Notifications.WarPrepEnding = false;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will no longer send a message 15 minutes before war starts");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable war prep ending")]
+        [Summary("Enables notification 15 minutes before end of war")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableWarPrepEnding()
+        {
+            cfg.Notifications.WarPrepEnding = true;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will send messages 15 minutes before war starts");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable war started")]
+        [Summary("Disables notifications when war starts.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task DisableWarStarted()
+        {
+            cfg.Notifications.WarStarted = false;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will no longer send notifications when the war starts.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable war started")]
+        [Summary("Enable notification when war starts.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableWarStarted()
+        {
+            cfg.Notifications.WarStarted = true;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will send notifications when the war starts.");
+        }
+        #endregion
+
         [RoleLevel(RoleLevel.Leader)]
         [Command("test messages")]
         [Summary("This will send a test of each configured war message.")]
