@@ -94,8 +94,76 @@ namespace WarBot.Modules.GuildCommandModules
             await ReplyAsync("Done.");
         }
         #endregion
-        #region Enable / Disable notifications
+        #region Enable / Disable Specific war notifications
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable war")]
+        [Summary("Disables notifications for a specific war. 1=2amCST, 2 = 8amCST, 3 = 2pmCST, 4 = 8pmCST")]
+        [CommandUsage("{prefix} {command} 1|2|3|4")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task DisableWar(int War)
+        {
+            switch (War)
+            {
+                case 1:
+                    cfg.Notifications.War1Enabled = false;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                case 2:
+                    cfg.Notifications.War2Enabled = false;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                case 3:
+                    cfg.Notifications.War3Enabled = false;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                case 4:
+                    cfg.Notifications.War4Enabled = false;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                default:
+                    await ReplyAsync("Please select between 1 and 4. 1 is for 2am central standard time war, while 4 is 8pm CST.");
+                    break;
+            }
+        }
 
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable war")]
+        [Summary("Enables notifications for a specific war. 1=2amCST, 2 = 8amCST, 3 = 2pmCST, 4 = 8pmCST")]
+        [CommandUsage("{prefix} {command} 1|2|3|4")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableWar(int War)
+        {
+            switch (War)
+            {
+                case 1:
+                    cfg.Notifications.War1Enabled = true;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                case 2:
+                    cfg.Notifications.War2Enabled = true;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                case 3:
+                    cfg.Notifications.War3Enabled = true;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                case 4:
+                    cfg.Notifications.War4Enabled = true;
+                    await cfg.SaveConfig();
+                    await ReplyAsync("Done.");
+                    break;
+                default:
+                    await ReplyAsync("Please select between 1 and 4. 1 is for 2am central standard time war, while 4 is 8pm CST.");
+                    break;
+            }
+        }
 
         #endregion
         [RoleLevel(RoleLevel.Leader)]
