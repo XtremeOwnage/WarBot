@@ -17,7 +17,14 @@ namespace WarBot.Modules.GuildCommandModules
     [RequireContext(ContextType.Guild)]
     public class VotingModule : GuildCommandModuleBase
     {
-        [Command("start vote"), Alias("vote", "new vote")]
+        [Command("start vote"), Alias("vote", "new vote", "poll", "new poll")]
+        [Summary("Starts a vote, with configurable options.")]
+        [CommandUsage("{prefix} {command} (TimeSpan) Your question here")]
+        [RoleLevel(RoleLevel.None, RoleMatchType.GREATER_THEN_OR_EQUAL)]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task StartVote_NoTime([Remainder]string Question) => await StartVote(TimeSpan.FromMinutes(5), Question);
+
+        [Command("start vote"), Alias("vote", "new vote", "poll", "new poll")]
         [Summary("Starts a vote, with configurable options.")]
         [CommandUsage("{prefix} {command} (TimeSpan) Your question here")]
         [RoleLevel(RoleLevel.None, RoleMatchType.GREATER_THEN_OR_EQUAL)]
