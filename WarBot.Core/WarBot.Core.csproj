@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Commands\Discord.Net.Commands.csproj" />
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Core\Discord.Net.Core.csproj" />
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Rest\Discord.Net.Rest.csproj" />
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj" />
+    <ProjectReference Include="..\..\..\Tababular\Tababular\Tababular.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,41 @@
 # WarBot
 Warbot is a discord bot designed for the hustle-castle mobile phone game. It is intended to display a notification when wars are starting, to assist with reminding members to deploy their troops.
 
+## What is WarBOT
+
+Warbot is a discord bot designed around the Hustle Castle mobile game. While, many of the features are specific to this game, you do not need to play this game to utilize WarBOT.
+
+## Basic Features
+
+### Discord User/Role Management
+* Can promote, demote, and set user to role(s).
+* Keeps track of the last time a user was online in discord.
+* Keeps track of the last time a user sent a message in discord.
+* Kick Users. Not a huge feature, but, It does leave a nice "Kicked" message.
+
+### Voting
+* Ever need a standarized way to initiate a vote in Discord? WarBOT is here to help!
+	* bot, vote (TimeSpan) Question
+
+### Reminders
+* In addition to WAR reminders for hustle castle, you can also ask WarBOT to remind you of something. This feature is available in both guilds, and via DM to the bot.
+
+### Cleaning up channels
+* You can use WarBOT to delete messages from a channel, with the option to filter on pinned, nonpinned, or all messages.
+
+### New Member Welcome Messages
+* WarBOT can send a greeting message to new users.
+
+## Hustle Castle - Specific Features
+
+### WAR Prep / War Prep Ending / War Started Reminders
+* Toggable notifications when war prep starts, war prep is ending, and war is started.
+	* Customizable messages.
+
+### Keep track of your clan members
+* Can force discord nickname to match in-game nickname.
+* Keeps track of the day they joined.
+
 # Basic Setup
 
 For the most basic setup, you must populate the members role.

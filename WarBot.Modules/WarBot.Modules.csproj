@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dialogs\PollOptionEntryDialog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Dialogs\PollOptionEntryDialog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Commands\Discord.Net.Commands.csproj" />
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Core\Discord.Net.Core.csproj" />
+    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj" />
+    <ProjectReference Include="..\WarBot.Core\WarBot.Core.csproj" />
+    <ProjectReference Include="..\WarBot.Storage\WarBot.Storage.csproj" />
+  </ItemGroup>
+
+
+
+</Project>
