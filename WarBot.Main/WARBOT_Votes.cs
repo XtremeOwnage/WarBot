@@ -63,19 +63,12 @@ namespace WarBot
                     //Ignore bots.
                     Results.Add(opt, votes.Where(o => o.IsBot == false).Count());
                 }
+                var sb = new StringBuilder()
+                    .AppendLine($"POLL RESULTS: {poll.Question}");
+                foreach (var o in Results)
+                    sb.AppendLine($"{o.Value} = {o.Key.Name}");
 
-                StringBuilder r = new StringBuilder()
-                    .AppendLine("```\n(Votes): Option\n```");
-
-                foreach (var opt in Results.OrderByDescending(o => o.Value))
-                    r.AppendLine($"```\n({opt.Value}): {opt.Key.Name}```");
-
-                EmbedBuilder eb = new EmbedBuilder()
-                    .WithTitle($"Poll Results for: {poll.Question}")
-                    .AddField("**Results**", r.ToString());
-
-
-                await Channel.SendMessageAsync(embed: eb.Build());
+                await Channel.SendMessageAsync(sb.ToString());
             }
         }
 
