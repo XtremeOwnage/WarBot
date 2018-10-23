@@ -44,10 +44,8 @@ namespace WarBot.Util
                     if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
                         return;
 
-                    var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
-
                     //Send the message.
-                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, ch));
+                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg));
                 }
                 catch (Exception ex)
                 {
@@ -69,10 +67,8 @@ namespace WarBot.Util
                     if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
                         return;
 
-                    var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
-
                     //Send the message.
-                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, ch));
+                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg));
                 }
                 catch (Exception ex)
                 {
@@ -93,10 +89,8 @@ namespace WarBot.Util
                     if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
                         return;
 
-                    var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements);
-
                     //Send the message.
-                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg, ch));
+                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg));
                 }
                 catch (Exception ex)
                 {

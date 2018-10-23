@@ -15,11 +15,17 @@ namespace WarBot.Modules.MessageTemplates
         /// Else- it will DM the owner of the guild.
         /// </summary>
         /// <param name="cfg"></param>
-        /// <param name="ch"></param>
         /// <param name="embed"></param>
+        /// 
         /// <returns></returns>
-        private static async Task sendWarMessage(IGuildConfig cfg, SocketTextChannel ch, Embed embed)
+        private static async Task sendWarMessage(IGuildConfig cfg, Embed embed)
         {
+            var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements) as SocketTextChannel;
+
+            //If there is no channel configured, abort.
+            if (ch == null)
+                return;
+
             //Check if we can send to that channel.
             if (PermissionHelper.TestBotPermission(ch, ChannelPermission.SendMessages))
             {
@@ -40,11 +46,8 @@ namespace WarBot.Modules.MessageTemplates
                 await dm.SendMessageAsync(embed: embed);
             }
         }
-        public static async Task War_Prep_Started(IGuildConfig cfg, SocketTextChannel ch)
+        public static async Task War_Prep_Started(IGuildConfig cfg)
         {
-            if (ch == null)
-                return;
-
             ///Determine the message to send.
             string Message = "";
             if (string.IsNullOrEmpty(cfg.Notifications.WarPrepStartedMessage))
@@ -59,13 +62,10 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Prep Started")
                 .WithDescription(Message);
 
-            await sendWarMessage(cfg, ch, eb.Build());
+            await sendWarMessage(cfg, eb.Build());
         }
-        public static async Task War_Prep_Ending(IGuildConfig cfg, SocketTextChannel ch)
+        public static async Task War_Prep_Ending(IGuildConfig cfg)
         {
-            if (ch == null)
-                return;
-
             ///Determine the message to send.
             string Message = "";
             if (string.IsNullOrEmpty(cfg.Notifications.WarPrepEndingMessage))
@@ -80,14 +80,10 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Prep Ending")
                 .WithDescription(Message);
 
-            await sendWarMessage(cfg, ch, eb.Build());
+            await sendWarMessage(cfg, eb.Build());
         }
-
-        public static async Task War_Started(IGuildConfig cfg, SocketTextChannel ch)
+        public static async Task War_Started(IGuildConfig cfg)
         {
-            if (ch == null)
-                return;
-
             ///Determine the message to send.
             string Message = "";
             if (string.IsNullOrEmpty(cfg.Notifications.WarStartedMessage))
@@ -102,7 +98,7 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Started")
                 .WithDescription(Message);
 
-            await sendWarMessage(cfg, ch, eb.Build());
+            await sendWarMessage(cfg, eb.Build());
         }
     }
 }
