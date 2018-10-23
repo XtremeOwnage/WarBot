@@ -61,7 +61,7 @@ namespace WarBot.Storage
             }
 
             //Past this point, there was no config stored in the database. Look at the old config files to determine if we can find a json file to update.
-
+            Console.WriteLine("No config found for guild " + Guild.Name);
             var newCfg = Storage.Models.DiscordGuild.Create(Guild);
 
 
@@ -69,6 +69,7 @@ namespace WarBot.Storage
             //There is a old-json based config. lets migrate it to the new database.
             if (!string.IsNullOrEmpty(cfgTxt) && (JsonConvert.DeserializeObject<Legacy.LegacyGuildConfig>(cfgTxt)).IsNotNull(out var oldCfg))
             {
+                Console.WriteLine("Successfully found legacy config to migrate.");
                 //Simple settings.
                 newCfg.BotVersion = oldCfg.BotVersion;
                 newCfg.Website = oldCfg.WebsiteURL;
@@ -116,6 +117,7 @@ namespace WarBot.Storage
             }
             else
             {
+                Console.WriteLine("Setting defaults for new guild.");
                 await newCfg.SetDefaults(Guild);
 
                 newCfg.Initialize(Guild, Save);
@@ -147,9 +149,11 @@ namespace WarBot.Storage
         {
             try
             {
-                var path = Path.Combine("./Guilds/", guild.Id.ToString());
+                var path = Path.Combine("./guilds/", guild.Id.ToString());
                 if (File.Exists(path))
                     return await File.ReadAllTextAsync(path);
+
+                Console.WriteLine("Unable to find legacy config.");
                 return null;
             }
             catch (Exception ex)
