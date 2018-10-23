@@ -15,7 +15,7 @@ namespace WarBot.Storage
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=warbot.db");
+            optionsBuilder.UseSqlite("Data Source=Config/warbot.db");
             optionsBuilder.UseLazyLoadingProxies(true);
         }
 
