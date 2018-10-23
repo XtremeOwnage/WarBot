@@ -10,7 +10,27 @@ namespace WarBot.Modules.GuildCommandModules
 {
     public class ShowConfigModule : GuildCommandModuleBase
     {
-        // ~say hello -> hello
+        [RoleLevel(RoleLevel.Officer)]
+        [Command("show notifications")]
+        [Summary("Shortcut for 'bot, show config notifications'")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task ShowNotifications() => await ShowConfig("notification");
+
+        [RoleLevel(RoleLevel.Officer)]
+        [Command("show channels")]
+        [Summary("Shortcut for 'bot, show config channel'")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task ShowChannels() => await ShowConfig("channel");
+
+        [RoleLevel(RoleLevel.Officer)]
+        [Command("show roles")]
+        [Summary("Shortcut for 'bot, show config role'")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task ShowRoles() => await ShowConfig("role");
+
         [RoleLevel(RoleLevel.Officer)]
         [Command("show config"), Alias("config show")]
         [Summary("Display the configuration for this guild.")]
