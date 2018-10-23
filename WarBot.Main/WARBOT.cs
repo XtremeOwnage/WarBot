@@ -72,11 +72,8 @@ namespace WarBot
             db.Migrate();
             #endregion
 
-            #region Background Job Processing
-
-            //Hangfire uses a lot of static methods, so, we just have to create the placeholder task.
+            Quartz.Logging.LogProvider.SetCurrentLogProvider(new Util.QuartzLogProvider());
             this.Jobs = new Implementation.QuartzJobScheduler(this);
-            #endregion
 
             //Initialize the config repository with an instance of the WarDB from the DI container.
             this.GuildRepo.Initialize(this, db);

@@ -1,6 +1,7 @@
 ﻿using Ninject;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Logging;
 using System;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
@@ -29,6 +30,7 @@ namespace WarBot.Implementation
         Task<bool> IJobScheduler.Delete(string jobId) => scheduler.DeleteJob(JobKey.Create(jobId));
         Task<bool> IJobScheduler.Delete(Core.JobScheduling.IJob job) => scheduler.DeleteJob(JobKey.Create(job.ID));
 
+
         public async Task<Core.JobScheduling.IJob> Schedule<T>(Expression<Action<T>> methodCall, TimeSpan delay)
         {
             try
@@ -44,7 +46,7 @@ namespace WarBot.Implementation
 
                 return new Job(job, this);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -52,33 +54,24 @@ namespace WarBot.Implementation
 
         public async Task<Core.JobScheduling.IJob> RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule)
         {
-            var Action = Expression.Compile();
+            try
+            {
+                var Action = Expression.Compile();
 
-            var job = Job_Action<T>.Create(Action);
-            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                .ForJob(job)
-                .WithCronSchedule(cronSchedule)
-                .Build();
+                var job = Job_Action<T>.Create(Action);
+                var trigger = TriggerBuilder.Create()
+                    .WithCronSchedule(cronSchedule)
+                    .ForJob(job)
+                    .Build();
 
-            await scheduler.ScheduleJob(trigger);
+                await scheduler.ScheduleJob(job, trigger);
 
-            return new Job(job, this);
-        }
-
-        public async Task<Core.JobScheduling.IJob> RecurringJob(string jobID, Expression<Action> Expression, string cronSchedule)
-        {
-            var Action = Expression.Compile();
-
-            var job = Job_Action.Create(Action);
-
-            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                .ForJob(job)
-                .WithCronSchedule(cronSchedule)
-                .Build();
-
-            await scheduler.ScheduleJob(trigger);
-
-            return new Job(job, this);
+                return new Job(job, this);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }
