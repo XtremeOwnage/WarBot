@@ -1,16 +1,12 @@
-﻿using Discord;
+using Discord;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using WarBot.Core;
-using System.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace WarBot.Storage.Models.Voting
+namespace WarBot.Core.Voting
 {
     public class Poll
     {
@@ -22,6 +18,7 @@ namespace WarBot.Storage.Models.Voting
         {
             this.Channel = Channel;
             this.Question = Question;
+            this.EndTime = EndTime;
         }
 
         /// <summary>
@@ -35,10 +32,14 @@ namespace WarBot.Storage.Models.Voting
             this.channel = await Client.GetChannelAsync(this.ChannelId, CacheMode.AllowDownload) as ITextChannel;
             this.message = await channel.GetMessageAsync(this.MessageId, CacheMode.AllowDownload) as IUserMessage;
         }
-
-        public Task End()
+        public void Start(TimeSpan Duration)
         {
-            throw new NotImplementedException();
+            this.IsActive = true;
+            this.EndTime = DateTimeOffset.Now.Add(Duration);
+        }
+        public void End()
+        {
+            this.IsActive = false;
         }
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -49,6 +50,11 @@ namespace WarBot.Storage.Models.Voting
         /// </summary>
         [Required]
         public string Question { get; }
+
+        /// <summary>
+        /// When is the poll scheduled to end.
+        /// </summary>
+        public DateTimeOffset EndTime { get; set; }
 
         #region Channel and Message fields/properties.
         /// <summary>
@@ -110,6 +116,8 @@ namespace WarBot.Storage.Models.Voting
         /// </summary>
         public virtual ICollection<UserVote> Votes { get; } = new List<UserVote>();
 
+        [NotMapped]
+        public bool IsActive { get; private set; } = true;
 
         public IEnumerable<(IEmote Emote, string OptionName, int Votes)> GetResults()
         {

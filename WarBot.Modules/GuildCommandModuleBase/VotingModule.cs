@@ -3,14 +3,13 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Humanizer;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
 using WarBot.Core.ModuleType;
-using WarBot.Storage.Models.Voting;
+using WarBot.Core.Voting;
 
 namespace WarBot.Modules.GuildCommandModules
 {
@@ -57,13 +56,12 @@ namespace WarBot.Modules.GuildCommandModules
             };
 
 
-        Poll Poll;
-        TimeSpan duration;
+        private Poll Poll;
+        private TimeSpan duration;
 
-        public PollQuestionEntryDialog(GuildCommandContext context, string question, TimeSpan Duration)
-            : base(context)
+        public PollQuestionEntryDialog(GuildCommandContext context, string question, TimeSpan Duration) : base(context)
         {
-            this.Poll = new Poll(context.cfg, context.Channel.Id, question);
+            this.Poll = new Poll(context.Channel, question);
             this.duration = Duration;
         }
         public override async Task ProcessMessage(SocketUserMessage input)
@@ -74,9 +72,9 @@ namespace WarBot.Modules.GuildCommandModules
                 return;
             else if (msg.Equals("remove", System.StringComparison.OrdinalIgnoreCase) || msg.Equals("undo", System.StringComparison.OrdinalIgnoreCase))
             {
-                if (Poll.EmojiOption.Any())
+                if (Poll.Options.Any())
                 {
-                    Poll.EmojiOption.Remove(Poll.EmojiOption.Last().Key);
+                    Poll.Options.Remove(Poll.Options.Last());
                     await Channel.SendMessageAsync($"Item Removed.");
                     return;
                 }
@@ -98,14 +96,14 @@ namespace WarBot.Modules.GuildCommandModules
                 {
                     var sb = new StringBuilder()
                         .AppendLine($"POLL: {Poll.Question}");
-                    foreach (var o in Poll.EmojiOption)
-                        sb.AppendLine($"{o.Key} = {o.Value}");
+                    foreach (var o in Poll.Options)
+                        sb.AppendLine($"{o.Emote} = {o.Name}");
 
                     var M = await Channel.SendMessageAsync(sb.ToString());
                     Poll.Message = M;
 
-                    foreach (var o in Poll.EmojiOption)
-                        await M.AddReactionAsync(o.Key);
+                    foreach (var o in Poll.Options)
+                        await M.AddReactionAsync(o.Emote);
 
                     await Channel.SendMessageAsync($"This poll will be automatically closed in {duration.Humanize()}.");
 
@@ -121,14 +119,17 @@ namespace WarBot.Modules.GuildCommandModules
             }
             else //Add new option.
             {
-                if (Poll.EmojiOption.Count >= Emotes.Length)
+                if (Poll.Options.Count >= Emotes.Length)
                 {
                     await Channel.SendMessageAsync($"You may only add up to {Emotes.Length} options.");
                 }
                 else
                 {
-                    var nextReaction = this.Emotes.FirstOrDefault(o => !Poll.EmojiOption.ContainsKey(o));
-                    Poll.EmojiOption.Add(nextReaction, msg);
+                    //Get a list of emotes which are currently used.
+                    var usedEmotes = Poll.Options.Select(o => o.Emote);
+                    //Find the first emote, which is not currently in use.
+                    var nextReaction = this.Emotes.FirstOrDefault(o => !usedEmotes.Contains(o));
+                    Poll.Options.Add(new PollOption(msg, nextReaction));
                     return;
                 }
             }

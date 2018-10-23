@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WarBot.Core.Dialogs;
 using WarBot.Core.JobScheduling;
+using WarBot.Core.Voting;
 
 namespace WarBot.Core
 {
@@ -53,11 +54,11 @@ namespace WarBot.Core
         /// </summary>
         CommandService CommandService { get; }
 
-        ///// <summary>
-        ///// Adds a poll to the bot.
-        ///// </summary>
-        ///// <param name="Poll"></param>
-        //Task AddPoll(IPoll Poll, TimeSpan WhenDone);
+        /// <summary>
+        /// Adds a poll to the bot.
+        /// </summary>
+        /// <param name="Poll"></param>
+        Task AddPoll(Poll Poll, TimeSpan WhenDone);
 
         /// <summary>
         /// Ends a poll.

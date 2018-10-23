@@ -14,12 +14,10 @@
 
   <ItemGroup>
     <Compile Remove="Dialogs\PollOptionEntryDialog.cs" />
-    <Compile Remove="GuildCommandModuleBase\VotingModule.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Dialogs\PollOptionEntryDialog.cs" />
-    <None Include="GuildCommandModuleBase\VotingModule.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,12 @@ namespace WarBot.Core
             return Input != null;
         }
 
+        public static bool IsNotNullOrEmpty<T>(this IEnumerable<T> Input, out IEnumerable<T> Output)
+        {
+            Output = Input;
+            return Input != null && Input.Count() > 0;
+        }
+
         public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> source, int batchSize)
         {
             using (var enumerator = source.GetEnumerator())

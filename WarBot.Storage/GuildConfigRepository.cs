@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WarBot.Core;
-using WarBot.Storage.Models.Voting;
 
 namespace WarBot.Storage
 {

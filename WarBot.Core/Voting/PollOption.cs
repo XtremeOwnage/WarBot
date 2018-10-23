@@ -1,9 +1,9 @@
-﻿using Discord;
+using Discord;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace WarBot.Storage.Models.Voting
+namespace WarBot.Core.Voting
 {
     public class PollOption
     {
