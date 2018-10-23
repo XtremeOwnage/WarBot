@@ -10,7 +10,37 @@ namespace WarBot.Modules.MessageTemplates
 {
     public static class WAR_Notifications
     {
-        public static async Task War_Prep_Started(IGuildConfig cfg, ITextChannel ch)
+        /// <summary>
+        /// Sends an embed to the selected channel, if we have the proper permissions.
+        /// Else- it will DM the owner of the guild.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="ch"></param>
+        /// <param name="embed"></param>
+        /// <returns></returns>
+        private static async Task sendWarMessage(IGuildConfig cfg, SocketTextChannel ch, Embed embed)
+        {
+            //Check if we can send to that channel.
+            if (PermissionHelper.TestBotPermission(ch, ChannelPermission.SendMessages))
+            {
+                await ch.SendMessageAsync(embed: embed);
+            }
+            else
+            {
+                Console.WriteLine($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}");
+                //We don't have permissions to post to that channel. Lets DM the guild owner.
+                var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
+
+                StringBuilder sb = new StringBuilder()
+                    .AppendLine("ERROR: Missing Permissions")
+                    .AppendLine($"You are receiving this error, because I do not have the proper permissions to send the notification to channel {ch.Name}.")
+                    .AppendLine("Please validate I have the 'SEND_MESSAGES' permission for the specified channel.");
+
+                await dm.SendMessageAsync(sb.ToString());
+                await dm.SendMessageAsync(embed: embed);
+            }
+        }
+        public static async Task War_Prep_Started(IGuildConfig cfg, SocketTextChannel ch)
         {
             if (ch == null)
                 return;
@@ -29,10 +59,9 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Prep Started")
                 .WithDescription(Message);
 
-            await ch.SendMessageAsync(embed: eb.Build());
+            await sendWarMessage(cfg, ch, eb.Build());
         }
-
-        public static async Task War_Prep_Ending(IGuildConfig cfg, ITextChannel ch)
+        public static async Task War_Prep_Ending(IGuildConfig cfg, SocketTextChannel ch)
         {
             if (ch == null)
                 return;
@@ -51,10 +80,10 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Prep Ending")
                 .WithDescription(Message);
 
-            await ch.SendMessageAsync(embed: eb.Build());
+            await sendWarMessage(cfg, ch, eb.Build());
         }
 
-        public static async Task War_Started(IGuildConfig cfg, ITextChannel ch)
+        public static async Task War_Started(IGuildConfig cfg, SocketTextChannel ch)
         {
             if (ch == null)
                 return;
@@ -73,7 +102,7 @@ namespace WarBot.Modules.MessageTemplates
                 .WithTitle("WAR Started")
                 .WithDescription(Message);
 
-            await ch.SendMessageAsync(embed: eb.Build());
+            await sendWarMessage(cfg, ch, eb.Build());
         }
     }
 }
