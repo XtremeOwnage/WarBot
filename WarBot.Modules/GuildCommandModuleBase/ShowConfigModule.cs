@@ -12,7 +12,7 @@ namespace WarBot.Modules.GuildCommandModules
     {
         // ~say hello -> hello
         [RoleLevel(RoleLevel.Officer)]
-        [Command("show config"), Alias("config show")]       
+        [Command("show config"), Alias("config show")]
         [Summary("Display the configuration for this guild.")]
         [CommandUsage("{prefix} {command} [role, channel, notification, basic, ALL]")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
@@ -45,7 +45,7 @@ namespace WarBot.Modules.GuildCommandModules
             }
 
             #endregion
-          
+
             #region Show Basic Configuration
             if (parts.Contains(c_BASIC))
             {
@@ -106,10 +106,10 @@ namespace WarBot.Modules.GuildCommandModules
                 var embed = new EmbedBuilder()
                     .WithTitle("Bot Configuration - War Notifications")
                     .AddField("War Prep Started Enabled", cfg.Notifications.WarPrepStarted)
-                    .AddField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
                     .AddField("War Prep Ending Enabled", cfg.Notifications.WarPrepEnding)
-                    .AddField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
                     .AddField("War Started Enabled", cfg.Notifications.WarStarted)
+                    .AddField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
+                    .AddField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
                     .AddField("War Started Message", cfg.Notifications.WarStartedMessage)
                     .AddField("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
                     .AddField("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
