@@ -1,27 +1,3 @@
-export function ShowGuilds(bot: Client): RichEmbed[] {
-    let Embeds: RichEmbed[] = new Array<RichEmbed>();
-
-    let GuildsArray: Array<Guild> = bot.guilds.array().sort(function (a: Guild, b: Guild): number {
-        return a.memberCount - b.memberCount;
-    }).reverse();
-    let Guilds: Array<Guild[]> = new Array<Guild[]>();
-
-    while (GuildsArray.length > 0)
-        Guilds.push(GuildsArray.splice(0, 20));
-
-    Guilds.forEach(function (guilds: Guild[]) {
-        let embed: RichEmbed = new RichEmbed()
-            .setTitle("Current Guilds (And Member Count) Using WarBot");
-        guilds.forEach(function (guild: Guild) {
-            embed.addField(guild.name, guild.memberCount, false);
-        });
-        Embeds.push(embed);
-    });
-
-
-    return Embeds;
-}
-
 export function DefaultChannelSet(ch: TextChannel): RichEmbed {
     const embed = new RichEmbed()
         .setTitle("Default Member Channel Configured")
