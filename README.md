@@ -36,22 +36,40 @@ Warbot is a discord bot designed around the Hustle Castle mobile game. While, ma
 * Can force discord nickname to match in-game nickname.
 * Keeps track of the day they joined.
 
-# Basic Setup
+# Guided Setup
 
-For the most basic setup, you must populate the members role.
+To have WarBOT walk assist you with configuration, just use:
 
-* bot, set member channel #general
+* bot, setup
 
-# Setup
+# Advanced Setup
 
 The following commands should provision most, if not all features of WarBot
 
-* bot, set member channel #General
-* bot, set officer channel #General
-* bot, set member role @Members
-* bot, set officer role @Officers
-* bot, set leader role @Admins
-* bot, set website http://my_site_here/
+If you wish to change WarBOT's prefix,
+* bot, set prefix !
+* bot, set prefix bot,
+
+To list available roles you can set, use
+* bot, set role 
+
+For examples on how to set roles:
+* bot, set role guest @Guest
+* bot, set role SuperMember @SpecialMembers
+* bot, set role Leader @Leaders
+
+List list configurable channels, use
+* bot, set channel
+
+For Examples on how to set channels:
+* bot, set channel CH_WarBot_Updates #bot_news
+* bot, set channel CH_WAR_Announcements #WAR
+* bot, set channel CH_Officers #officers
+* bot, set channel CH_New_Users #welcome
+
+Other common settings
+* bot, set website Please visit http://my_site_here/ to see our website.
+* bot, set loot For directions on how to request warchest loot, please see #War_Loot_Rules
 
 # Validate Settings
 
