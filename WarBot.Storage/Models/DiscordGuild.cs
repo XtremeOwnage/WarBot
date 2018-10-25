@@ -160,7 +160,7 @@ namespace WarBot.Storage.Models
         public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc)
         {
             //Initialize the stored references.
-            foreach (var role in this.Roles)
+            foreach (var role in this.Roles.ToList())
             {
                 var dRole = Guild.GetRole(role.EntityId);
                 if (dRole != null)
