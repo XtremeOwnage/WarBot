@@ -85,6 +85,11 @@ namespace WarBot.Storage.Models
         public virtual List<GuildChannel> Channels { get; } = new List<GuildChannel>();
 
         #region Channels and Roles
+        //Clear's all configured roles.
+        public void ClearAllRoles()
+        {
+            this.Roles.Clear();
+        }
         public IDictionary<RoleLevel, IRole> GetRoleMap()
         {
             return this.Roles
