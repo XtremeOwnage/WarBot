@@ -83,5 +83,16 @@ namespace WarBot.Modules.GuildCommandModules
 
             await ReplyAsync($"The greeting has been disabled.");
         }
+
+        
+        [RoleLevel(RoleLevel.ServerAdmin)]
+        [Command("setup")]
+        [Summary("Starts the warbot configuration dialog.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnterSetup()
+        {
+            await this.bot.OpenDialog(new Dialogs.SetupDialog(this.Context));
+        }
     }
 }
