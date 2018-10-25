@@ -20,12 +20,19 @@ namespace WarBot.Implementation
         }
         public Task Execute(IJobExecutionContext context)
         {
-            var kernel = WARBOT.kernel;
-            var instance = kernel.Get<T>();
+            try
+            {
+                var kernel = WARBOT.kernel;
+                var instance = kernel.Get<T>();
 
-            var action = context.MergedJobDataMap["action"] as Action<T>;
+                var action = context.MergedJobDataMap["action"] as Action<T>;
 
-            return Task.Run(() => action.Invoke(instance));
+                return Task.Run(() => action.Invoke(instance));
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
     }
 }
