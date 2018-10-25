@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace WarBot.Storage
     /// </summary>
     public class GuildConfigRepository : IGuildConfigRepository
     {
-        private Dictionary<ulong, IGuildConfig> configStore;
+        private ConcurrentDictionary<ulong, IGuildConfig> configStore;
         private IWARBOT bot;
         private WarDB db;
 
@@ -24,7 +25,7 @@ namespace WarBot.Storage
         {
             this.bot = Bot;
             this.db = warDB;
-            configStore = new Dictionary<ulong, IGuildConfig>();
+            configStore = new ConcurrentDictionary<ulong, IGuildConfig>();
 
         }
 
@@ -33,7 +34,7 @@ namespace WarBot.Storage
         public void removeGuild(SocketGuild Guild)
         {
             if (configStore.ContainsKey(Guild.Id))
-                configStore.Remove(Guild.Id);
+                configStore.TryRemove(Guild.Id, out _);
         }
 
         public async Task<IGuildConfig> GetConfig(SocketGuild Guild)
@@ -54,7 +55,7 @@ namespace WarBot.Storage
                 g.Initialize(Guild, Save);
 
                 //Add the object to the local cache.
-                configStore.Add(Guild.Id, g);
+                configStore.TryAdd(Guild.Id, g);
 
                 //Return the cached object.
                 return configStore[Guild.Id];
@@ -129,7 +130,7 @@ namespace WarBot.Storage
             await db.SaveWithOutput();
 
 
-            configStore.Add(Guild.Id, newCfg);
+            configStore.TryAdd(Guild.Id, newCfg);
             return configStore[Guild.Id];
         }
 
