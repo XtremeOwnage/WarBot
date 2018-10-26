@@ -59,7 +59,7 @@ namespace WarBot
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
             kernel = new StandardKernel();
-            kernel.Bind<IWARBOT>().ToConstant(this);
+            kernel.Bind<IWARBOT, WARBOT>().ToConstant(this);
             kernel.Bind<IDiscordClient>().ToConstant(this.Client);
             kernel.Bind<ILog>().ToConstant(this.Log);
             kernel.Bind<IGuildConfigRepository>().ToConstant(this.GuildRepo);
@@ -88,23 +88,23 @@ namespace WarBot
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.
             Client.ChannelDestroyed += Client_ChannelDestroyed;
+            Client.Disconnected += Client_Disconnected;
             Client.GuildAvailable += Client_GuildAvailable;
             Client.JoinedGuild += Client_JoinedGuild;
             Client.LeftGuild += Client_LeftGuild;
             Client.Log += Client_Log;
+            Client.MessageDeleted += Client_MessageDeleted_Poll;
             Client.MessageReceived += Client_MessageReceived;
+            Client.ReactionAdded += Client_ReactionAdded;
+            Client.ReactionRemoved += Client_ReactionRemoved;
             Client.Ready += Client_Ready;
             Client.RoleDeleted += Client_RoleDeleted;
             Client.UserJoined += Client_UserJoined;
             Client.UserLeft += Client_UserLeft;
-            Client.Disconnected += Client_Disconnected;
-            Client.ReactionAdded += Client_ReactionAdded;
-            Client.ReactionRemoved += Client_ReactionRemoved;
-            Client.MessageDeleted += Client_MessageDeleted_Poll;
 
             ////Login  and start discord api.
-             Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true).Wait();
-             Client.StartAsync().Wait();
+            Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true).Wait();
+            Client.StartAsync().Wait();
         }
 
         private async Task Client_Disconnected(Exception arg)
@@ -135,15 +135,15 @@ namespace WarBot
             catch (Exception ex)
             {
                 //Write exception to console, force bot to stop.
-                Console.WriteLine(ex.Message);
+                await Console.Out.WriteLineAsync(ex.Message);
                 StopToken.Cancel();
             }
         }
 
-        private async Task Client_Ready()
+        private Task Client_Ready()
         {
             //Set status to online.
-            await Client.SetStatusAsync(UserStatus.Online);
+            return Client.SetStatusAsync(UserStatus.Online);
         }
     }
 }
