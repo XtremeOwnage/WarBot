@@ -16,9 +16,11 @@ namespace WarBot.Core.Voting
 
         public UserVote(IUser User, PollOption Option)
         {
+            this.User = User;
             this.UserId = User.Id;
             this.Option = Option;
         }
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; private set; }
 
@@ -29,6 +31,9 @@ namespace WarBot.Core.Voting
 
         [Required]
         public ulong UserId { get; }
+
+        [NotMapped]
+        public IUser User { get; internal set; }
 
         [Required, ForeignKey(nameof(Option))]
         public int OptionID { get; set; }
