@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using WarBot.Attributes;
@@ -22,5 +23,23 @@ namespace WarBot.Modules.CommandModuleBase
             await ReplyAsync(embed: eb.Build());
             System.Environment.Exit(0);
         }
+
+        [RoleLevel(RoleLevel.GlobalAdmin)]
+        [Command("start job")]
+        [Summary("Forces the scheduler to execute the provided job immediatly.")]
+        [CommandUsage("{prefix} {command} (job name)")]
+        public async Task InvokeJob(string Name)
+        {
+            try
+            {
+                await this.bot.Jobs.ExecuteJob(Name);
+                await ReplyAsync("Done.");
+            }
+            catch(Exception ex)
+            {
+                await ReplyAsync(ex.Message);
+            }
+        }
+
     }
 }

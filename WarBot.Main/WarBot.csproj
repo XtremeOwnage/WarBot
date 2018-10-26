@@ -39,9 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Commands\Discord.Net.Commands.csproj" />
-    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.Core\Discord.Net.Core.csproj" />
-    <ProjectReference Include="..\..\..\Discord.Net\src\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj" />
     <ProjectReference Include="..\WarBot.Core\WarBot.Core.csproj" />
     <ProjectReference Include="..\WarBot.Modules\WarBot.Modules.csproj" />
     <ProjectReference Include="..\WarBot.Storage\WarBot.Storage.csproj" />

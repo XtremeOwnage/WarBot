@@ -87,9 +87,10 @@ namespace WarBot
                         .WithTitle("WarBOT")
                         .WithColor(Color.Green)
                         .WithDescription("Thanks for inviting me to your server. I will send you notifications related to Hustle Castle war events.")
-                        .AddBlankField()
+                        .AddField("_ _", "_ _")
                         .AddField("For Help", $"Just type 'bot, help' or {arg.CurrentUser.Mention} help")
                         .AddField("For Support", "Either click this message or contact <@381654208073433091>.")
+                        .AddField("To Configure Me", "Have a server admin type: **bot, setup**")
                         .WithUrl("https://github.com/XtremeOwnage/WarBot")
                         .WithImageUrl("http://i1223.photobucket.com/albums/dd516/ericmck2000/download.jpg");
 

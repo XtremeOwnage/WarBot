@@ -24,6 +24,11 @@ Instead of a member's channel, officer's channel, etc... You now have:
 
 # New Commands / Updated Commands
 
+### Guided Setup Process
+* bot, setup
+
+This will guide you though the complete setup process, and ask you simple questions.
+
 ### Voting
 - You can now initiate votes, with up to 10 options.
 ```

@@ -85,6 +85,11 @@ namespace WarBot.Storage.Models
         public virtual List<GuildChannel> Channels { get; } = new List<GuildChannel>();
 
         #region Channels and Roles
+        //Clear's all configured roles.
+        public void ClearAllRoles()
+        {
+            this.Roles.Clear();
+        }
         public IDictionary<RoleLevel, IRole> GetRoleMap()
         {
             return this.Roles
@@ -160,7 +165,7 @@ namespace WarBot.Storage.Models
         public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc)
         {
             //Initialize the stored references.
-            foreach (var role in this.Roles)
+            foreach (var role in this.Roles.ToList())
             {
                 var dRole = Guild.GetRole(role.EntityId);
                 if (dRole != null)
@@ -171,7 +176,7 @@ namespace WarBot.Storage.Models
 
             }
 
-            foreach (var channel in this.Channels)
+            foreach (var channel in this.Channels.ToList())
             {
                 var ch = Guild.GetChannel(channel.EntityId) as ITextChannel;
                 if (ch != null)

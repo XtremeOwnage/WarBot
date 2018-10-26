@@ -31,6 +31,12 @@ namespace WarBot.Core.Voting
         {
             this.channel = await Client.GetChannelAsync(this.ChannelId, CacheMode.AllowDownload) as ITextChannel;
             this.message = await channel.GetMessageAsync(this.MessageId, CacheMode.AllowDownload) as IUserMessage;
+
+            //Populate the users.
+            foreach (var vote in Votes)
+            {
+                vote.User = await Client.GetUserAsync(vote.UserId);
+            }
         }
         public void Start(TimeSpan Duration)
         {

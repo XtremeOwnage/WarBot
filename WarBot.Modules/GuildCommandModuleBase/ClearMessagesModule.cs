@@ -44,12 +44,7 @@ namespace WarBot.Modules.GuildCommandModules
                 {
                     //If there are messages to bulk delete, do it.
                     if (ToBulkDelete.Count > 0)
-                        await Context.GuildChannel.DeleteMessagesAsync(ToBulkDelete);
-                    //Once everything has been bulk deleted, start deleting one by one.
-                    //else if (matchingResults.Count() > 0)
-                    //    foreach (IMessage msg in matchingResults)
-                    //        await msg.DeleteAsync();
-                    //If nothing else to delete, stop deleting stuff.
+                        await Context.GuildChannel.DeleteMessagesAsync(ToBulkDelete);       
                     else
                         break;
                 }

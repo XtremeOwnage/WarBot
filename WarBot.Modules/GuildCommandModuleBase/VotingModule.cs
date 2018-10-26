@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Humanizer;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace WarBot.Modules.GuildCommandModules
     [RequireContext(ContextType.Guild)]
     public class VotingModule : GuildCommandModuleBase
     {
-        [Command("start vote"), Alias("vote", "new vote")]
+        [Command("start vote"), Alias("vote", "new vote", "poll", "new poll", "start poll")]
         [Summary("Starts a vote, with configurable options.")]
         [CommandUsage("{prefix} {command} (TimeSpan) Your question here")]
         [RoleLevel(RoleLevel.None, RoleMatchType.GREATER_THEN_OR_EQUAL)]
@@ -25,18 +26,31 @@ namespace WarBot.Modules.GuildCommandModules
         public async Task StartVote(TimeSpan HowLong, [Remainder]string Question)
         {
             if (String.IsNullOrEmpty(Question))
-            {
-                await ReplyAsync($"You must ask a question.");
-            }
+                await bot.OpenDialog(new PollQuestionEntryDialog(this.Context, HowLong));
             else
-            {
-                await Context.Channel.SendMessageAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
-                              "\r\nIf this was accidental, type 'stop' to abort." +
-                              "\r\nYou may also type 'remove' or 'undo' to remove the last option added.");
-
                 await bot.OpenDialog(new PollQuestionEntryDialog(this.Context, Question, HowLong));
-            }
         }
+
+        [Command("start vote"), Alias("vote", "new vote", "poll", "new poll", "start poll")]
+        [Summary("Starts a vote, with configurable options.")]
+        [CommandUsage("{prefix} {command} (timespan)")]
+        [RoleLevel(RoleLevel.None, RoleMatchType.GREATER_THEN_OR_EQUAL)]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task StartVote_NoTime(TimeSpan Howlong) => await StartVote(Howlong, null);
+
+        [Command("start vote"), Alias("vote", "new vote", "poll", "new poll", "start poll")]
+        [Summary("Starts a vote, with configurable options.")]
+        [CommandUsage("{prefix} {command} Your question here")]
+        [RoleLevel(RoleLevel.None, RoleMatchType.GREATER_THEN_OR_EQUAL)]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task StartVote_NoTime([Remainder]string Question) => await StartVote(TimeSpan.FromMinutes(5), Question);
+
+        [Command("start vote"), Alias("vote", "new vote", "poll", "new poll", "start poll")]
+        [Summary("Starts a vote, with configurable options.")]
+        [CommandUsage("{prefix} {command}")]
+        [RoleLevel(RoleLevel.None, RoleMatchType.GREATER_THEN_OR_EQUAL)]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task StartVote_NoParams() => await StartVote_NoTime(null);
     }
 
     public class PollQuestionEntryDialog : WarBot.Core.Dialogs.SocketGuildDialogContextBase
@@ -56,66 +70,95 @@ namespace WarBot.Modules.GuildCommandModules
             };
 
 
+        private State currState;
         private Poll Poll;
         private TimeSpan duration;
+        private List<IMessage> cleanupMessages = new List<IMessage>();
 
         public PollQuestionEntryDialog(GuildCommandContext context, string question, TimeSpan Duration) : base(context)
         {
             this.Poll = new Poll(context.Channel, question);
             this.duration = Duration;
+            startStep(State.GET_OPTIONS).Wait();
+        }
+        public PollQuestionEntryDialog(GuildCommandContext context, TimeSpan Duration) : base(context)
+        {
+            this.duration = Duration;
+            startStep(State.GET_QUESTION).Wait();
+        }
+
+        private async Task startStep(State step)
+        {
+            currState = step;
+            switch (step)
+            {
+                case State.GET_QUESTION:
+                    cleanupMessages.Add(Channel.SendMessageAsync("Please let me know what the poll's topic is.").Result);
+                    break;
+                case State.GET_OPTIONS:
+                    cleanupMessages.Add(Channel.SendMessageAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
+                      "\r\nIf this was accidental, type 'stop' to abort." +
+                      "\r\nYou may also type 'remove' or 'undo' to remove the last option added.").Result);
+                    break;
+                case State.DONE:
+                    Bot.AddPoll(Poll, this.duration);
+                    goto case State.CLEANUP;
+                case State.CANCELLED:
+                    await Channel.SendMessageAsync($"Poll creation cancelled.");
+                    goto case State.CLEANUP;
+
+                case State.CLEANUP:
+                    //Cleanup the messages from this poll.
+                    await Channel.DeleteMessagesAsync(cleanupMessages);
+                    await Bot.CloseDialog(this);
+                    break;
+            }
+
         }
         public override async Task ProcessMessage(SocketUserMessage input)
         {
             var msg = input.Content;
+            var cmd = input.Content.Trim().ToLowerInvariant();
+
+            //Delete this message after the dialog is over.
+            cleanupMessages.Add(input);
 
             if (string.IsNullOrEmpty(msg))
                 return;
-            else if (msg.Equals("remove", System.StringComparison.OrdinalIgnoreCase) || msg.Equals("undo", System.StringComparison.OrdinalIgnoreCase))
+
+            if (cmd.Equals("stop") || cmd.Equals("cancel"))
             {
+                await startStep(State.CANCELLED);
+                return;
+            }
+            else if (currState == State.GET_QUESTION)
+            {
+                this.Poll = new Poll(Channel, msg);
+                cleanupMessages.Add(Channel.SendMessageAsync($"The topic has been set to:\r\n**{msg}**").Result);
+                await startStep(State.GET_OPTIONS);
+            }
+            else if (currState != State.GET_OPTIONS)
+                throw new Exception("This shouldn't be possible? Something broke.");
+            else if ((cmd.Equals("remove") || cmd.Equals("undo")))
+            {
+                //Cleanup the message.
                 if (Poll.Options.Any())
                 {
                     Poll.Options.Remove(Poll.Options.Last());
-                    await Channel.SendMessageAsync($"Item Removed.");
+                    cleanupMessages.Add(Channel.SendMessageAsync($"Item Removed.").Result);
                     return;
                 }
                 else
-                {
-                    await Channel.SendMessageAsync("There were no questions in the list.");
-                    return;
-                }
+                    cleanupMessages.Add(Channel.SendMessageAsync("There were no questions in the list.").Result);
             }
-            else if (msg.Equals("stop", System.StringComparison.OrdinalIgnoreCase))
+            else if (msg.Equals("done"))
             {
-                await Channel.SendMessageAsync($"Poll creation cancelled.");
-                await Bot.CloseDialog(this);
-                return;
-            }
-            else if (msg.Equals("done", System.StringComparison.OrdinalIgnoreCase))
-            {
-                try
-                {
-                    var sb = new StringBuilder()
-                        .AppendLine($"POLL: {Poll.Question}");
-                    foreach (var o in Poll.Options)
-                        sb.AppendLine($"{o.Emote} = {o.Name}");
-
-                    var M = await Channel.SendMessageAsync(sb.ToString());
-                    Poll.Message = M;
-
-                    foreach (var o in Poll.Options)
-                        await M.AddReactionAsync(o.Emote);
-
-                    await Channel.SendMessageAsync($"This poll will be automatically closed in {duration.Humanize()}.");
-
-                    await Bot.AddPoll(Poll, this.duration);
-
-                    await Bot.CloseDialog(this);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    await Channel.SendMessageAsync(ex.Message);
-                }
+                if (Poll.Options.Count == 0)
+                    cleanupMessages.Add(Channel.SendMessageAsync("You have not added any options to the poll. Please provide an option.").Result);
+                else if (Poll.Options.Count < 2)
+                    cleanupMessages.Add(Channel.SendMessageAsync("You have not added enough options to the poll. You must provide at least two options.").Result);
+                else
+                    await startStep(State.DONE);
             }
             else //Add new option.
             {
@@ -133,6 +176,21 @@ namespace WarBot.Modules.GuildCommandModules
                     return;
                 }
             }
+        }
+
+        private enum State
+        {
+            GET_QUESTION = 0,
+            GET_OPTIONS = 1,
+
+            //Poll data entry is completed.
+            DONE = 2,
+
+            //Poll was cancelled.
+            CANCELLED = 3,
+
+            //Cleanup step.
+            CLEANUP = 4,
         }
     }
 }

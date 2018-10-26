@@ -239,18 +239,10 @@ namespace WarBot.Modules.GuildCommandModules
             var CannotManageTheseRoles = Map.Where(o => o.Value.Position >= MyHighestRole);
             if (CannotManageTheseRoles.Count() > 0)
             {
-                sb.AppendLine("I cannot add or remove users from these roles specified in my configuration, because the roles are equal to, or above my current role.");
-
                 foreach (var x in CannotManageTheseRoles.ToArray())
                 {
                     //Remove those values from the role map.
                     Map.Remove(x.Key);
-
-                    //Append the output text.
-                    if (x.Value.IsMentionable)
-                        sb.AppendLine($"\tRole {x.Key.ToString()}: {x.Value.Mention}");
-                    else
-                        sb.AppendLine($"\tRole {x.Key.ToString()}: {x.Value.Name}");
                 }
             }
         }

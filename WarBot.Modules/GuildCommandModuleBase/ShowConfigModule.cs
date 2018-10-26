@@ -70,10 +70,14 @@ namespace WarBot.Modules.GuildCommandModules
             if (parts.Contains(c_BASIC))
             {
                 var embed = new EmbedBuilder()
-                    .WithTitle("Bot Configuration - Basic")
-                    .AddField("Website Text", cfg.Website)
-                    .AddField("Loot Text", cfg.Loot)
-                    .AddField("Prefix", cfg.Prefix);
+                    .WithTitle("Bot Configuration - Basic");
+
+                if (!string.IsNullOrWhiteSpace(cfg.Website))
+                    embed.AddField("Website Text", cfg.Website);
+                if (!string.IsNullOrWhiteSpace(cfg.Loot))
+                    embed.AddField("Loot Text", cfg.Loot);
+                if (!string.IsNullOrWhiteSpace(cfg.Prefix))
+                    embed.AddField("Prefix", cfg.Prefix);
 
                 await ReplyAsync(embed: embed.Build());
             }
@@ -127,10 +131,16 @@ namespace WarBot.Modules.GuildCommandModules
                     .WithTitle("Bot Configuration - War Notifications")
                     .AddField("War Prep Started Enabled", cfg.Notifications.WarPrepStarted)
                     .AddField("War Prep Ending Enabled", cfg.Notifications.WarPrepEnding)
-                    .AddField("War Started Enabled", cfg.Notifications.WarStarted)
-                    .AddField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage)
-                    .AddField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage)
-                    .AddField("War Started Message", cfg.Notifications.WarStartedMessage)
+                    .AddField("War Started Enabled", cfg.Notifications.WarStarted);
+
+                if (!string.IsNullOrWhiteSpace(cfg.Notifications.WarPrepStartedMessage))
+                    embed.AddField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage);
+                if (!string.IsNullOrWhiteSpace(cfg.Notifications.WarPrepEndingMessage))
+                    embed.AddField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage);
+                if (!string.IsNullOrWhiteSpace(cfg.Notifications.WarStartedMessage))
+                    embed.AddField("War Started Message", cfg.Notifications.WarStartedMessage);
+
+                embed
                     .AddField("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
                     .AddField("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
                     .AddField("War 3 Enabled (2pm CST)", cfg.Notifications.War3Enabled)

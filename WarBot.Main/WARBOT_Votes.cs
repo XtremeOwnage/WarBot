@@ -10,10 +10,11 @@ using WarBot.Core.Voting;
 using WarBot.Storage;
 using System.Collections.Generic;
 using System.Text;
+using Humanizer;
 
 namespace WarBot
 {
-    public partial class WARBOT
+    public partial class WARBOT : IWARBOT
     {
         /// <summary>
         /// Dialogs, will force a specific user/channel combination, into a "stateful" conversation with the bot.
@@ -26,19 +27,69 @@ namespace WarBot
         //ulong = messageID, Poll = Poll results.
         private ConcurrentDictionary<ulong, Poll> ActivePolls { get; } = new ConcurrentDictionary<ulong, Poll>();
 
-        public Task AddPoll(Poll Poll, TimeSpan TriggerWhen)
+        //Holds a list of pending votes for a poll.
+        private ConcurrentQueue<(ulong MessageId, ulong UserId, IEmote Emote, bool Add)> ReactionQueue = new ConcurrentQueue<(ulong MessageId, ulong UserId, IEmote Emote, bool Add)>();
+
+        private readonly object PollLock = new object();
+        #region Discord.net events
+        //Enqueues the data to a queue to prevent from blocking the api.
+        private Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
         {
+            ReactionQueue.Enqueue((arg3.MessageId, arg3.UserId, arg3.Emote, false));
+            return Task.CompletedTask;
+        }
+        //Enqueues the data to a queue to prevent from blocking the api.
+        private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        {
+            ReactionQueue.Enqueue((arg3.MessageId, arg3.UserId, arg3.Emote, true));
+            return Task.CompletedTask;
+        }
+        /// <summary>
+        /// If the message deleted was apart of a poll, we need to cancel the poll.
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <returns></returns>
+        private Task Client_MessageDeleted_Poll(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
+        {
+            return Task.Run(async () =>
+            {
+                if (!ActivePolls.ContainsKey(arg1.Id))
+                    return;
+
+                //Delete the poll for the list of active polls.
+                ActivePolls.TryRemove(arg1.Id, out _);
+
+                //Send a message, regarding the poll being removed.
+                await arg2.SendMessageAsync("The poll was deleted.");
+            });
+        }
+        #endregion
+        #region WARBOT Add/End Poll
+        public void AddPoll(Poll Poll, TimeSpan TriggerWhen)
+        {
+            var sb = new StringBuilder()
+                       .AppendLine($"POLL: {Poll.Question}");
+            foreach (var o in Poll.Options)
+                sb.AppendLine($"{o.Emote} = {o.Name}");
+
+            var M = Poll.Channel.SendMessageAsync(sb.ToString()).Result;
+            Poll.Message = M;
+
+            foreach (var o in Poll.Options)
+                M.AddReactionAsync(o.Emote).Wait();
+
+            Poll.Channel.SendMessageAsync($"This poll will be automatically closed in {TriggerWhen.Humanize()}.").Wait();
 
             this.ActivePolls.TryAdd(Poll.MessageId, Poll);
 
             Poll.Start(TriggerWhen);
+
             //Schedule a job to end the poll.
             Jobs.Schedule<IWARBOT>(o => o.EndPoll(Poll.MessageId), TriggerWhen);
-
-            return Task.CompletedTask;
         }
 
-        public async Task EndPoll(ulong MessageId)
+        public void EndPoll(ulong MessageId)
         {
             //Remove the poll from active polls.
             if (ActivePolls.ContainsKey(MessageId) && ActivePolls.TryRemove(MessageId, out var poll))
@@ -59,103 +110,83 @@ namespace WarBot
                 foreach (var opt in poll.Options)
                 {
                     //ToDo - Add Logic to ensure a user did not vote twice.
-                    var votes = await Message.GetReactionUsersAsync(opt.Emote, 9000).FlattenAsync();
+                    var votes = Message.GetReactionUsersAsync(opt.Emote, 9000).FlattenAsync().Result;
+
                     //Ignore bots.
                     Results.Add(opt, votes.Where(o => o.IsBot == false).Count());
                 }
                 var sb = new StringBuilder()
                     .AppendLine($"POLL RESULTS: {poll.Question}");
-                foreach (var o in Results)
+                foreach (var o in Results.Where(o => o.Value > 0).OrderByDescending(o => o.Value))
                     sb.AppendLine($"{o.Value} = {o.Key.Name}");
 
-                await Channel.SendMessageAsync(sb.ToString());
+                Channel.SendMessageAsync(sb.ToString()).Wait();
             }
         }
 
-
-        private async Task Client_MessageDeleted_Poll(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
+        public void ProcessReactions()
         {
-            if (!ActivePolls.ContainsKey(arg1.Id))
-                return;
-
-            //Delete the poll for the list of active polls.
-            ActivePolls.TryRemove(arg1.Id, out _);
-
-            //Send a message, regarding the poll being removed.
-            await arg2.SendMessageAsync("The poll was deleted.");
-        }
-
-        private async Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
-        {
-            try
+            lock (PollLock)
             {
-                //Check to see if the message was apart of a poll. If not, return.
-                if (!ActivePolls.ContainsKey(arg1.Id))
-                    return;
-                //Ignore if this was a reaction I added.
-                else if (arg3.UserId == Client.CurrentUser.Id)
-                    return;
-
-                var CurrentPoll = ActivePolls[arg1.Id];
-
-                if (CurrentPoll.Options.Any(o => o.Emote == arg3.Emote))
+                while (ReactionQueue.TryDequeue(out var res))
                 {
-                    await arg2.SendMessageAsync($"Note- One of the options for the pool was removed by {arg3.User.Value.Mention}. I have added the reaction back.");
+                    //If this message is not apart of an active poll, goto the next record..
+                    if (!ActivePolls.ContainsKey(res.MessageId))
+                        continue;
+                    //Else if, the user who submitted the reaction was me (the bot), ignore
+                    else if (res.UserId == Client.CurrentUser.Id)
+                        continue;
 
-                    //Re-add the reaction back into the message.
-                    await CurrentPoll.Message.AddReactionAsync(arg3.Emote);
-                }
-                else
-                {
-                    //The reaction removed was not apart of the poll.
-                }
-            }
-            catch (Exception ex)
-            {
-                await Log.Error(null, ex);
-            }
-        }
-
-        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
-        {
-            //Todo - efficiency improvements. Goes slow. Might be discord.net's problem.
-            try
-            {
-                if (!ActivePolls.ContainsKey(arg1.Id))
-                    return;
-                //Ignore if I(Warbot) added the reaction.
-                else if (arg3.UserId == Client.CurrentUser.Id)
-                    return;
-
-                var CurrentPoll = ActivePolls[arg1.Id];
-
-                //Check if this emote is supposed to be apart of the poll.
-                if (CurrentPoll.Options.FirstOrDefault(o => o.Emote.Equals(arg3.Emote)).IsNotNull(out PollOption option))
-                {
-                    //Test if the user has already voted.
-                    if (CurrentPoll.Votes.Where(o => o.UserId == arg3.UserId).IsNotNullOrEmpty(out var DuplicateVotes))
+                    try
                     {
-                        //Remove their other reactions.
-                        foreach (var rtd in DuplicateVotes)
-                            await CurrentPoll.Message.RemoveReactionAsync(rtd.Option.Emote, arg3.User.Value);
+                        var CurrentPoll = ActivePolls[res.MessageId];
+                        var CurrentOption = CurrentPoll.Options.FirstOrDefault(o => o.Emote.Equals(res.Emote));
+                        var CurrentUser = Client.GetUser(res.UserId);
+                        //Check if this emote is supposed to be apart of the poll.
+                        if (CurrentOption != null)
+                        {
+                            //User is voting.
+                            if (res.Add)
+                            {
+                                //Remove the duplicate reactions one at a time.
+                                foreach (var rtd in CurrentPoll.Votes.Where(o => o.UserId == res.UserId).ToArray())
+                                {
+                                    //Remove the vote from the storage.
+                                    CurrentPoll.Votes.Remove(rtd);
+
+                                    //Wait for the reaction to be removed.                                    
+                                    CurrentPoll.Message.RemoveReactionAsync(rtd.Option.Emote, rtd.User).Wait();
+                                }
+
+                                //Update their vote.
+                                CurrentPoll.Votes.Add(new UserVote(CurrentUser, CurrentOption));
+                            }
+                            else //User is removing a vote.
+                            {
+                                foreach (var voteToRemove in CurrentPoll.Votes.Where(o => o.Option == CurrentOption && o.UserId == CurrentUser.Id).ToArray())
+                                    CurrentPoll.Votes.Remove(voteToRemove);
+                            }
+
+                        }
+                        else if (res.Add)
+                        {
+                            //This emote was NOT apart of the poll. Remove it.
+                            CurrentPoll.Message.RemoveReactionAsync(res.Emote, CurrentUser).Wait();
+                        }
+                        else
+                        {
+                            //They removed a reaction which was not apart of this poll. 
+                        }
                     }
-
-                    //Update their vote.
-                    CurrentPoll.Votes.Add(new UserVote(arg3.User.Value, option));
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        throw;
+                    }
                 }
-                else //This emote was NOT apart of the poll. Remove it.
-                {
-                    await CurrentPoll.Message.RemoveReactionAsync(arg3.Emote, arg3.User.Value);
-
-                    var dm = await arg3.User.Value.GetOrCreateDMChannelAsync();
-                    await dm.SendMessageAsync($"{arg3.User.Value.Mention}, Please do not add new reactions to my poll.");
-
-                }
-            }
-            catch (Exception ex)
-            {
-                await Log.Error(null, ex);
             }
         }
+        #endregion
+
     }
 }

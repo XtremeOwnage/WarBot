@@ -39,7 +39,7 @@ namespace WarBot.Core
 
         IRole GetGuildRole(RoleLevel role);
         void SetGuildRole(RoleLevel role, IRole GuildRole);
-
+        void ClearAllRoles();
         /// <summary>
         /// Return a mapping of ChannelTypes to Channel instances.
         /// </summary>
