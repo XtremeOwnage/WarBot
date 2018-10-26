@@ -41,8 +41,11 @@ namespace WarBot.Util
                 try
                 {
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
-                        return;
+                    if (!cfg.Notifications.WarPrepStarted)
+                        continue;
+                    //Guild elected out of this specific war.
+                    else if (!shouldSendSpecificWar(cfg, WarNo))
+                        continue;
 
                     //Send the message.
                     Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg));
@@ -62,10 +65,12 @@ namespace WarBot.Util
             {
                 try
                 {
-
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
-                        return;
+                    if (!cfg.Notifications.WarPrepEnding)
+                        continue;
+                    //Guild elected out of this specific war.
+                    else if (!shouldSendSpecificWar(cfg, WarNo))
+                        continue;
 
                     //Send the message.
                     Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg));
@@ -80,24 +85,34 @@ namespace WarBot.Util
 
         public async Task SendWarStarted(byte WarNo)
         {
-            List<Task> Tasks = new List<Task>();
-            foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
+            try
             {
-                try
+                List<Task> Tasks = new List<Task>();
+                foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
                 {
-                    //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepStarted || !shouldSendSpecificWar(cfg, WarNo))
-                        return;
+                    try
+                    {
+                        //Guild has elected out for this notification.
+                        if (!cfg.Notifications.WarStarted)
+                            continue;
+                        //Guild elected out of this specific war.
+                        else if (!shouldSendSpecificWar(cfg, WarNo))
+                            continue;
 
-                    //Send the message.
-                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg));
+                        //Send the message.
+                        Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg));
+                    }
+                    catch (Exception ex)
+                    {
+                        await bot.Log.Error(cfg.Guild, ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    await bot.Log.Error(cfg.Guild, ex);
-                }
+                await Task.WhenAll(Tasks);
             }
-            await Task.WhenAll(Tasks);
+            catch(Exception ex2)
+            {
+                throw;
+            }
         }
     }
 }
