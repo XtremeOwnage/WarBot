@@ -58,13 +58,13 @@ namespace WarBot.Core
         /// Adds a poll to the bot.
         /// </summary>
         /// <param name="Poll"></param>
-        Task AddPoll(Poll Poll, TimeSpan WhenDone);
+        void AddPoll(Poll Poll, TimeSpan WhenDone);
 
         /// <summary>
         /// Ends a poll.
         /// </summary>
         /// <param name="MessageId"></param>
-        Task EndPoll(ulong MessageId);
+        void EndPoll(ulong MessageId);
 
         /// <summary>
         /// This token keeps the bot running. If cancellation is requested, entire application will stop.

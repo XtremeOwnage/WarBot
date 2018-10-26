@@ -10,10 +10,11 @@ using WarBot.Core.Voting;
 using WarBot.Storage;
 using System.Collections.Generic;
 using System.Text;
+using Humanizer;
 
 namespace WarBot
 {
-    public partial class WARBOT
+    public partial class WARBOT : IWARBOT
     {
         /// <summary>
         /// Dialogs, will force a specific user/channel combination, into a "stateful" conversation with the bot.
@@ -65,18 +66,30 @@ namespace WarBot
         }
         #endregion
         #region WARBOT Add/End Poll
-        public Task AddPoll(Poll Poll, TimeSpan TriggerWhen)
+        public void AddPoll(Poll Poll, TimeSpan TriggerWhen)
         {
+            var sb = new StringBuilder()
+                       .AppendLine($"POLL: {Poll.Question}");
+            foreach (var o in Poll.Options)
+                sb.AppendLine($"{o.Emote} = {o.Name}");
+
+            var M = Poll.Channel.SendMessageAsync(sb.ToString()).Result;
+            Poll.Message = M;
+
+            foreach (var o in Poll.Options)
+                M.AddReactionAsync(o.Emote).Wait();
+
+            Poll.Channel.SendMessageAsync($"This poll will be automatically closed in {TriggerWhen.Humanize()}.").Wait();
+
             this.ActivePolls.TryAdd(Poll.MessageId, Poll);
 
             Poll.Start(TriggerWhen);
+
             //Schedule a job to end the poll.
             Jobs.Schedule<IWARBOT>(o => o.EndPoll(Poll.MessageId), TriggerWhen);
-
-            return Task.CompletedTask;
         }
 
-        public async Task EndPoll(ulong MessageId)
+        public void EndPoll(ulong MessageId)
         {
             //Remove the poll from active polls.
             if (ActivePolls.ContainsKey(MessageId) && ActivePolls.TryRemove(MessageId, out var poll))
@@ -97,16 +110,17 @@ namespace WarBot
                 foreach (var opt in poll.Options)
                 {
                     //ToDo - Add Logic to ensure a user did not vote twice.
-                    var votes = await Message.GetReactionUsersAsync(opt.Emote, 9000).FlattenAsync();
+                    var votes = Message.GetReactionUsersAsync(opt.Emote, 9000).FlattenAsync().Result;
+
                     //Ignore bots.
                     Results.Add(opt, votes.Where(o => o.IsBot == false).Count());
                 }
                 var sb = new StringBuilder()
                     .AppendLine($"POLL RESULTS: {poll.Question}");
-                foreach (var o in Results)
+                foreach (var o in Results.Where(o => o.Value > 0).OrderByDescending(o => o.Value))
                     sb.AppendLine($"{o.Value} = {o.Key.Name}");
 
-                await Channel.SendMessageAsync(sb.ToString());
+                Channel.SendMessageAsync(sb.ToString()).Wait();
             }
         }
 
@@ -154,7 +168,7 @@ namespace WarBot
                             }
 
                         }
-                        else if (res.Add) 
+                        else if (res.Add)
                         {
                             //This emote was NOT apart of the poll. Remove it.
                             CurrentPoll.Message.RemoveReactionAsync(res.Emote, CurrentUser).Wait();

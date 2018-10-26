@@ -100,21 +100,8 @@ namespace WarBot.Modules.GuildCommandModules
             else if (msg.Equals("done", System.StringComparison.OrdinalIgnoreCase))
             {
                 try
-                {
-                    var sb = new StringBuilder()
-                        .AppendLine($"POLL: {Poll.Question}");
-                    foreach (var o in Poll.Options)
-                        sb.AppendLine($"{o.Emote} = {o.Name}");
-
-                    var M = await Channel.SendMessageAsync(sb.ToString());
-                    Poll.Message = M;
-
-                    foreach (var o in Poll.Options)
-                        await M.AddReactionAsync(o.Emote);
-
-                    await Channel.SendMessageAsync($"This poll will be automatically closed in {duration.Humanize()}.");
-
-                    await Bot.AddPoll(Poll, this.duration);
+                {                 
+                    Bot.AddPoll(Poll, this.duration);
 
                     await Bot.CloseDialog(this);
                     return;
