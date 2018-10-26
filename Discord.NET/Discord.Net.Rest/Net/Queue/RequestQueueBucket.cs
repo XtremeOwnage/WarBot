@@ -67,16 +67,10 @@ namespace Discord.Net.Queue
                             case (HttpStatusCode)429:
                                 if (info.IsGlobal)
                                 {
-#if DEBUG_LIMITS
-                                    Debug.WriteLine($"[{id}] (!) 429 [Global]");
-#endif
                                     _queue.PauseGlobal(info);
                                 }
                                 else
                                 {
-#if DEBUG_LIMITS
-                                    Debug.WriteLine($"[{id}] (!) 429");
-#endif
                                     UpdateRateLimit(id, request, info, true);
                                 }
                                 await _queue.RaiseRateLimitTriggered(Id, info).ConfigureAwait(false);

@@ -369,6 +369,8 @@ namespace Discord
         /// </returns>
         public EmbedBuilder AddField(string name, object value, bool inline = false)
         {
+            if (string.IsNullOrEmpty(value.ToString()))
+                value = "_ _";
             var field = new EmbedFieldBuilder()
                 .WithIsInline(inline)
                 .WithName(name)
@@ -376,17 +378,6 @@ namespace Discord
             AddField(field);
             return this;
         }
-
-        public EmbedBuilder AddBlankField(bool inline = false)
-        {
-            var field = new EmbedFieldBuilder()
-                .WithIsInline(inline)
-                .WithName(null)
-                .WithValue(null);
-            AddField(field);
-            return this;
-        }
-
 
         /// <summary>
         ///     Adds a field with the provided <see cref="EmbedFieldBuilder" /> to an
@@ -476,7 +467,8 @@ namespace Discord
             get => _name;
             set
             {
-                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException($"Field name must not be null, empty or entirely whitespace.", nameof(Name));
+                if (string.IsNullOrWhiteSpace(value))
+                    _name = "_ _";
                 if (value.Length > MaxFieldNameLength) throw new ArgumentException($"Field name length must be less than or equal to {MaxFieldNameLength}.", nameof(Name));
                 _name = value;
             }
@@ -499,7 +491,8 @@ namespace Discord
             set
             {
                 var stringValue = value?.ToString();
-                if (string.IsNullOrEmpty(stringValue)) throw new ArgumentException($"Field value must not be null or empty.", nameof(Value));
+                if (string.IsNullOrEmpty(stringValue))
+                    _value = "_ _";
                 if (stringValue.Length > MaxFieldValueLength) throw new ArgumentException($"Field value length must be less than or equal to {MaxFieldValueLength}.", nameof(Value));
                 _value = stringValue;
             }
