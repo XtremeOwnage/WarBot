@@ -43,7 +43,11 @@ namespace WarBot
         public WARBOT()
         {
             this.Config = BotConfig.Load();
-            this.Client = new DiscordSocketClient();
+            this.Client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+                AlwaysDownloadUsers = false,              
+
+            });
             this.commands = new CommandService(new CommandServiceConfig
             {
                 DefaultRunMode = RunMode.Async,
