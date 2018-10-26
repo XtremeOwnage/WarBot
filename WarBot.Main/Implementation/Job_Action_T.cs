@@ -7,16 +7,24 @@ namespace WarBot.Implementation
 {
     public class Job_Action<T> : IJob
     {
-        public static IJobDetail Create(Action<T> action, bool Durable = false)
+        public static IJobDetail Create(string Identity, Action<T> action, bool Durable = false)
         {
-            return JobBuilder
-                .Create<Job_Action<T>>()
-                .StoreDurably(Durable)
-                .SetJobData(new JobDataMap
-                {
-                    {"action", action}
-                })
-                .Build();
+            try
+            {
+                return JobBuilder
+                    .Create<Job_Action<T>>()
+                    .WithIdentity(new JobKey(Identity))
+                    .StoreDurably(Durable)
+                    .SetJobData(new JobDataMap
+                    {
+                        {"action", action}
+                    })
+                    .Build();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
         public Task Execute(IJobExecutionContext context)
         {
