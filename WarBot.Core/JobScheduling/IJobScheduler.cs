@@ -33,5 +33,10 @@ namespace WarBot.Core.JobScheduling
 
         //Schedule recurring job.
         Task<IJob> RecurringJob<T>(string jobID, Expression<Action<T>> Expression, string cronSchedule);
+
+        Task<IJob> RecurringJob_EveryNSeconds<T>(string JobID, Expression<Action<T>> methodCall, int Seconds);
+
+        //Schedules a job to run immediatly.
+        Task ExecuteJob(string Name);
     }
 }
