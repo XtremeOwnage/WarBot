@@ -10,6 +10,7 @@ namespace WarBot.Storage
 {
     public partial class WarDB : DbContext
     {
+        public DbSet<Poll> Polls { get; set; }
         public DbSet<DiscordGuild> Guilds { get; set; }
         public DbSet<DiscordUser> Users { get; set; }
 

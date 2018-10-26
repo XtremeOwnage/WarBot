@@ -31,6 +31,7 @@ namespace WarBot
         private ConcurrentQueue<(ulong MessageId, ulong UserId, IEmote Emote, bool Add)> ReactionQueue = new ConcurrentQueue<(ulong MessageId, ulong UserId, IEmote Emote, bool Add)>();
 
         private readonly object PollLock = new object();
+
         #region Discord.net events
         //Enqueues the data to a queue to prevent from blocking the api.
         private Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
@@ -65,6 +66,7 @@ namespace WarBot
             });
         }
         #endregion
+
         #region WARBOT Add/End Poll
         public void AddPoll(Poll Poll, TimeSpan TriggerWhen)
         {
@@ -81,12 +83,17 @@ namespace WarBot
 
             Poll.Channel.SendMessageAsync($"This poll will be automatically closed in {TriggerWhen.Humanize()}.").Wait();
 
-            this.ActivePolls.TryAdd(Poll.MessageId, Poll);
+            //Add the poll to stateful DB storage.
+            var db = kernel.Get<WarDB>();
+            var x = db.Polls.Add(Poll);
+            db.SaveChanges();
+
+            this.ActivePolls.TryAdd(Poll.MessageId, x.Entity);
 
             Poll.Start(TriggerWhen);
 
             //Schedule a job to end the poll.
-            Jobs.Schedule<IWARBOT>(o => o.EndPoll(Poll.MessageId), TriggerWhen);
+            Jobs.Schedule<WARBOT>(o => o.EndPoll(Poll.MessageId), TriggerWhen);
         }
 
         public void EndPoll(ulong MessageId)
@@ -100,11 +107,13 @@ namespace WarBot
                 var Channel = poll.Channel;
                 var Message = poll.Message;
 
-                //Clear all votes, before recount.
-                poll.Votes.Clear();
+                //Process all reaction requests before ending the poll.
+                ProcessReactions();
 
                 //Create dictionary of option to votes.
                 Dictionary<PollOption, int> Results = new Dictionary<PollOption, int>();
+
+
 
                 //Recount all votes, and store to a dictionary.
                 foreach (var opt in poll.Options)
@@ -122,12 +131,19 @@ namespace WarBot
 
                 Channel.SendMessageAsync(sb.ToString()).Wait();
             }
+
+            //remove the poll from stateful db storage.
+            var db = kernel.Get<WarDB>();
+            foreach (var td in db.Polls.Where(o => o.MessageId == MessageId).ToList())
+                db.Polls.Remove(td);
+            db.SaveChanges();
         }
 
         public void ProcessReactions()
         {
             lock (PollLock)
             {
+
                 while (ReactionQueue.TryDequeue(out var res))
                 {
                     //If this message is not apart of an active poll, goto the next record..

@@ -115,6 +115,11 @@ namespace WarBot.Storage
                 newCfg.Initialize(Guild, Save);
 
                 await bot.Log.Debug($"Updated config from json to database for {Guild.Name}", Guild);
+
+                await Guild.DefaultChannel.SendMessageAsync("I have migrated your configurations from the old version of me, to the updated version\r\n" +
+                    "Since, this is a massive upgrade, all of your settings may not have been properly updated.\r\n" +
+                    "If you have a free moment, I suggest an administrator to use 'bot, setup' to use my new setup wizard.\r\n" +
+                    "As well, I recommend you read this: https://github.com/XtremeOwnage/WarBot/blob/master/version3.md");
             }
             else
             {
