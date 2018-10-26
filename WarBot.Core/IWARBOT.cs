@@ -61,12 +61,6 @@ namespace WarBot.Core
         void AddPoll(Poll Poll, TimeSpan WhenDone);
 
         /// <summary>
-        /// Ends a poll.
-        /// </summary>
-        /// <param name="MessageId"></param>
-        void EndPoll(ulong MessageId);
-
-        /// <summary>
         /// This token keeps the bot running. If cancellation is requested, entire application will stop.
         /// </summary>
         CancellationTokenSource StopToken { get; }
