@@ -86,7 +86,7 @@ namespace WarBot
             //Add the poll to stateful DB storage.
             var db = kernel.Get<WarDB>();
             var x = db.Polls.Add(Poll);
-            db.SaveChanges();        
+            db.SaveChanges();
 
             this.ActivePolls.TryAdd(Poll.MessageId, x.Entity);
 
@@ -107,11 +107,13 @@ namespace WarBot
                 var Channel = poll.Channel;
                 var Message = poll.Message;
 
-                //Clear all votes, before recount.
-                poll.Votes.Clear();
+                //Process all reaction requests before ending the poll.
+                ProcessReactions();
 
                 //Create dictionary of option to votes.
                 Dictionary<PollOption, int> Results = new Dictionary<PollOption, int>();
+
+
 
                 //Recount all votes, and store to a dictionary.
                 foreach (var opt in poll.Options)
@@ -133,7 +135,7 @@ namespace WarBot
             //remove the poll from stateful db storage.
             var db = kernel.Get<WarDB>();
             foreach (var td in db.Polls.Where(o => o.MessageId == MessageId).ToList())
-                db.Polls.Remove(td);            
+                db.Polls.Remove(td);
             db.SaveChanges();
         }
 
@@ -143,7 +145,7 @@ namespace WarBot
             {
 
                 while (ReactionQueue.TryDequeue(out var res))
-                {           
+                {
                     //If this message is not apart of an active poll, goto the next record..
                     if (!ActivePolls.ContainsKey(res.MessageId))
                         continue;
