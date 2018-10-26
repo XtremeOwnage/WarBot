@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Humanizer;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,6 +66,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         private Poll Poll;
         private TimeSpan duration;
+        private List<SocketUserMessage> cleanupMessages = new List<SocketUserMessage>();
 
         public PollQuestionEntryDialog(GuildCommandContext context, string question, TimeSpan Duration) : base(context)
         {
@@ -74,11 +76,13 @@ namespace WarBot.Modules.GuildCommandModules
         public override async Task ProcessMessage(SocketUserMessage input)
         {
             var msg = input.Content;
+            cleanupMessages.Add(input);
 
             if (string.IsNullOrEmpty(msg))
                 return;
             else if (msg.Equals("remove", System.StringComparison.OrdinalIgnoreCase) || msg.Equals("undo", System.StringComparison.OrdinalIgnoreCase))
             {
+                //Cleanup the message.
                 if (Poll.Options.Any())
                 {
                     Poll.Options.Remove(Poll.Options.Last());
@@ -90,6 +94,8 @@ namespace WarBot.Modules.GuildCommandModules
                     await Channel.SendMessageAsync("There were no questions in the list.");
                     return;
                 }
+
+
             }
             else if (msg.Equals("stop", System.StringComparison.OrdinalIgnoreCase))
             {
@@ -100,7 +106,10 @@ namespace WarBot.Modules.GuildCommandModules
             else if (msg.Equals("done", System.StringComparison.OrdinalIgnoreCase))
             {
                 try
-                {                 
+                {
+                    //Cleanup the messages from this poll.
+                    await Channel.DeleteMessagesAsync(cleanupMessages);
+
                     Bot.AddPoll(Poll, this.duration);
 
                     await Bot.CloseDialog(this);
