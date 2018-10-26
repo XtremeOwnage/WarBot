@@ -176,7 +176,7 @@ namespace WarBot.Storage.Models
 
             }
 
-            foreach (var channel in this.Channels)
+            foreach (var channel in this.Channels.ToList())
             {
                 var ch = Guild.GetChannel(channel.EntityId) as ITextChannel;
                 if (ch != null)
