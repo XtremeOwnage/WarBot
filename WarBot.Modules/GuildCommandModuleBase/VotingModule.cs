@@ -153,7 +153,12 @@ namespace WarBot.Modules.GuildCommandModules
             }
             else if (msg.Equals("done"))
             {
-                await startStep(State.DONE);
+                if (Poll.Options.Count == 0)
+                    cleanupMessages.Add(Channel.SendMessageAsync("You have not added any options to the poll. Please provide an option.").Result);
+                else if (Poll.Options.Count < 2)
+                    cleanupMessages.Add(Channel.SendMessageAsync("You have not added enough options to the poll. You must provide at least two options.").Result);
+                else
+                    await startStep(State.DONE);
             }
             else //Add new option.
             {
