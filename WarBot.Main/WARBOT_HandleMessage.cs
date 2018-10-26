@@ -10,25 +10,31 @@ namespace WarBot
 {
     public partial class WARBOT
     {
-        private async Task Client_MessageReceived(SocketMessage socketMessage)
+        private Task Client_MessageReceived(SocketMessage socketMessage)
         {
             Interlocked.Increment(ref this.MessagesProcessed);
+
+            var message = socketMessage as SocketUserMessage;
+
+            //If this was a system message, ignore it.
+            if (message == null)
+                return Task.CompletedTask;
+            //If the message is from a bot, ignore it.
+            else if (message.Author.IsBot)
+                return Task.CompletedTask;
+            //If the message is from me, ignore it.
+            else if (message.Author.Id == Client.CurrentUser.Id)
+                return Task.CompletedTask;
+
+            var t = Task.Run(() => processMessage(message));
+
+            return Task.CompletedTask;
+        }
+        private async Task processMessage(SocketUserMessage message)
+        {
+
             try
             {
-                var message = socketMessage as SocketUserMessage;
-
-                //If this was a system message, ignore it.
-                if (message == null)
-                    return;
-
-                //If the message is from a bot, ignore it.
-                if (message.Author.IsBot)
-                    return;
-
-                //If the message is from me, ignore it.
-                if (message.Author.Id == Client.CurrentUser.Id)
-                    return;
-
                 //Start actual processing logic.              
                 var UserChannelHash = SocketDialogContextBase.GetHashCode(message.Channel, message.Author);
                 //Check if there is an open dialog.
@@ -71,7 +77,7 @@ namespace WarBot
                 {
                     var context = new Core.ModuleType.CommandContext(Client, message, this);
 
-                    var result = await commands.ExecuteAsync(context, socketMessage.Content, kernel, MultiMatchHandling.Best);
+                    var result = await commands.ExecuteAsync(context, message.Content, kernel, MultiMatchHandling.Best);
                 }
             }
             catch (Exception ex)
