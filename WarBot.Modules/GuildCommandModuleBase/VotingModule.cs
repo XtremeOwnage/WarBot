@@ -68,12 +68,11 @@ namespace WarBot.Modules.GuildCommandModules
             new Emoji("8\u20e3"),
             new Emoji("9\u20e3"),
             };
-
+    
 
         private State currState;
         private Poll Poll;
         private TimeSpan duration;
-        private List<IMessage> cleanupMessages = new List<IMessage>();
 
         public PollQuestionEntryDialog(GuildCommandContext context, string question, TimeSpan Duration) : base(context)
         {
@@ -93,10 +92,10 @@ namespace WarBot.Modules.GuildCommandModules
             switch (step)
             {
                 case State.GET_QUESTION:
-                    cleanupMessages.Add(Channel.SendMessageAsync("Please let me know what the poll's topic is.").Result);
+                    CleanupList.Add(Channel.SendMessageAsync("Please let me know what the poll's topic is.").Result);
                     break;
                 case State.GET_OPTIONS:
-                    cleanupMessages.Add(Channel.SendMessageAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
+                    CleanupList.Add(Channel.SendMessageAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
                       "\r\nIf this was accidental, type 'stop' to abort." +
                       "\r\nYou may also type 'remove' or 'undo' to remove the last option added.").Result);
                     break;
@@ -108,8 +107,6 @@ namespace WarBot.Modules.GuildCommandModules
                     goto case State.CLEANUP;
 
                 case State.CLEANUP:
-                    //Cleanup the messages from this poll.
-                    await Channel.DeleteMessagesAsync(cleanupMessages);
                     await Bot.CloseDialog(this);
                     break;
             }
@@ -121,7 +118,7 @@ namespace WarBot.Modules.GuildCommandModules
             var cmd = input.Content.Trim().ToLowerInvariant();
 
             //Delete this message after the dialog is over.
-            cleanupMessages.Add(input);
+            CleanupList.Add(input);
 
             if (string.IsNullOrEmpty(msg))
                 return;
@@ -134,7 +131,7 @@ namespace WarBot.Modules.GuildCommandModules
             else if (currState == State.GET_QUESTION)
             {
                 this.Poll = new Poll(Channel, msg);
-                cleanupMessages.Add(Channel.SendMessageAsync($"The topic has been set to:\r\n**{msg}**").Result);
+                CleanupList.Add(Channel.SendMessageAsync($"The topic has been set to:\r\n**{msg}**").Result);
                 await startStep(State.GET_OPTIONS);
             }
             else if (currState != State.GET_OPTIONS)
@@ -145,18 +142,18 @@ namespace WarBot.Modules.GuildCommandModules
                 if (Poll.Options.Any())
                 {
                     Poll.Options.Remove(Poll.Options.Last());
-                    cleanupMessages.Add(Channel.SendMessageAsync($"Item Removed.").Result);
+                    CleanupList.Add(Channel.SendMessageAsync($"Item Removed.").Result);
                     return;
                 }
                 else
-                    cleanupMessages.Add(Channel.SendMessageAsync("There were no questions in the list.").Result);
+                    CleanupList.Add(Channel.SendMessageAsync("There were no questions in the list.").Result);
             }
             else if (cmd.Equals("done"))
             {
                 if (Poll.Options.Count == 0)
-                    cleanupMessages.Add(Channel.SendMessageAsync("You have not added any options to the poll. Please provide an option.").Result);
+                    CleanupList.Add(Channel.SendMessageAsync("You have not added any options to the poll. Please provide an option.").Result);
                 else if (Poll.Options.Count < 2)
-                    cleanupMessages.Add(Channel.SendMessageAsync("You have not added enough options to the poll. You must provide at least two options.").Result);
+                    CleanupList.Add(Channel.SendMessageAsync("You have not added enough options to the poll. You must provide at least two options.").Result);
                 else
                     await startStep(State.DONE);
             }

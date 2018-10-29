@@ -32,13 +32,23 @@ namespace WarBot.Core.Dialogs
         /// <summary>
         /// If the WARBot is removed from the guild, while there is an open dialog, this method will be fired.
         /// </summary>
-        public async Task CloseDialog_GuildRemoved()
+        public Task CloseDialog_GuildRemoved()
         {
+            return Task.CompletedTask;
             //If this was a guild channel context, there is nothing to do.
             if (Channel is SocketGuildChannel)
             {
-                return;
+                
             }
+        }
+
+        public override async Task OnClosed()
+        {
+            //Cleanup the messages from this dialog.
+            await Channel.DeleteMessagesAsync(CleanupList);
+
+            //Execute the base.onClosed
+            await base.OnClosed();
         }
     }
 }
