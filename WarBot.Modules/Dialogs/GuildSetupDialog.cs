@@ -249,7 +249,33 @@ namespace WarBot.Modules.Dialogs
                     else
                         await SendAsync(msg_BoolParseFailed);
                     break;
-
+                case SetupStep.Portal_Started:
+                    if (Bool == true)
+                        await NextStep();
+                    else if (Bool == false || Skip)
+                    {
+                        this.Config.Notifications.PortalEnabled = false;
+                        this.Config.Notifications.PortalStartedMessage = null;
+                        await SkipStep("I will not send a notification when the portal opens.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
+                case SetupStep.Portal_Started_Message:
+                    if (Skip)
+                    {
+                        this.Config.Notifications.PortalEnabled = true;
+                        this.Config.Notifications.PortalStartedMessage = null;
+                        await SkipStep("I will use my default notification when the portal opens.");
+                    }
+                    else
+                    {
+                        this.Config.Notifications.PortalEnabled = true;
+                        this.Config.Notifications.PortalStartedMessage = Message;
+                        await NextStep("The war started message has been set to:\r" +
+                            $"\n{Message}");
+                    }
+                    break;
                 //All of these steps share the same logic.
                 case SetupStep.Role_Guest:
                 case SetupStep.Role_Member:
@@ -373,6 +399,15 @@ namespace WarBot.Modules.Dialogs
                     await SendAsync("What message would you like for me to send when the war starts?" +
                         "\r\nYou may 'skip' to use a default message.");
                     break;
+                case SetupStep.Portal_Started:
+                    await SendAsync("Would you like me to send an announcement when the portal opens once per week?" +
+                        "\r\nYes or No?");
+                    break;
+                case SetupStep.Portal_Started_Message:
+                    await SendAsync("What message would you like for me to send when the portal opens?" +
+                        "\r\nYou may 'skip' to use a default message.");
+                    break;
+
                 case SetupStep.Should_Set_Roles:
                     await SendAsync("Would you like me to assist you with managing the roles of your discord server?\r" +
                         "\nI can help by promoting users, demoting users, and setting users to specific roles\r" +
@@ -437,7 +472,9 @@ namespace WarBot.Modules.Dialogs
             await this.Channel.SendMessageAsync("The guild setup dialog has been closed.");
         }
 
-
+        /// <summary>
+        /// Defines the current step of this dialog. This enum also contains attributes to manage the flow.
+        /// </summary>
         enum SetupStep
         {
             NULL,
@@ -467,7 +504,7 @@ namespace WarBot.Modules.Dialogs
             Channel_Officers,
 
             //Hustle Castle - War Related Settings
-            [Step(Channel_Officers, WAR_SendPrepStarted, Should_Set_Roles)]
+            [Step(Channel_Officers, WAR_SendPrepStarted, Portal_Started)]
             Channel_WAR,
             [Step(Channel_WAR, WAR_PrepStartedMessage, WAR_SendPrepEnding)]
             WAR_SendPrepStarted,
@@ -477,14 +514,19 @@ namespace WarBot.Modules.Dialogs
             WAR_SendPrepEnding,
             [Step(WAR_SendPrepEnding, WAR_SendWarStarted)]
             WAR_PrepEndingMessage,
-            [Step(WAR_SendPrepEnding, WAR_WarStartedMessage, Should_Set_Roles)]
+            [Step(WAR_SendPrepEnding, WAR_WarStartedMessage, Portal_Started)]
             WAR_SendWarStarted,
-            [Step(WAR_SendWarStarted, Should_Set_Roles)]
+            [Step(WAR_SendWarStarted, Portal_Started)]
             WAR_WarStartedMessage,
 
+            //Portal Enabled / Portal Message
+            [Step(Channel_WAR, Portal_Started, Should_Set_Roles)]
+            Portal_Started,
+            [Step(Portal_Started, Should_Set_Roles)]
+            Portal_Started_Message,
 
             //Roles    
-            [Step(WarBot_Prefix, Role_Guest, Set_Website)]
+            [Step(Channel_WAR, Role_Guest, Set_Website)]
             Should_Set_Roles,
             [Step(Should_Set_Roles, Role_Member)]
             Role_Guest,
