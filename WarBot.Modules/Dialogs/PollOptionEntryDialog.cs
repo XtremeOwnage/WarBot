@@ -1,19 +1,17 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WarBot.Core.ModuleType;
-using WarBot.Storage.Models.Voting;
+using WarBot.Core.Voting;
 
 namespace WarBot.Modules.Dialogs
 {
-    public class PollOptionEntryDialog : Core.Dialogs.SocketDialogContextBase
+    public class PollQuestionEntryDialog : WarBot.Core.Dialogs.SocketGuildDialogContextBase
     {
         //ToDo - Add more emotes.
-        List<IEmote> Emotes = new List<IEmote> {
+        IEmote[] Emotes = new IEmote[] {
             new Emoji("0\u20e3"),
             new Emoji("1\u20e3"),
             new Emoji("2\u20e3"),
@@ -27,101 +25,124 @@ namespace WarBot.Modules.Dialogs
             };
 
 
-        Poll Poll;
-        TimeSpan duration;
+        private State currState;
+        private Poll Poll;
+        private TimeSpan duration;
 
-        public PollOptionEntryDialog(CommandContext context, string question, TimeSpan Duration)
-            : base(context)
+        public PollQuestionEntryDialog(GuildCommandContext context, string question, TimeSpan Duration) : base(context)
         {
             this.Poll = new Poll(context.Channel, question);
             this.duration = Duration;
+            startStep(State.GET_OPTIONS).Wait();
         }
-        public override async Task OnCreated()
+        public PollQuestionEntryDialog(GuildCommandContext context, TimeSpan Duration) : base(context)
         {
-            await this.Channel.SendMessageAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
-               "\r\nIf this was accidental, type 'stop' to abort." +
-               "\r\nYou may also type 'remove' or 'undo' to remove the last option added.");
+            this.duration = Duration;
+            startStep(State.GET_QUESTION).Wait();
+        }
+
+        private async Task startStep(State step)
+        {
+            currState = step;
+            switch (step)
+            {
+                case State.GET_QUESTION:
+                    await SendAsync("Please let me know what the poll's topic is.");
+                    break;
+                case State.GET_OPTIONS:
+                    await SendAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
+                      "\r\nIf this was accidental, type 'stop' to abort." +
+                      "\r\nYou may also type 'remove' or 'undo' to remove the last option added.");
+                    break;
+                case State.DONE:
+                    Bot.AddPoll(Poll, this.duration);
+                    goto case State.CLEANUP;
+                case State.CANCELLED:
+                    await Channel.SendMessageAsync($"Poll creation cancelled.");
+                    goto case State.CLEANUP;
+
+                case State.CLEANUP:
+                    await Bot.CloseDialog(this);
+                    break;
+            }
+
         }
         public override async Task ProcessMessage(SocketUserMessage input)
         {
             var msg = input.Content;
+            var cmd = input.Content.Trim().ToLowerInvariant();
+
+            //Delete this message after the dialog is over.
+            CleanupList.Add(input);
 
             if (string.IsNullOrEmpty(msg))
                 return;
-            else if (msg.Equals("remove", System.StringComparison.OrdinalIgnoreCase) || msg.Equals("undo", System.StringComparison.OrdinalIgnoreCase))
+
+            if (cmd.Equals("stop") || cmd.Equals("cancel"))
             {
+                await startStep(State.CANCELLED);
+                return;
+            }
+            else if (currState == State.GET_QUESTION)
+            {
+                this.Poll = new Poll(Channel, msg);
+                await SendAsync($"The topic has been set to:\r\n**{msg}**");
+                await startStep(State.GET_OPTIONS);
+            }
+            else if (currState != State.GET_OPTIONS)
+                throw new Exception("This shouldn't be possible? Something broke.");
+            else if ((cmd.Equals("remove") || cmd.Equals("undo")))
+            {
+                //Cleanup the message.
                 if (Poll.Options.Any())
                 {
-                    var lastOpt = Poll.Options.Last();
-
-                    //Re-add the emote to the list of available emotes.
-                    Emotes.Insert(0, lastOpt.Emote);
-
-                    Poll.Options.Remove(lastOpt);
-                    await Channel.SendMessageAsync($"Item Removed.");
+                    Poll.Options.Remove(Poll.Options.Last());
+                    await SendAsync($"Item Removed.");
                     return;
                 }
                 else
-                {
-                    await Channel.SendMessageAsync("There were no questions in the list.");
-                    return;
-                }
+                    await SendAsync("There were no questions in the list.");
             }
-            else if (msg.Equals("stop", System.StringComparison.OrdinalIgnoreCase))
+            else if (cmd.Equals("done"))
             {
-                await Channel.SendMessageAsync($"Poll creation cancelled.");
-                await Bot.CloseDialog(this);
-                return;
-            }
-            else if (msg.Equals("done", System.StringComparison.OrdinalIgnoreCase))
-            {
-                try
-                {
-                    var sb = new StringBuilder()
-                        .AppendLine($"POLL: {Poll.Question}");
-                    foreach (var o in Poll.Options)
-                        sb.AppendLine($"{o.Emote} = {o.Name}");
-
-                    var M = await Channel.SendMessageAsync(sb.ToString());
-                    Poll.Message = M;
-
-                    //Pin the message, if we have permissions.
-                    //ToDo - Add an actual permissions check.
-                    try
-                    {
-                        await M.PinAsync();
-                    }
-                    catch
-                    {
-
-                    }
-
-                    foreach (var o in Poll.Options)
-                        await M.AddReactionAsync(o.Emote);
-
-                    await Bot.AddPoll(Poll, this.duration);
-
-                    //Close this dialog.
-                    await CloseDialog();
-                }
-                catch (Exception ex)
-                {
-                    await Channel.SendMessageAsync(ex.Message);
-                }
+                if (Poll.Options.Count == 0)
+                    await SendAsync("You have not added any options to the poll. Please provide an option.");
+                else if (Poll.Options.Count < 2)
+                    await SendAsync("You have not added enough options to the poll. You must provide at least two options.");
+                else
+                    await startStep(State.DONE);
             }
             else //Add new option.
             {
-                if (Emotes.Count == 0)
+                if (Poll.Options.Count >= Emotes.Length)
                 {
-                    await Channel.SendMessageAsync($"You may not add any more options.");
+                    await SendAsync($"You may only add up to {Emotes.Length} options.");
                 }
                 else
                 {
-                    var NextEmote = Emotes.First();
-                    Poll.Options.Add(new PollOption(msg, NextEmote));
-                    Emotes.Remove(NextEmote);
+                    //Get a list of emotes which are currently used.
+                    var usedEmotes = Poll.Options.Select(o => o.Emote);
+                    //Find the first emote, which is not currently in use.
+                    var nextReaction = this.Emotes.FirstOrDefault(o => !usedEmotes.Contains(o));
+                    Poll.Options.Add(new PollOption(msg, nextReaction));
+                    return;
                 }
             }
+        }
+
+        private enum State
+        {
+            GET_QUESTION = 0,
+            GET_OPTIONS = 1,
+
+            //Poll data entry is completed.
+            DONE = 2,
+
+            //Poll was cancelled.
+            CANCELLED = 3,
+
+            //Cleanup step.
+            CLEANUP = 4,
         }
     }
 }
