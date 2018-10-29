@@ -114,5 +114,34 @@ namespace WarBot.Util
                 throw;
             }
         }
+
+        public async Task SendPortalOpened()
+        {
+            try
+            {
+                List<Task> Tasks = new List<Task>();
+                foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
+                {
+                    try
+                    {
+                        //Guild has elected out for this notification.
+                        if (!cfg.Notifications.PortalEnabled)
+                            continue;
+
+                        //Send the message.
+                        Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg));
+                    }
+                    catch (Exception ex)
+                    {
+                        await bot.Log.Error(cfg.Guild, ex);
+                    }
+                }
+                await Task.WhenAll(Tasks);
+            }
+            catch (Exception ex2)
+            {
+                throw;
+            }
+        }
     }
 }
