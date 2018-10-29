@@ -11,7 +11,50 @@ namespace WarBot.Modules.GuildCommandModules
     /// </summary>
     public class WarMessagesModule : GuildCommandModuleBase
     {
+        #region Portal
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("set portal started")]
+        [Summary("This message is triggered once a week when the portal opens.")]
+        [CommandUsage("{prefix} {command} @Role, The portal has opened!")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task SetPortalOpen([Remainder] string Message)
+        {
+            if (Message.Length < 1)
+                Message = null;
+
+            this.cfg.Notifications.PortalStartedMessage = Message;
+            await cfg.SaveConfig();
+            await ReplyAsync("Done.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable portal")]
+        [Summary("Disables notifications when portal opens")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task DisablePortal()
+        {
+            cfg.Notifications.PortalEnabled = false;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will no longer send a message when the portal is opened.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable portal")]
+        [Summary("Enables notifications when portal opens.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnablePortal()
+        {
+            cfg.Notifications.PortalEnabled = true;
+            await cfg.SaveConfig();
+            await ReplyAsync("I will send a message when the portal is opened.");
+        }
+
+        #endregion
         #region Commands to SET messages
+
+
         [RoleLevel(RoleLevel.Leader)]
         [Command("set war prep started")]
         [Summary("This message is triggered when preperation peroid starts for clan wars.")]
