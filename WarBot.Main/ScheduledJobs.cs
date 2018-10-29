@@ -33,7 +33,7 @@ namespace WarBot
             job.RecurringJob_EveryNSeconds<WARBOT>("process_reactions", o => o.ProcessReactions(), 15);
 
             //Send Portal Started
-            job.RecurringJob<WAR_Messages>("war1_started", o => o.SendPortalOpened().Wait(), "0 0 9 * * FRI");
+            job.RecurringJob<WAR_Messages>("portal_opened", o => o.SendPortalOpened().Wait(), "0 0 9 ? * FRI");
 
         }
     }

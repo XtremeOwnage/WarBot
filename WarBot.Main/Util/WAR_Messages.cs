@@ -129,7 +129,7 @@ namespace WarBot.Util
                             continue;
 
                         //Send the message.
-                        Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg));
+                        Tasks.Add(WarBot.Modules.MessageTemplates.Portal_Notifications.Portal_Opened(cfg));
                     }
                     catch (Exception ex)
                     {

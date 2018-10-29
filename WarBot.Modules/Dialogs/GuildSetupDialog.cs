@@ -520,7 +520,7 @@ namespace WarBot.Modules.Dialogs
             WAR_WarStartedMessage,
 
             //Portal Enabled / Portal Message
-            [Step(Channel_WAR, Portal_Started, Should_Set_Roles)]
+            [Step(Channel_WAR, Portal_Started_Message, Should_Set_Roles)]
             Portal_Started,
             [Step(Portal_Started, Should_Set_Roles)]
             Portal_Started_Message,

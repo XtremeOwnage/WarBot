@@ -49,7 +49,7 @@ namespace WarBot.Modules.MessageTemplates
         {
             ///Determine the message to send.
             string Message = "";
-            if (string.IsNullOrEmpty(cfg.Notifications.WarStartedMessage))
+            if (string.IsNullOrEmpty(cfg.Notifications.PortalStartedMessage))
                 if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out var role) && role.IsMentionable)
                     Message = $"{role.Mention}, The portal has opened!";
                 else
