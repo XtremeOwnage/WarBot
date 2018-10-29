@@ -30,6 +30,8 @@ namespace WarBot.Storage.Models
             WarStartedMessage = null;
             SendUpdateMessage = true;
             GreetingMessage = null;
+            PortalEnabled = true;
+            PortalStartedMessage = null;
             return this;
         }
 
@@ -49,10 +51,18 @@ namespace WarBot.Storage.Models
         public bool War2Enabled { get; set; }
         public bool War3Enabled { get; set; }
         public bool War4Enabled { get; set; }
+       
+        public bool SendUpdateMessage { get; set; }
+
+
+
         public string WarPrepStartedMessage { get; set; }
         public string WarPrepEndingMessage { get; set; }
         public string WarStartedMessage { get; set; }
-        public bool SendUpdateMessage { get; set; }
+
+
+        public bool PortalEnabled { get; set; }
+        public string PortalStartedMessage { get; set; }
 
         /// <summary>
         /// Welcome message for new players joining the discord guild.
