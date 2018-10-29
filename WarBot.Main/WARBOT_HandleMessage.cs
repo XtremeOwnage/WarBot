@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using WarBot.Core;
 using WarBot.Core.Dialogs;
 using WarBot.Core.ModuleType;
 
@@ -63,7 +64,11 @@ namespace WarBot
                         return;
 
                     //Strip out the prefix.
-                    string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
+                    string Msg = message.Content
+                        .Substring(argPos, message.Content.Length - argPos)
+                        .Trim()
+                        .RemovePrecedingChar(',');
+
 
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);
