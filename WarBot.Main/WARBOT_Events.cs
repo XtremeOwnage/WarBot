@@ -107,7 +107,6 @@ namespace WarBot
         private async Task Client_Log(LogMessage message)
         {
             await Log.ConsoleOUT(message.Message);
-
         }
 
         private async Task Client_UserJoined(SocketGuildUser arg)
@@ -174,6 +173,7 @@ namespace WarBot
 
         private async Task Client_ChannelDestroyed(SocketChannel arg)
         {
+
             #region Close any open dialogs in this channel.
             try
             {
@@ -248,7 +248,7 @@ namespace WarBot
             try
             {
                 var cfg = await this.GuildRepo.GetConfig(arg);
-                await Log.Debug("Guild Available", arg);
+                await Console.Out.WriteLineAsync("Guild Available");
 
                 //Do update check.
                 await Util.Update.UpdateCheck(cfg, this);

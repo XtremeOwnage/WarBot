@@ -35,8 +35,6 @@ namespace WarBot
         public GuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
-        public TimeSpan jobPollingInterval { get; } = TimeSpan.FromSeconds(2);
-
         IGuildConfigRepository IWARBOT.GuildRepo => this.GuildRepo;
 
 
@@ -45,7 +43,7 @@ namespace WarBot
             this.Config = BotConfig.Load();
             this.Client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                AlwaysDownloadUsers = false,              
+                AlwaysDownloadUsers = false,
 
             });
             this.commands = new CommandService(new CommandServiceConfig
@@ -91,6 +89,7 @@ namespace WarBot
 
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.
+            Client.Ready += Client_Ready;
             Client.ChannelDestroyed += Client_ChannelDestroyed;
             Client.Disconnected += Client_Disconnected;
             Client.GuildAvailable += Client_GuildAvailable;
@@ -101,7 +100,6 @@ namespace WarBot
             Client.MessageReceived += Client_MessageReceived;
             Client.ReactionAdded += Client_ReactionAdded;
             Client.ReactionRemoved += Client_ReactionRemoved;
-            Client.Ready += Client_Ready;
             Client.RoleDeleted += Client_RoleDeleted;
             Client.UserJoined += Client_UserJoined;
             Client.UserLeft += Client_UserLeft;
@@ -114,38 +112,15 @@ namespace WarBot
         private async Task Client_Disconnected(Exception arg)
         {
             await Console.Out.WriteLineAsync(arg.Message);
-            try
-            {
-                while (true)
-                {
-                    switch (Client.ConnectionState)
-                    {
-                        case Discord.ConnectionState.Connected:
-                            //Good to go.
-                            return;
-                        case Discord.ConnectionState.Disconnecting:
-                        case Discord.ConnectionState.Connecting:
-                            //Try again, in 4 seconds.
-                            await Task.Delay(TimeSpan.FromSeconds(4), StopToken.Token);
-                            return;
-                        case Discord.ConnectionState.Disconnected:
-                            StopToken.Cancel();
-                            return;
 
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //Write exception to console, force bot to stop.
-                await Console.Out.WriteLineAsync(ex.Message);
-                StopToken.Cancel();
-            }
+            StopToken.Cancel();
         }
 
         private Task Client_Ready()
         {
+            //Initialize Logging
+            Log.Client_Ready().Wait();
+
             //Set status to online.
             return Client.SetStatusAsync(UserStatus.Online);
         }

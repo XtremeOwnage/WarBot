@@ -32,7 +32,6 @@ namespace WarBot
         }
         private async Task processMessage(SocketUserMessage message)
         {
-
             try
             {
                 //Start actual processing logic.              
