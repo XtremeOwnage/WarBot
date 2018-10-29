@@ -37,6 +37,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Net.Rest", "Discord
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Net.WebSocket", "Discord.NET\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj", "{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangeLogs", "ChangeLogs", "{CE011A00-0AD7-47AD-B129-9AD751098A18}"
+	ProjectSection(SolutionItems) = preProject
+		3.1.md = 3.1.md
+		version3.md = version3.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +104,7 @@ Global
 		{E65AEF26-C39A-4FAD-914B-7D2769E2D464} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
 		{215A9C5F-7402-41E6-ABBB-956522E9DB40} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
 		{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
+		{CE011A00-0AD7-47AD-B129-9AD751098A18} = {E7D63BC3-AA9D-4D32-B345-A521B0A246F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B7C9431B-35F8-4124-9533-6CA1A366EACD}
