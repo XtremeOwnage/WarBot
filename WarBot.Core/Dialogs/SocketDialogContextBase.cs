@@ -48,10 +48,9 @@ namespace WarBot.Core.Dialogs
         public List<IMessage> CleanupList = new List<IMessage>();
         /// <summary>
         /// A shortcut to send a message to the current channel.
+        /// Messages sent via this method WILL be removed when the dialog is closed.
         /// </summary>
-        /// <param name="Message"></param>
-        /// <returns></returns>
-        public async Task SendAsync(string Message) => await Channel.SendMessageAsync(Message);
+        public async Task SendAsync(string Message) => CleanupList.Add(await Channel.SendMessageAsync(Message));
 
         /// <summary>
         /// This dialog's unique hashcode, derrived from the user/channel combination.
