@@ -13,7 +13,7 @@ namespace WarBot.Modules.GuildCommandModules
     {
         #region Portal
         [RoleLevel(RoleLevel.Leader)]
-        [Command("set portal started")]
+        [Command("set portal")]
         [Summary("This message is triggered once a week when the portal opens.")]
         [CommandUsage("{prefix} {command} @Role, The portal has opened!")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
