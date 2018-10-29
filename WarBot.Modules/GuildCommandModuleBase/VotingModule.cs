@@ -68,7 +68,7 @@ namespace WarBot.Modules.GuildCommandModules
             new Emoji("8\u20e3"),
             new Emoji("9\u20e3"),
             };
-    
+
 
         private State currState;
         private Poll Poll;
@@ -92,12 +92,12 @@ namespace WarBot.Modules.GuildCommandModules
             switch (step)
             {
                 case State.GET_QUESTION:
-                    CleanupList.Add(Channel.SendMessageAsync("Please let me know what the poll's topic is.").Result);
+                    await SendAsync("Please let me know what the poll's topic is.");
                     break;
                 case State.GET_OPTIONS:
-                    CleanupList.Add(Channel.SendMessageAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
+                    await SendAsync("Please enter the poll options one at a time. Type 'Done' when you are finished." +
                       "\r\nIf this was accidental, type 'stop' to abort." +
-                      "\r\nYou may also type 'remove' or 'undo' to remove the last option added.").Result);
+                      "\r\nYou may also type 'remove' or 'undo' to remove the last option added.");
                     break;
                 case State.DONE:
                     Bot.AddPoll(Poll, this.duration);
@@ -131,7 +131,7 @@ namespace WarBot.Modules.GuildCommandModules
             else if (currState == State.GET_QUESTION)
             {
                 this.Poll = new Poll(Channel, msg);
-                CleanupList.Add(Channel.SendMessageAsync($"The topic has been set to:\r\n**{msg}**").Result);
+                await SendAsync($"The topic has been set to:\r\n**{msg}**");
                 await startStep(State.GET_OPTIONS);
             }
             else if (currState != State.GET_OPTIONS)
@@ -142,18 +142,18 @@ namespace WarBot.Modules.GuildCommandModules
                 if (Poll.Options.Any())
                 {
                     Poll.Options.Remove(Poll.Options.Last());
-                    CleanupList.Add(Channel.SendMessageAsync($"Item Removed.").Result);
+                    await SendAsync($"Item Removed.");
                     return;
                 }
                 else
-                    CleanupList.Add(Channel.SendMessageAsync("There were no questions in the list.").Result);
+                    await SendAsync("There were no questions in the list.");
             }
             else if (cmd.Equals("done"))
             {
                 if (Poll.Options.Count == 0)
-                    CleanupList.Add(Channel.SendMessageAsync("You have not added any options to the poll. Please provide an option.").Result);
+                    await SendAsync("You have not added any options to the poll. Please provide an option.");
                 else if (Poll.Options.Count < 2)
-                    CleanupList.Add(Channel.SendMessageAsync("You have not added enough options to the poll. You must provide at least two options.").Result);
+                    await SendAsync("You have not added enough options to the poll. You must provide at least two options.");
                 else
                     await startStep(State.DONE);
             }
@@ -161,7 +161,7 @@ namespace WarBot.Modules.GuildCommandModules
             {
                 if (Poll.Options.Count >= Emotes.Length)
                 {
-                    await Channel.SendMessageAsync($"You may only add up to {Emotes.Length} options.");
+                    await SendAsync($"You may only add up to {Emotes.Length} options.");
                 }
                 else
                 {
