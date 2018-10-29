@@ -151,7 +151,7 @@ namespace WarBot.Modules.GuildCommandModules
                 else
                     cleanupMessages.Add(Channel.SendMessageAsync("There were no questions in the list.").Result);
             }
-            else if (msg.Equals("done"))
+            else if (cmd.Equals("done"))
             {
                 if (Poll.Options.Count == 0)
                     cleanupMessages.Add(Channel.SendMessageAsync("You have not added any options to the poll. Please provide an option.").Result);
