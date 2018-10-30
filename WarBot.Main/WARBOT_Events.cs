@@ -79,7 +79,8 @@ namespace WarBot
             //Send a welcome message to the guild.
             try
             {
-                if (cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var CH))
+                var CH = await ChannelHelper.findDefaultChannel(arg);
+                if (CH != null)
                 {
                     //Publish a Welcome Message.
 
