@@ -18,7 +18,7 @@ namespace WarBot.Modules.MessageTemplates
         /// <param name="embed"></param>
         /// 
         /// <returns></returns>
-        private static async Task sendWarMessage(IGuildConfig cfg, Embed embed)
+        private static async Task sendWarMessage(IWARBOT bot, IGuildConfig cfg, Embed embed)
         {
             var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements) as SocketTextChannel;
 
@@ -26,25 +26,49 @@ namespace WarBot.Modules.MessageTemplates
             if (ch == null)
                 return;
 
-            //Check if we can send to that channel.
+            //If we can send to the WAR channel, and we have permissions.
             if (PermissionHelper.TestBotPermission(ch, ChannelPermission.SendMessages))
             {
                 await ch.SendMessageAsync(embed: embed);
+                return;
             }
-            else
+
+            Console.WriteLine($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}");
+            StringBuilder sb = new StringBuilder()
+                .AppendLine("ERROR: Missing Permissions")
+                .AppendLine($"You are receiving this error, because I do not have the proper permissions to send the war notification to channel {ch.Name}.")
+                .AppendLine("Please validate I have the 'SEND_MESSAGES' permission for the specified channel.");
+
+            //Else, we don't have permissions to the WAR Channel. Send a notification to the officers channel.
+            var och = cfg.GetGuildChannel(WarBotChannelType.CH_Officers) as SocketTextChannel;
+            if (och != null && PermissionHelper.TestBotPermission(och, ChannelPermission.SendMessages))
             {
-                Console.WriteLine($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}");
-                //We don't have permissions to post to that channel. Lets DM the guild owner.
+                await och.SendMessageAsync(sb.ToString());
+                return;
+            }
+
+
+
+
+
+            //We don't have permissions to post to either channel. Lets try and DM the guild's owner... 
+            try
+            {
                 var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
-
-                StringBuilder sb = new StringBuilder()
-                    .AppendLine("ERROR: Missing Permissions")
-                    .AppendLine($"You are receiving this error, because I do not have the proper permissions to send the notification to channel {ch.Name}.")
-                    .AppendLine("Please validate I have the 'SEND_MESSAGES' permission for the specified channel.");
-
                 await dm.SendMessageAsync(sb.ToString());
                 await dm.SendMessageAsync(embed: embed);
             }
+            catch
+            {
+                //Well, out of options. Lets disable this channel for the guild.
+                cfg.SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, null);
+                await cfg.SaveConfig();
+
+                var error = new UnauthorizedAccessException("Missing permissions to send to WAR Channel. WAR messages disabled for this guild.");
+                await bot.Log.Error(cfg.Guild, error, nameof(sendWarMessage));
+
+            }
+
         }
         public static async Task War_Prep_Started(IGuildConfig cfg)
         {
