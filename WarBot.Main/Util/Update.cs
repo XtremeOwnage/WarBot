@@ -38,11 +38,11 @@ namespace WarBot.Util
                         await CH.SendMessageAsync(embed: eb.Build());
                     }
 
-                    await bot.Log.GuildUpdated(Cfg, CurrentVersion, UpdateSentToClan);
-
                     //Update the config's version
                     Cfg.BotVersion = CurrentVersion;
                     await Cfg.SaveConfig();
+
+                    await bot.Log.GuildUpdated(Cfg, CurrentVersion, UpdateSentToClan);
                 }
                 else
                 {
@@ -53,6 +53,7 @@ namespace WarBot.Util
             {
                 //Update the config's version.
                 Cfg.BotVersion = CurrentVersion;
+                await Cfg.SaveConfig();
             }
         }
     }
