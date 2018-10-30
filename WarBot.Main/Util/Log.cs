@@ -114,8 +114,7 @@ namespace WarBot.Util
         {
             EmbedBuilder eb = new EmbedBuilder()
                 .WithTitle(Guild.Name)
-                .AddField("From", Message.Author.Username, true)
-                .AddField("FromId", Message.Author.Id, true);
+                .AddField("From", $"{Message.Author.Username}#{Message.Author.Discriminator}", true);
 
             if (Message.Channel is ITextChannel)
                 eb.AddField("Channel", Message.Channel.Name, true);
