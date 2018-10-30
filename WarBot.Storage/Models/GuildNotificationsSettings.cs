@@ -22,17 +22,17 @@ namespace WarBot.Storage.Models
             War2Enabled = true;
             War3Enabled = true;
             War4Enabled = true;
-            WarPrepEnding = true;
+            WarPrepEnding = false;
             WarPrepEndingMessage = null;
-            WarPrepStarted = true;
+            WarPrepStarted = false;
             WarPrepStartedMessage = null;
-            WarStarted = true;
+            WarStarted = false ;
             WarStartedMessage = null;
-            SendUpdateMessage = true;
+            SendUpdateMessage = false;
             GreetingMessage = null;
-            PortalEnabled = true;
+            PortalEnabled = false;
             PortalStartedMessage = null;
-            User_Left_Guild = true;
+            User_Left_Guild = false;
             
             return this;
         }
