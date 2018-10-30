@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Discord;
+using Discord.WebSocket;
+using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using WarBot.Core;
 using WarBot.Core.Dialogs;
 
 namespace WarBot
 {
-    public partial class WARBOT
+    public partial class WARBOT : IWARBOT
     {
         /// <summary>
         /// Dialogs, will force a specific user/channel combination, into a "stateful" conversation with the bot.
@@ -16,6 +19,20 @@ namespace WarBot
 
         //Keep track of current, open dialogs.
         public ConcurrentDictionary<int, SocketDialogContextBase> Dialogs = new ConcurrentDictionary<int, SocketDialogContextBase>();
+
+        public bool TryGetDialog<T>(ISocketMessageChannel Channel, IUser User, out T Dialog) where T : SocketDialogContextBase
+        {
+            var hc = (User.Id + Channel.Id).GetHashCode();
+
+            if (Dialogs.TryGetValue(hc, out var dialog) && dialog is T u)
+            {
+                Dialog = u;
+                return true;
+            }
+            Dialog = default;
+            return false;
+        }
+
 
         public async Task OpenDialog(SocketDialogContextBase Dialog)
         {
