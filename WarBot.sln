@@ -29,19 +29,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Dependancies", "0. Depen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tababular", "..\..\Tababular\Tababular\Tababular.csproj", "{C4F988DB-1778-4009-BC05-406504F8FD31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Net.Commands", "Discord.NET\Discord.Net.Commands\Discord.Net.Commands.csproj", "{1D0EC345-3464-4536-BD32-DF397C3F8FFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Commands", "Discord.NET\Discord.Net.Commands\Discord.Net.Commands.csproj", "{1D0EC345-3464-4536-BD32-DF397C3F8FFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Net.Core", "Discord.NET\Discord.Net.Core\Discord.Net.Core.csproj", "{E65AEF26-C39A-4FAD-914B-7D2769E2D464}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Core", "Discord.NET\Discord.Net.Core\Discord.Net.Core.csproj", "{E65AEF26-C39A-4FAD-914B-7D2769E2D464}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Net.Rest", "Discord.NET\Discord.Net.Rest\Discord.Net.Rest.csproj", "{215A9C5F-7402-41E6-ABBB-956522E9DB40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Rest", "Discord.NET\Discord.Net.Rest\Discord.Net.Rest.csproj", "{215A9C5F-7402-41E6-ABBB-956522E9DB40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord.Net.WebSocket", "Discord.NET\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj", "{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.WebSocket", "Discord.NET\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj", "{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangeLogs", "ChangeLogs", "{CE011A00-0AD7-47AD-B129-9AD751098A18}"
 	ProjectSection(SolutionItems) = preProject
 		ChangeLogs\v3.0.md = ChangeLogs\v3.0.md
 		ChangeLogs\v3.1.md = ChangeLogs\v3.1.md
 		ChangeLogs\v3.2.md = ChangeLogs\v3.2.md
+		ChangeLogs\v3.3.md = ChangeLogs\v3.3.md
 	EndProjectSection
 EndProject
 Global
