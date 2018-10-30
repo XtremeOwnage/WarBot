@@ -19,12 +19,14 @@ Warbot is a discord bot designed around the Hustle Castle mobile game. While, ma
 
 ### Reminders
 * In addition to WAR reminders for hustle castle, you can also ask WarBOT to remind you of something. This feature is available in both guilds, and via DM to the bot.
+* WarBOT can also let you know when the portal opens for the week.
 
 ### Cleaning up channels
 * You can use WarBOT to delete messages from a channel, with the option to filter on pinned, nonpinned, or all messages.
 
 ### New Member Welcome Messages
 * WarBOT can send a greeting message to new users.
+* WarBOT can also let you know when somebody leaves your server.
 
 ## Hustle Castle - Specific Features
 
