@@ -176,7 +176,7 @@ namespace WarBot.Util
             {
                 await ConsoleOUT($"Channel {ch.ToString()} is null. Unable to log to channel.");
             }
-            if (!target.TestBotPermission(ChannelPermission.SendMessages))
+            else if (!target.TestBotPermission(ChannelPermission.SendMessages))
             {
                 await ConsoleOUT($"We do not have SEND_MESSAGES permission to log to {ch.ToString()} channel.");
             }
