@@ -12,7 +12,7 @@ namespace WarBot.Core
         /// If we are unable to find a channel which we can send messages to, we will create a new channel, if we have permissions.
         /// </summary>
         /// <returns></returns>
-        public static async Task<ITextChannel> findDefaultChannel(SocketGuild Guild)
+        public static async Task<IMessageChannel> findFirstChannelSendable(SocketGuild Guild)
         {
             var myUser = Guild.CurrentUser;
 
@@ -20,20 +20,28 @@ namespace WarBot.Core
             if (Guild.DefaultChannel != null && myUser.GetPermissions(Guild.DefaultChannel).SendMessages)
                 return Guild.DefaultChannel;
 
-            //Next, Just loop through channels, until we find a writeable channel.
-            foreach (SocketTextChannel ch in Guild.Channels.OfType<SocketTextChannel>())
-            {
-                if (myUser.GetPermissions(ch).SendMessages)
-                    return ch;
-            }
+            await System.Console.Out.WriteLineAsync($"Guild {Guild.Name} - Unable to send to default channel.");
 
-            //If, there are no writable channels. Lets create one?
-            if (myUser.GuildPermissions.ManageChannels && myUser.GuildPermissions.SendMessages)
+            //Next, Just loop through channels, until we find a writeable channel.
+            var ch = Guild.Channels.OfType<SocketTextChannel>().FirstOrDefault(o => myUser.GetPermissions(o).SendMessages == true);
+            if (ch != null)
+                return ch;
+
+            await System.Console.Out.WriteLineAsync($"Guild {Guild.Name} - Unable to send to ANY channel.");
+
+            //Try to make a DM with the guild's owner.
+            try
             {
-                var newCh = await Guild.CreateTextChannelAsync("General");
-                await newCh.SendMessageAsync(@"I was unable to find a channel to which I could sent messages, So, I created this channel automatically.
-I will post messages into this channel.");
-                return newCh;
+                var dm = await Guild.Owner.GetOrCreateDMChannelAsync();
+                await dm.SendMessageAsync($"I am unable to send the following message to your discord guild {Guild.Name} because, I lack the SEND_MESSAGES permission for all channels.\r" +
+                    $"\nTo note: I will not be very useful if I cannot send messages to your guild.");
+
+                return dm;
+            }
+            catch
+            {
+                await System.Console.Out.WriteLineAsync($"Guild {Guild.Name} - Unable to DM Owner");
+                //unable to make a DM...
             }
 
             return null;
