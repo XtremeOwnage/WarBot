@@ -49,7 +49,7 @@ namespace WarBot.Storage
             {
 
                 //Inflate the object before returning it.
-                g.Initialize(Guild, Save);
+                g.Initialize(Guild, Save, bot);
 
                 //Add the object to the local cache.
                 configStore.TryAdd(Guild.Id, g);
@@ -57,22 +57,24 @@ namespace WarBot.Storage
                 //Return the cached object.
                 return configStore[Guild.Id];
             }
+            else //Create a new config for this guild.
+            {
+                var newCfg = Storage.Models.DiscordGuild.Create(Guild);
 
-            var newCfg = Storage.Models.DiscordGuild.Create(Guild);
+                await newCfg.SetDefaults(Guild);
 
-            await newCfg.SetDefaults(Guild);
+                newCfg.Initialize(Guild, Save, bot);
 
-            newCfg.Initialize(Guild, Save);
+                //Add the new Guild to the database.
+                db.Guilds.Add(newCfg);
 
-            //Add the new Guild to the database.
-            db.Guilds.Add(newCfg);
-
-            //Save the new config.
-            await db.SaveWithOutput();
+                //Save the new config.
+                await db.SaveWithOutput();
 
 
-            configStore.TryAdd(Guild.Id, newCfg);
-            return configStore[Guild.Id];
+                configStore.TryAdd(Guild.Id, newCfg);
+                return configStore[Guild.Id];
+            }
         }
 
         private async Task Save<T>(T Cfg) where T : IGuildConfig

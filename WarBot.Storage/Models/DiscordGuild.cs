@@ -135,6 +135,9 @@ namespace WarBot.Storage.Models
         }
         #endregion
         #region IGuildConfig Implementation
+        [NotMapped]
+        public ILog Log { get; private set; }
+
         string IGuildConfig.Website
         {
             get => this.Website;
@@ -162,8 +165,11 @@ namespace WarBot.Storage.Models
         INotificationSettings IGuildConfig.Notifications => this.NotificationSettings;
 
 
-        public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc)
+
+        public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc, IWARBOT Bot)
         {
+            this.Log = Bot.Log;
+
             //Initialize the stored references.
             foreach (var role in this.Roles.ToList())
             {
