@@ -1,5 +1,7 @@
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
+using Discord.WebSocket;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,11 +37,53 @@ namespace WarBot.Modules.CommandModuleBase
                 await this.bot.Jobs.ExecuteJob(Name);
                 await ReplyAsync("Done.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await ReplyAsync(ex.Message);
             }
         }
+
+        [RoleLevel(RoleLevel.GlobalAdmin)]
+        [Command("send pm")]
+        [Summary("Sends a DM to another user.")]
+        [CommandUsage("{prefix} {command} (person Id)")]
+        public async Task Start_DM_ById(ulong Who, [Remainder] string Message)
+        {
+            try
+            {
+                var User = await this.bot.Client.GetUserAsync(Who) as SocketUser;
+                if (User == null)
+                    await ReplyAsync("Unable to find user by the ID provided");
+                else
+                    await Start_DM_ByTag(User, Message);
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(ex.Message);
+            }
+        }
+
+        [RoleLevel(RoleLevel.GlobalAdmin)]
+        [Command("send pm")]
+        [Summary("Establishes a group conversation between the requestor, and another person.")]
+        [CommandUsage("{prefix} {command} @Person")]
+        public async Task Start_DM_ByTag(SocketUser Who, [Remainder] string Message)
+        {
+            try
+            {
+                string from = $"{Context.User.Username}#{Context.User.Discriminator}";
+                SocketDMChannel dm = Who.GetOrCreateDMChannelAsync().Result as SocketDMChannel;
+                RestUserMessage m = dm.SendMessageAsync($"New private message from {from}.\r\n" + Message).Result;
+                if (m != null)
+                    await ReplyAsync("Success.");
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(ex.Message);
+            }
+        }
+
+
 
     }
 }
