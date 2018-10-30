@@ -76,7 +76,7 @@ namespace WarBot
             //Send a welcome message to the guild.
             try
             {
-                var CH = await ChannelHelper.findDefaultChannel(arg);
+                var CH = await ChannelHelper.findFirstChannelSendable(arg);
                 if (CH != null)
                 {
                     //Publish a Welcome Message.
@@ -93,6 +93,10 @@ namespace WarBot
                         .WithImageUrl("http://i1223.photobucket.com/albums/dd516/ericmck2000/download.jpg");
 
                     await CH.SendMessageAsync(embed: eb.Build());
+                }
+                else
+                {
+                    await Log.Error(arg, new Exception("Unable to send my welcome message. No permissions."));
                 }
             }
             catch (Exception ex)
