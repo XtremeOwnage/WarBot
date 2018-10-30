@@ -22,9 +22,6 @@ namespace WarBot
 
                 foreach (var Dialog in matchingDialogs)
                 {
-                    //Send a message to the user/channel, that we are closing the dialog.
-                    await Dialog.Value.CloseDialog_GuildRemoved();
-
                     //Remove the dialog from the stack.
                     this.Dialogs.TryRemove(Dialog.Key, out var _);
                 }
