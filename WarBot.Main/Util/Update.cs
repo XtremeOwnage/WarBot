@@ -8,9 +8,9 @@ namespace WarBot.Util
 
     public class Update
     {
-        public const string CurrentVersion = "3.0";
+        public const string CurrentVersion = "3.1";
         const bool SendUpdateNotificationForCurrentVersion = true;
-        const string UpdateNotesURL = "https://github.com/XtremeOwnage/WarBot/blob/master/version3.md";
+        const string UpdateNotesURL = "https://github.com/XtremeOwnage/WarBot/blob/master/3.1.md";
 
         public static async Task UpdateCheck(IGuildConfig Cfg, WARBOT bot)
         {
