@@ -21,18 +21,17 @@ namespace WarBot.Util
         public Log(WARBOT Discord)
         {
             this.bot = Discord;
-            this.bot.Client.Ready += Client_Ready;
         }
 
-        private async Task Client_Ready()
+        public async Task Client_Ready()
         {
             await ConsoleOUT("Initalizing Logging.");
 
             try
             {
                 Channels_Chat = bot.Client.GetChannel(this.bot.Config.Log_CH_Chat) as SocketTextChannel;
-                Channels_Error = bot.Client.GetChannel(this.bot.Config.Log_CH_Debug) as SocketTextChannel;
-                Channels_Debug = bot.Client.GetChannel(this.bot.Config.Log_CH_Errors) as SocketTextChannel;
+                Channels_Error = bot.Client.GetChannel(this.bot.Config.Log_CH_Errors) as SocketTextChannel;
+                Channels_Debug = bot.Client.GetChannel(this.bot.Config.Log_CH_Debug) as SocketTextChannel;
                 Channels_Activity = bot.Client.GetChannel(this.bot.Config.Log_CH_Guilds) as SocketTextChannel;
 
                 if (Channels_Chat == null)
@@ -94,13 +93,29 @@ namespace WarBot.Util
         {
             string Message = $"{guild?.Name} - {Method} - {ex.Message}";
             await ConsoleOUT(Message);
+
+            var eb = new EmbedBuilder()
+                .WithTitle("Exception")
+                .WithColor(Color.Red);
+
+            if (guild?.Name != null)
+                eb.AddField("Guild", guild.Name, true);
+            if (!string.IsNullOrWhiteSpace(Method))
+                eb.AddField("Method", Method, true);
+            if (ex?.GetType()?.Name != null)
+                eb.AddField("Type", ex.GetType().Name);
+            if (!string.IsNullOrWhiteSpace(ex?.Message))
+                eb.AddField("Message", ex.Message, false);
+
+            await sendToChannel(LogChannel.Errors, eb.Build());
         }
 
         public async Task ChatMessage(IMessage Message, IGuild Guild, IResult Result)
         {
             EmbedBuilder eb = new EmbedBuilder()
                 .WithTitle(Guild.Name)
-                .AddField("From", Message.Author.Username, true);
+                .AddField("From", Message.Author.Username, true)
+                .AddField("FromId", Message.Author.Id, true);
 
             if (Message.Channel is ITextChannel)
                 eb.AddField("Channel", Message.Channel.Name, true);
@@ -146,21 +161,36 @@ namespace WarBot.Util
 
         }
 
-        public async Task ConsoleOUT(string Message)
-        {
-            if (System.Environment.UserInteractive)
-                await Console.Out.WriteLineAsync(Message);
-        }
+        public async Task ConsoleOUT(string Message) => await Console.Out.WriteLineAsync(Message);
+
 
 
         #region Private Members
         public async Task sendToChannel(LogChannel ch, string Message) => await sendToChannel(ch, null, Message);
         public async Task sendToChannel(LogChannel ch, Embed embed) => await sendToChannel(ch, embed, "");
-        public async Task sendToChannel(LogChannel ch, Embed embed, string Message = "")
+        private async Task sendToChannel(LogChannel ch, Embed embed, string Message = "")
         {
             var target = getChannel(ch);
-            if (target != null)
-                await target.SendMessageAsync(Message, embed: embed);
+
+            if (target == null)
+            {
+                await ConsoleOUT($"Channel {ch.ToString()} is null. Unable to log to channel.");
+            }
+            if (!target.TestBotPermission(ChannelPermission.SendMessages))
+            {
+                await ConsoleOUT($"We do not have SEND_MESSAGES permission to log to {ch.ToString()} channel.");
+            }
+            else
+            {
+                try
+                {
+                    await target.SendMessageAsync(Message, embed: embed);
+                }
+                catch (Exception ex)
+                {
+                    await ConsoleOUT($"Failed to log to {ch.ToString()} channel. {ex.Message}");
+                }
+            }
 
         }
         private string cleanMessageText(IMessage msg)

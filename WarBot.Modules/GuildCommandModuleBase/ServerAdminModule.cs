@@ -57,34 +57,7 @@ namespace WarBot.Modules.GuildCommandModules
             await ReplyAsync($"My prefix has been set to '{Prefix}'");
         }
 
-        [RoleLevel(RoleLevel.Leader)]
-        [Command("set greeting")]
-        [Summary("Set a greeting message to send to new users.")]
-        [CommandUsage("{prefix} {command} Welcome to our server!")]
-        [RequireBotPermission(ChannelPermission.SendMessages)]
-        public async Task SetGreetingMessage([Remainder]string Greeting = null)
-        {
-            //Update the config.
-            cfg.Notifications.NewUserGreeting = Greeting;
-            await cfg.SaveConfig();
-
-            await ReplyAsync($"The greeting message has been set.");
-        }
-
-        [RoleLevel(RoleLevel.Leader)]
-        [Command("disable greeting")]
-        [Summary("Disable the greeting message to new users.")]
-        [CommandUsage("{prefix} {command}")]
-        [RequireBotPermission(ChannelPermission.SendMessages)]
-        public async Task DisableGreeting()
-        {
-            cfg.Notifications.NewUserGreeting = null;
-            await cfg.SaveConfig();
-
-            await ReplyAsync($"The greeting has been disabled.");
-        }
-
-        
+       
         [RoleLevel(RoleLevel.ServerAdmin)]
         [Command("setup")]
         [Summary("Starts the warbot configuration dialog.")]

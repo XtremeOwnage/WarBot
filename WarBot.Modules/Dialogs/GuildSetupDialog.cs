@@ -18,12 +18,14 @@ namespace WarBot.Modules.Dialogs
         private SetupStep CurrentStep = SetupStep.Initial;
         public async override Task ProcessMessage(SocketUserMessage input)
         {
+            //Add the user's message to be cleaned up after this poll is completed.
+            CleanupList.Add(input);
             string Message = input.Content.Trim();
             string rawMsg = input.Content.Trim().ToLowerInvariant();
 
             if (rawMsg == "stop" || rawMsg == "cancel")
             {
-                await Send("Setup aborted.");
+                await SendAsync("Setup aborted.");
                 await this.Bot.CloseDialog(this);
                 return;
             }
@@ -61,36 +63,38 @@ namespace WarBot.Modules.Dialogs
 
                     await NextStep($"My prefix has been set to '{Config.Prefix}'");
                     break;
-                case SetupStep.Greeting_Should_Greet:
-                    if (Bool == true)
-                        await NextStep();
-                    else if (Bool == false || Skip)
-                    {
-                        this.Config.Notifications.NewUserGreeting = null;
-                        this.Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, null);
-                        await SkipStep("I will not send new user greetings.");
-                    }
-                    else
-                        await Send(msg_BoolParseFailed);
-                    break;
-                case SetupStep.Greeting_Channel_NewUsers:
+                case SetupStep.User_Left_Channel:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, null);
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Left, null);
+                        await SkipStep("I will not send notifications when a user leaves.");
+                    }
+                    else if (CH != null)
+                    {
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Left, CH);
+                        await NextStep($"When a user leaves, I will post to {CH.Mention}");
+                    }
+                    else
+                        await SendAsync(msg_ChannelExpected);
+                    break;
+                case SetupStep.User_Join_Channel:
+                    if (Skip)
+                    {
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
                         await SkipStep("I will not send new user greetings.");
                     }
                     else if (CH != null)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, CH);
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, CH);
                         await NextStep($"New user greetings will go to {CH.Mention}");
                     }
                     else
-                        await Send(msg_ChannelExpected);
+                        await SendAsync(msg_ChannelExpected);
                     break;
-                case SetupStep.Greeting_Message:
+                case SetupStep.User_Join_Message:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, null);
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
                         await SkipStep("I will not send new user greetings.");
                     }
                     else
@@ -98,7 +102,7 @@ namespace WarBot.Modules.Dialogs
                         Config.Notifications.NewUserGreeting = Message;
                         await NextStep("New users joining the server will receive this message:\r" +
                             $"\n{User.Mention}, {Message}\r" +
-                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.CH_New_Users).Mention}");
+                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.CH_User_Join).Mention}");
                     }
                     break;
                 case SetupStep.Channel_Updates:
@@ -115,7 +119,7 @@ namespace WarBot.Modules.Dialogs
                         await NextStep($"My update notifications will be sent to {CH.Mention}.");
                     }
                     else
-                        await Send(msg_ChannelExpected);
+                        await SendAsync(msg_ChannelExpected);
 
                     break;
                 case SetupStep.Channel_Officers:
@@ -130,9 +134,9 @@ namespace WarBot.Modules.Dialogs
                         await NextStep($"My officer-related messages and errors will be sent to {CH.Mention}.");
                     }
                     else
-                        await Send(msg_ChannelExpected);
+                        await SendAsync(msg_ChannelExpected);
                     break;
-                case SetupStep.Channel_WAR:
+                case SetupStep.WAR_Channel:
                     if (Skip || Bool == false)
                     {
                         Config.SetGuildChannel(Core.WarBotChannelType.CH_WAR_Announcements, null);
@@ -148,7 +152,7 @@ namespace WarBot.Modules.Dialogs
                         await NextStep($"My war announcements will be sent to {CH.Mention}.");
                     }
                     else
-                        await Send(msg_ChannelExpected);
+                        await SendAsync(msg_ChannelExpected);
                     break;
                 case SetupStep.WAR_SendPrepStarted:
                     if (Bool == true)
@@ -162,7 +166,7 @@ namespace WarBot.Modules.Dialogs
                         await SkipStep("I will not send notifications when war prep starts.");
                     }
                     else
-                        await Send(msg_BoolParseFailed);
+                        await SendAsync(msg_BoolParseFailed);
                     break;
                 case SetupStep.WAR_PrepStartedMessage:
                     if (Skip)
@@ -192,7 +196,7 @@ namespace WarBot.Modules.Dialogs
                     }
                     //Failed to parse a boolean.
                     else
-                        await Send(msg_BoolParseFailed);
+                        await SendAsync(msg_BoolParseFailed);
                     break;
                 case SetupStep.WAR_PrepEndingMessage:
                     if (Skip)
@@ -221,7 +225,7 @@ namespace WarBot.Modules.Dialogs
                         await SkipStep("I will not send a notification when clan wars start.");
                     }
                     else
-                        await Send(msg_BoolParseFailed);
+                        await SendAsync(msg_BoolParseFailed);
                     break;
                 case SetupStep.WAR_WarStartedMessage:
                     if (Skip)
@@ -245,9 +249,35 @@ namespace WarBot.Modules.Dialogs
                         await SkipStep("I will not perform any role-based management or tagging.");
                     }
                     else
-                        await Send(msg_BoolParseFailed);
+                        await SendAsync(msg_BoolParseFailed);
                     break;
-
+                case SetupStep.Portal_Started:
+                    if (Bool == true)
+                        await NextStep();
+                    else if (Bool == false || Skip)
+                    {
+                        this.Config.Notifications.PortalEnabled = false;
+                        this.Config.Notifications.PortalStartedMessage = null;
+                        await SkipStep("I will not send a notification when the portal opens.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
+                case SetupStep.Portal_Started_Message:
+                    if (Skip)
+                    {
+                        this.Config.Notifications.PortalEnabled = true;
+                        this.Config.Notifications.PortalStartedMessage = null;
+                        await SkipStep("I will use my default notification when the portal opens.");
+                    }
+                    else
+                    {
+                        this.Config.Notifications.PortalEnabled = true;
+                        this.Config.Notifications.PortalStartedMessage = Message;
+                        await NextStep("The war started message has been set to:\r" +
+                            $"\n{Message}");
+                    }
+                    break;
                 //All of these steps share the same logic.
                 case SetupStep.Role_Guest:
                 case SetupStep.Role_Member:
@@ -266,7 +296,7 @@ namespace WarBot.Modules.Dialogs
                         await NextStep($"Role {role.ToString()} has been assigned to discord role {(ROLE.IsMentionable ? ROLE.Mention : ROLE.Name)}");
                     }
                     else
-                        await Send(msg_RoleExpected);
+                        await SendAsync(msg_RoleExpected);
                     break;
                 case SetupStep.Set_Website:
                     if (Skip)
@@ -303,116 +333,126 @@ namespace WarBot.Modules.Dialogs
         private async Task StartStep(SetupStep step)
         {
             CurrentStep = step;
-            const string suffix = "\n\r\n*You may always say 'skip' to continue to the next step, 'back' to return to the previous step, or 'stop' to cancel this dialog.*\r";
+            const string suffix = "\n\r\n*You may always say 'skip' to disable this feature, 'back' to return to the previous step, or 'stop' to cancel this dialog.*\r";
             switch (step)
             {
                 case SetupStep.Initial:
-                    await Send("Welcome to the guild setup dialog.\r" +
+                    await SendAsync("Welcome to the guild setup dialog.\r" +
                         "\nI will walk you through the process of configuring me, by asking simple questions.");
                     return;
 
                 case SetupStep.WarBot_Prefix:
-                    await Send("Lets start by asking what my prefix should be.\r" +
+                    await SendAsync("Lets start by asking what my prefix should be.\r" +
                         $"\nYou also may always address me by tagging me, like this:\r" +
                         $"\n**{this.Bot.Client.CurrentUser.Mention}, help**\r" +
                         $"\nWhat prefix should I use?" +
                         suffix);
                     return;
-                case SetupStep.Greeting_Should_Greet:
-                    await Send("Would you like me to greet new users joining your server?\r" +
-                        suffix);
-                    break;
-                case SetupStep.Greeting_Channel_NewUsers:
-                    await Send("Which channel would you like me to use for greeting new users?\r" +
+                case SetupStep.User_Join_Channel:
+                    await SendAsync("Which channel would you like me to use for greeting new users?\r" +
                         "\nIt is recommend the new users can see the new channel, but, you can set this to a private channel to notify your officers.\r" +
-                        $"\nPlease tag the channel like this: {this.Channel.Mention}");
+                        $"\nPlease tag the channel like this: {this.Channel.Mention}"
+                        + suffix);
                     break;
-                case SetupStep.Greeting_Message:
-                    await Send("What message would you like me to send to new users?");
+                case SetupStep.User_Join_Message:
+                    await SendAsync("What message would you like me to send to new users?");
+                    break;
+                case SetupStep.User_Left_Channel:
+                    await SendAsync("What channel would you like me to send a notification to when users leave?\r" +
+                        "\nIf you do not want this feature, please say 'skip'.");
                     break;
                 case SetupStep.Channel_Updates:
-                    await Send("Occasionally, my developer will add significant new features to me.\r" +
+                    await SendAsync("Occasionally, my developer will add significant new features to me.\r" +
                         "\nWould you like to receive those updates in a channel?\r" +
                         "\nIf so, please tell me which channel to send update notices to. If you do not want this, say 'No'.\r" +
                         suffix);
                     break;
                 case SetupStep.Channel_Officers:
-                    await Send("Occasionally, I need to communicate with the clan's leadership.\r" +
+                    await SendAsync("Occasionally, I need to communicate with the clan's leadership.\r" +
                         "\nWould you like to receive those updates in a channel? (They are not very frequent.)\r" +
                         "\nIf so, please tell me which channel to use. If you do not want this, say 'No'.\r" +
                         suffix);
                     break;
-                case SetupStep.Channel_WAR:
-                    await Send("I assume you invited me to your server, for the purpose of alerting for Hustle Castle War events.\r" +
+                case SetupStep.WAR_Channel:
+                    await SendAsync("I assume you invited me to your server, for the purpose of alerting for Hustle Castle War events.\r" +
                         "\nPlease let me know which channel I should send war announcments to.\r" +
                         "\nIf you say 'No' or 'Skip', I will disable all war-related announcements.");
                     break;
                 case SetupStep.WAR_SendPrepStarted:
-                    await Send("Would you like me to send an announcement when the war preperation peroid starts?" +
+                    await SendAsync("Would you like me to send an announcement when the war preperation peroid starts?" +
                         "\r\nYes or No?");
                     break;
                 case SetupStep.WAR_PrepStartedMessage:
-                    await Send("What message would you like for me to send to members when the war preperation peroid starts?" +
+                    await SendAsync("What message would you like for me to send to members when the war preperation peroid starts?" +
                         "\r\nYou may 'skip' to use a default message.");
                     break;
                 case SetupStep.WAR_SendPrepEnding:
-                    await Send("Would you like me to send an announcement 15 minutes before the war starts?" +
+                    await SendAsync("Would you like me to send an announcement 15 minutes before the war starts?" +
                         "\r\nYes or No?");
                     break;
                 case SetupStep.WAR_PrepEndingMessage:
-                    await Send("What message would you like for me to send before the war starts?" +
+                    await SendAsync("What message would you like for me to send before the war starts?" +
                         "\r\nYou may 'skip' to use a default message.");
                     break;
                 case SetupStep.WAR_SendWarStarted:
-                    await Send("Would you like me to send an announcement when the war starts?" +
+                    await SendAsync("Would you like me to send an announcement when the war starts?" +
                         "\r\nYes or No?");
                     break;
                 case SetupStep.WAR_WarStartedMessage:
-                    await Send("What message would you like for me to send when the war starts?" +
+                    await SendAsync("What message would you like for me to send when the war starts?" +
                         "\r\nYou may 'skip' to use a default message.");
                     break;
+                case SetupStep.Portal_Started:
+                    await SendAsync("Would you like me to send an announcement when the portal opens once per week?" +
+                        "\r\nYes or No?");
+                    break;
+                case SetupStep.Portal_Started_Message:
+                    await SendAsync("What message would you like for me to send when the portal opens?" +
+                        "\r\nYou may 'skip' to use a default message.");
+                    break;
+
                 case SetupStep.Should_Set_Roles:
-                    await Send("Would you like me to assist you with managing the roles of your discord server?\r" +
+                    await SendAsync("Would you like me to assist you with managing the roles of your discord server?\r" +
                         "\nI can help by promoting users, demoting users, and setting users to specific roles\r" +
                         "\nAs well, many of my functions requires a user to have a specific role\r" +
                         "\nPlease say yes or no.");
                     break;
                 case SetupStep.Role_Guest:
-                    await Send("Which role would you like to utilize for guests?\r" +
+                    await SendAsync("Which role would you like to utilize for guests?\r" +
                         "\nTypically, users in this role will not have access to many of the protected channels, or features of mine.\r" +
                         "\nPlease tag a role, like so: @Guests, or say 'skip'");
                     break;
                 case SetupStep.Role_Member:
-                    await Send("Which role would you like to use for members?\r" +
+                    await SendAsync("Which role would you like to use for members?\r" +
                         "\nThese users will have access to basic commands.\r" +
                          "\nPlease tag a role, like so: @Members, or say 'skip'");
                     break;
                 case SetupStep.Role_Officer:
-                    await Send("Which role would you like to use for officers?\r" +
+                    await SendAsync("Which role would you like to use for officers?\r" +
                         "\nThese users will have access to a few user management commands, and will be able to set users to roles less then officer\r" +
                          "\nPlease tag a role, like so: @Officers, or say 'skip'");
                     break;
                 case SetupStep.Role_Leader:
-                    await Send("Which role would you like to use for Leaders?\r" +
+                    await SendAsync("Which role would you like to use for Leaders?\r" +
                         "\nThese users will have access to nearly all of my features around user and clan management.\r" +
                          "\nPlease tag a role, like so: @Leaders, or say 'skip'");
                     break;
                 case SetupStep.Role_ServerAdmin:
-                    await Send("Which role would you like to use for Server Admins?\r" +
+                    await SendAsync("Which role would you like to use for Server Admins?\r" +
                         "\nThese users will have access to all of my commands. It is not required that you set this role, as I can detect users who have administrative permissions.\r" +
                          "\nPlease tag a role, like so: @Admins, or say 'skip'");
                     break;
                 case SetupStep.Set_Website:
-                    await Send("I can assist in directing users to a website, or message you specify when somebody says, 'bot, website'\r" +
+                    await SendAsync("I can assist in directing users to a website, or message you specify when somebody says, 'bot, website'\r" +
                         "If you would like to use this feature, please tell me the message to send. Else, say 'skip'.");
                     break;
                 case SetupStep.Set_Loot:
-                    await Send("I can assist in pointing users to how your loot is managed when somebody says, 'bot, loot'.\r" +
+                    await SendAsync("I can assist in pointing users to how your loot is managed when somebody says, 'bot, loot'.\r" +
                         "If you would like to use this feature, please tell me the message to send. Else, say 'skip'.");
                     break;
                 case SetupStep.Done:
                     {
-                        await Send("You have successfully completed my setup wizard.\r" +
+                        await SendAsync("You have successfully completed my setup wizard.\r" +
                             "\nYou may always type 'bot, setup' to re-run this wizard, or 'bot, help' to show your available commands.\r" +
                             "\nIf you run into any issues, you may submit an issue at https://github.com/XtremeOwnage/WarBot or, join the support server for me.\r" +
                             "\nThanks for trusting WarBOT with all of your needs!");
@@ -431,10 +471,13 @@ namespace WarBot.Modules.Dialogs
         }
         public async override Task OnClosed()
         {
+            await base.OnClosed();
             await this.Channel.SendMessageAsync("The guild setup dialog has been closed.");
         }
 
-
+        /// <summary>
+        /// Defines the current step of this dialog. This enum also contains attributes to manage the flow.
+        /// </summary>
         enum SetupStep
         {
             NULL,
@@ -443,30 +486,29 @@ namespace WarBot.Modules.Dialogs
             Initial,
 
             //Setup the prefix for the bot.
-            [Step(WarBot_Prefix, Greeting_Should_Greet)]
+            [Step(WarBot_Prefix, User_Join_Channel)]
             WarBot_Prefix,
 
-            [Step(WarBot_Prefix, Greeting_Channel_NewUsers, Channel_Updates)]
-            //Determine if we should greet new users.
-            Greeting_Should_Greet,
+            [Step(WarBot_Prefix, User_Join_Message, User_Left_Channel)]
+            User_Join_Channel,
 
-            [Step(Greeting_Should_Greet, Greeting_Message, Channel_Updates)]
-            Greeting_Channel_NewUsers,
+            [Step(User_Join_Channel, User_Left_Channel)]
+            User_Join_Message,
 
-            [Step(Greeting_Channel_NewUsers, Channel_Updates)]
-            Greeting_Message,
+            [Step(User_Join_Channel, Channel_Updates)]
+            User_Left_Channel,
 
             //Configure various channels
-            [Step(Greeting_Should_Greet, Channel_Officers)]
+            [Step(User_Left_Channel, Channel_Officers)]
             Channel_Updates,
 
-            [Step(Channel_Updates, Channel_WAR)]
+            [Step(Channel_Updates, WAR_Channel)]
             Channel_Officers,
 
             //Hustle Castle - War Related Settings
-            [Step(Channel_Officers, WAR_SendPrepStarted, Should_Set_Roles)]
-            Channel_WAR,
-            [Step(Channel_WAR, WAR_PrepStartedMessage, WAR_SendPrepEnding)]
+            [Step(Channel_Officers, WAR_SendPrepStarted, Portal_Started)]
+            WAR_Channel,
+            [Step(WAR_Channel, WAR_PrepStartedMessage, WAR_SendPrepEnding)]
             WAR_SendPrepStarted,
             [Step(WAR_SendPrepStarted, WAR_SendPrepEnding)]
             WAR_PrepStartedMessage,
@@ -474,14 +516,19 @@ namespace WarBot.Modules.Dialogs
             WAR_SendPrepEnding,
             [Step(WAR_SendPrepEnding, WAR_SendWarStarted)]
             WAR_PrepEndingMessage,
-            [Step(WAR_SendPrepEnding, WAR_WarStartedMessage, Should_Set_Roles)]
+            [Step(WAR_SendPrepEnding, WAR_WarStartedMessage, Portal_Started)]
             WAR_SendWarStarted,
-            [Step(WAR_SendWarStarted, Should_Set_Roles)]
+            [Step(WAR_SendWarStarted, Portal_Started)]
             WAR_WarStartedMessage,
 
+            //Portal Enabled / Portal Message
+            [Step(WAR_Channel, Portal_Started_Message, Should_Set_Roles)]
+            Portal_Started,
+            [Step(Portal_Started, Should_Set_Roles)]
+            Portal_Started_Message,
 
             //Roles    
-            [Step(WarBot_Prefix, Role_Guest, Set_Website)]
+            [Step(WAR_Channel, Role_Guest, Set_Website)]
             Should_Set_Roles,
             [Step(Should_Set_Roles, Role_Member)]
             Role_Guest,
@@ -527,14 +574,14 @@ namespace WarBot.Modules.Dialogs
         private async Task NextStep(string Message = null)
         {
             if (Message != null)
-                await Send(Message);
+                await SendAsync(Message);
             SetupStep NextStep = GetStep(CurrentStep).NextStep;
             await StartStep(NextStep);
         }
         private async Task SkipStep(string Message = null)
         {
             if (Message != null)
-                await Send(Message);
+                await SendAsync(Message);
             SetupStep SkipStep = GetStep(CurrentStep).SkipStep;
             await StartStep(SkipStep);
         }
@@ -543,8 +590,6 @@ namespace WarBot.Modules.Dialogs
             SetupStep PrevStep = GetStep(CurrentStep).PreviousStep;
             await StartStep(PrevStep);
         }
-        public async Task Send(string Message)
-            => await this.Channel.SendMessageAsync(text: Message);
         StepAttribute GetStep(SetupStep Value)
         {
             var type = typeof(SetupStep);

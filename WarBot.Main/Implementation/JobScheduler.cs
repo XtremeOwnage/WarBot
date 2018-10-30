@@ -86,7 +86,7 @@ namespace WarBot.Implementation
                 var job = Job_Action<T>.Create(jobID, Action);
 
                 var trigger = TriggerBuilder.Create()
-                    .WithCronSchedule(cronSchedule)
+                    .WithCronSchedule(cronSchedule, o => o.InTimeZone(TimeZoneInfo.Utc))
                     .ForJob(job)
                     .Build();
 

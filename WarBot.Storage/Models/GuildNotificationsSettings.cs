@@ -30,6 +30,10 @@ namespace WarBot.Storage.Models
             WarStartedMessage = null;
             SendUpdateMessage = true;
             GreetingMessage = null;
+            PortalEnabled = true;
+            PortalStartedMessage = null;
+            User_Left_Guild = true;
+            
             return this;
         }
 
@@ -42,23 +46,32 @@ namespace WarBot.Storage.Models
         public virtual DiscordGuild DiscordGuild { get; }
 
 
-        public bool WarPrepStarted { get; set; }
-        public bool WarPrepEnding { get; set; }
-        public bool WarStarted { get; set; }
-        public bool War1Enabled { get; set; }
-        public bool War2Enabled { get; set; }
-        public bool War3Enabled { get; set; }
-        public bool War4Enabled { get; set; }
-        public string WarPrepStartedMessage { get; set; }
-        public string WarPrepEndingMessage { get; set; }
-        public string WarStartedMessage { get; set; }
-        public bool SendUpdateMessage { get; set; }
+        public bool WarPrepStarted { get; set; } = true;
+        public bool WarPrepEnding { get; set; } = true;
+        public bool WarStarted { get; set; } = true;
+        public bool War1Enabled { get; set; } = true;
+        public bool War2Enabled { get; set; } = true;
+        public bool War3Enabled { get; set; } = true;
+        public bool War4Enabled { get; set; } = true;
+
+        public bool SendUpdateMessage { get; set; } = true;
+
+
+
+        public string WarPrepStartedMessage { get; set; } = null;
+        public string WarPrepEndingMessage { get; set; } = null;
+        public string WarStartedMessage { get; set; } = null;
+
+
+        public bool PortalEnabled { get; set; } = true;
+        public string PortalStartedMessage { get; set; } = null;
 
         /// <summary>
         /// Welcome message for new players joining the discord guild.
         /// </summary>
-        public string GreetingMessage { get; set; }
+        public string GreetingMessage { get; set; } = null;
 
+        public bool User_Left_Guild { get; set; } = false;
 
         #region INotificationSettings
         string INotificationSettings.NewUserGreeting

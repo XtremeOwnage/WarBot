@@ -144,7 +144,15 @@ namespace WarBot.Modules.GuildCommandModules
                     .AddField("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
                     .AddField("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
                     .AddField("War 3 Enabled (2pm CST)", cfg.Notifications.War3Enabled)
-                    .AddField("War 4 Enabled (8pm CST)", cfg.Notifications.War4Enabled);
+                    .AddField("War 4 Enabled (8pm CST)", cfg.Notifications.War4Enabled)
+                    .AddField("Portal Remindar Enabled", cfg.Notifications.PortalEnabled);
+
+                if (!string.IsNullOrWhiteSpace(cfg.Notifications.PortalStartedMessage))
+                    embed.AddField("Portal Started Message", cfg.Notifications.PortalStartedMessage);
+
+                if (!string.IsNullOrWhiteSpace(cfg.Notifications.NewUserGreeting))
+                    embed.AddField("New User Greeting", cfg.Notifications.NewUserGreeting);
+                embed.AddField("User Left Enabled", cfg.Notifications.User_Left_Guild);
 
                 await ReplyAsync(embed: embed.Build());
             }

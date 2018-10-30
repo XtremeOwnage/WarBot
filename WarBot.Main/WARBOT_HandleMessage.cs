@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using WarBot.Core;
 using WarBot.Core.Dialogs;
 using WarBot.Core.ModuleType;
 
@@ -32,7 +33,6 @@ namespace WarBot
         }
         private async Task processMessage(SocketUserMessage message)
         {
-
             try
             {
                 //Start actual processing logic.              
@@ -51,11 +51,8 @@ namespace WarBot
 
                     #region Parse out command from prefix.
                     int argPos = 0;
-                    bool HasStringPrefix = message.HasStringPrefix(cfg?.Prefix ?? "bot,", ref argPos, StringComparison.OrdinalIgnoreCase);
-                    bool HasBotPrefix = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
-
-                    //Substring containing only the desired commands.
-                    string Msg = message.Content.Substring(argPos, message.Content.Length - argPos).Trim();
+                    bool HasPrefix = message.HasStringPrefix(cfg?.Prefix ?? "bot,", ref argPos, StringComparison.OrdinalIgnoreCase)
+                        || message.HasMentionPrefix(Client.CurrentUser, ref argPos);
                     #endregion
 
 
@@ -63,8 +60,15 @@ namespace WarBot
                     if (cfg == null)
                         return;
                     //If the message was not to me, Ignore it.
-                    else if (!(HasStringPrefix || HasBotPrefix))
+                    else if (!HasPrefix)
                         return;
+
+                    //Strip out the prefix.
+                    string Msg = message.Content
+                        .Substring(argPos, message.Content.Length - argPos)
+                        .Trim()
+                        .RemovePrecedingChar(',');
+
 
                     //Load dynamic command context.
                     var context = new GuildCommandContext(Client, message, cfg, this);

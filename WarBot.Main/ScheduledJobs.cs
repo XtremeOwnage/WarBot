@@ -11,23 +11,29 @@ namespace WarBot
         /// <param name="job"></param>
         public static void ScheduleJobs(IJobScheduler job)
         {
-            //War Related Jobs
-            job.RecurringJob<WAR_Messages>("war1_prep_started", o => o.SendWarPrepStarted(1).Wait(), "0 0 2 * * ?");
-            job.RecurringJob<WAR_Messages>("war2_prep_started", o => o.SendWarPrepStarted(2).Wait(), "0 0 8 * * ?");
-            job.RecurringJob<WAR_Messages>("war3_prep_started", o => o.SendWarPrepStarted(3).Wait(), "0 0 14 * * ?");
-            job.RecurringJob<WAR_Messages>("war4_prep_started", o => o.SendWarPrepStarted(4).Wait(), "0 0 20 * * ?");
+            //War prep started
+            job.RecurringJob<WAR_Messages>("war1_prep_started", o => o.SendWarPrepStarted(1).Wait(), "0 0 7 * * ?");
+            job.RecurringJob<WAR_Messages>("war2_prep_started", o => o.SendWarPrepStarted(2).Wait(), "0 0 13 * * ?");
+            job.RecurringJob<WAR_Messages>("war3_prep_started", o => o.SendWarPrepStarted(3).Wait(), "0 0 19 * * ?");
+            job.RecurringJob<WAR_Messages>("war4_prep_started", o => o.SendWarPrepStarted(4).Wait(), "0 0 1 * * ?");
 
-            job.RecurringJob<WAR_Messages>("war1_prep_ending", o => o.SendWarPrepEnding(1).Wait(), "0 45 3 * * ?");
-            job.RecurringJob<WAR_Messages>("war2_prep_ending", o => o.SendWarPrepEnding(2).Wait(), "0 45 9 * * ?");
-            job.RecurringJob<WAR_Messages>("war3_prep_ending", o => o.SendWarPrepEnding(3).Wait(), "0 45 15 * * ?");
-            job.RecurringJob<WAR_Messages>("war4_prep_ending", o => o.SendWarPrepEnding(4).Wait(), "0 45 21 * * ?");
+            //War Prep Ending
+            job.RecurringJob<WAR_Messages>("war1_prep_ending", o => o.SendWarPrepEnding(1).Wait(), "0 45 8 * * ?");
+            job.RecurringJob<WAR_Messages>("war2_prep_ending", o => o.SendWarPrepEnding(2).Wait(), "0 45 14 * * ?");
+            job.RecurringJob<WAR_Messages>("war3_prep_ending", o => o.SendWarPrepEnding(3).Wait(), "0 45 20 * * ?");
+            job.RecurringJob<WAR_Messages>("war4_prep_ending", o => o.SendWarPrepEnding(4).Wait(), "0 45 2 * * ?");
 
-            job.RecurringJob<WAR_Messages>("war1_started", o => o.SendWarStarted(1).Wait(), "0 0 4 * * ?");
-            job.RecurringJob<WAR_Messages>("war2_started", o => o.SendWarStarted(2).Wait(), "0 0 10 * * ?");
-            job.RecurringJob<WAR_Messages>("war3_started", o => o.SendWarStarted(3).Wait(), "0 0 16 * * ?");
-            job.RecurringJob<WAR_Messages>("war4_started", o => o.SendWarStarted(4).Wait(), "0 0 22 * * ?");
+            //War Started
+            job.RecurringJob<WAR_Messages>("war1_started", o => o.SendWarStarted(1).Wait(), "0 0 9 * * ?");
+            job.RecurringJob<WAR_Messages>("war2_started", o => o.SendWarStarted(2).Wait(), "0 0 15 * * ?");
+            job.RecurringJob<WAR_Messages>("war3_started", o => o.SendWarStarted(3).Wait(), "0 0 21 * * ?");
+            job.RecurringJob<WAR_Messages>("war4_started", o => o.SendWarStarted(4).Wait(), "0 0 3 * * ?");
 
+            //Process reactions queue
             job.RecurringJob_EveryNSeconds<WARBOT>("process_reactions", o => o.ProcessReactions(), 15);
+
+            //Send Portal Started
+            job.RecurringJob<WAR_Messages>("portal_opened", o => o.SendPortalOpened().Wait(), "0 0 9 ? * FRI");
 
         }
     }

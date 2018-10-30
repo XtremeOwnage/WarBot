@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +35,13 @@ namespace WarBot.Core
         int LoadedModules { get; }
         int LoadedCommands { get; }
         long MessagesProcessed { get; }
-
+        /// <summary>
+        /// Determines if a dialog is currently open.
+        /// </summary>
+        /// <param name="Channel"></param>
+        /// <param name="User"></param>
+        /// <returns></returns>
+        bool TryGetDialog<T>(ISocketMessageChannel Channel, IUser User, out T Dialog) where T : SocketDialogContextBase;
         /// <summary>
         /// Open a new dialog with the user/channel combination.
         /// </summary>

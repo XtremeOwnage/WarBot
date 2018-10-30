@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WarBot.Core;
 
@@ -21,97 +23,101 @@ namespace WarBot.Util
         /// <returns></returns>
         private bool shouldSendSpecificWar(IGuildConfig cfg, byte WarNo)
         {
-            if (WarNo == 1)
-                return cfg.Notifications.War1Enabled;
-            else if (WarNo == 2)
-                return cfg.Notifications.War2Enabled;
-            else if (WarNo == 3)
-                return cfg.Notifications.War3Enabled;
-            else if (WarNo == 4)
-                return cfg.Notifications.War4Enabled;
+            if (WarNo == 1) return cfg.Notifications.War1Enabled;
+            if (WarNo == 2) return cfg.Notifications.War2Enabled;
+            if (WarNo == 3) return cfg.Notifications.War3Enabled;
+            if (WarNo == 4) return cfg.Notifications.War4Enabled;
 
             else throw new ArgumentOutOfRangeException("There are only 4 wars. The value passed was not between 1 and 4.");
         }
 
+
         public async Task SendWarPrepStarted(byte WarNo)
         {
-            List<Task> Tasks = new List<Task>();
-            foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
-            {
-                try
+            var Errors = bot.GuildRepo
+                .GetCachedConfigs()
+                .Select(cfg => new Action(() =>
                 {
                     //Guild has elected out for this notification.
                     if (!cfg.Notifications.WarPrepStarted)
-                        continue;
+                        return;
                     //Guild elected out of this specific war.
                     else if (!shouldSendSpecificWar(cfg, WarNo))
-                        continue;
+                        return;
 
                     //Send the message.
-                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg));
-                }
-                catch (Exception ex)
-                {
-                    await bot.Log.Error(cfg.Guild, ex);
-                }
+                    WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg).Wait();
+                })).executeParallel(bot.StopToken.Token, 1);
+
+            foreach (Exception err in Errors)
+            {
+                await this.bot.Log.Error(null, err);
             }
-            await Task.WhenAll(Tasks);
         }
 
         public async Task SendWarPrepEnding(byte WarNo)
         {
-            List<Task> Tasks = new List<Task>();
-            foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
-            {
-                try
+            var Errors = bot.GuildRepo
+                .GetCachedConfigs()
+                .Select(cfg => new Action(() =>
                 {
                     //Guild has elected out for this notification.
                     if (!cfg.Notifications.WarPrepEnding)
-                        continue;
+                        return;
                     //Guild elected out of this specific war.
                     else if (!shouldSendSpecificWar(cfg, WarNo))
-                        continue;
+                        return;
 
                     //Send the message.
-                    Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg));
-                }
-                catch (Exception ex)
-                {
-                    await bot.Log.Error(cfg.Guild, ex);
-                }
+                    WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg).Wait();
+                })).executeParallel(bot.StopToken.Token, 1);
+
+            foreach (Exception err in Errors)
+            {
+                await this.bot.Log.Error(null, err);
             }
-            await Task.WhenAll(Tasks);
         }
 
         public async Task SendWarStarted(byte WarNo)
         {
-            try
-            {
-                List<Task> Tasks = new List<Task>();
-                foreach (IGuildConfig cfg in bot.GuildRepo.GetCachedConfigs())
-                {
-                    try
-                    {
-                        //Guild has elected out for this notification.
-                        if (!cfg.Notifications.WarStarted)
-                            continue;
-                        //Guild elected out of this specific war.
-                        else if (!shouldSendSpecificWar(cfg, WarNo))
-                            continue;
+            var Errors = bot.GuildRepo
+                  .GetCachedConfigs()
+                  .Select(cfg => new Action(() =>
+                  {
+                      //Guild has elected out for this notification.
+                      if (!cfg.Notifications.WarStarted)
+                          return;
+                      //Guild elected out of this specific war.
+                      else if (!shouldSendSpecificWar(cfg, WarNo))
+                          return;
 
-                        //Send the message.
-                        Tasks.Add(WarBot.Modules.MessageTemplates.WAR_Notifications.War_Started(cfg));
-                    }
-                    catch (Exception ex)
-                    {
-                        await bot.Log.Error(cfg.Guild, ex);
-                    }
-                }
-                await Task.WhenAll(Tasks);
-            }
-            catch(Exception ex2)
+                      //Send the message.
+                      Modules.MessageTemplates.WAR_Notifications.War_Started(cfg).Wait();
+                  })).executeParallel(bot.StopToken.Token, 1);
+
+            foreach (Exception err in Errors)
             {
-                throw;
+                await this.bot.Log.Error(null, err);
+            }
+        }
+
+        public async Task SendPortalOpened()
+        {
+            var Errors = bot.GuildRepo
+                 .GetCachedConfigs()
+                 .Select(cfg => new Action(() =>
+                 {
+                     //Guild has elected out for this notification.
+                     if (!cfg.Notifications.PortalEnabled)
+                         return;
+
+                     //Send the message.
+                     Modules.MessageTemplates.Portal_Notifications.Portal_Opened(cfg).Wait();
+                 })).executeParallel(bot.StopToken.Token, 1);
+
+            foreach (Exception err in Errors)
+            {
+                await this.bot.Log.Error(null, err);
             }
         }
     }

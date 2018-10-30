@@ -1,5 +1,7 @@
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using WarBot.Core.ModuleType;
@@ -40,6 +42,15 @@ namespace WarBot.Core.Dialogs
         public SocketUser User { get; }
         public ISocketMessageChannel Channel { get; }
         public IWARBOT Bot { get; }
+        /// <summary>
+        /// A list of messages which will be deleted when the dialog is closed.
+        /// </summary>
+        public List<IMessage> CleanupList = new List<IMessage>();
+        /// <summary>
+        /// A shortcut to send a message to the current channel.
+        /// Messages sent via this method WILL be removed when the dialog is closed.
+        /// </summary>
+        public async Task SendAsync(string Message) => CleanupList.Add(await Channel.SendMessageAsync(Message));
 
         /// <summary>
         /// This dialog's unique hashcode, derrived from the user/channel combination.
@@ -63,9 +74,9 @@ namespace WarBot.Core.Dialogs
         /// The default implementation does nothing. Derrived classes may override.
         /// </summary>
         /// <returns></returns>
-        public virtual Task OnClosed()
+        public virtual async Task OnClosed()
         {
-            return Task.CompletedTask;
+
         }
     }
 }
