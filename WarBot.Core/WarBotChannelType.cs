@@ -11,6 +11,8 @@ namespace WarBot.Core
         [Description("Functions requring officer/admins will be directed here. Clan management functions... etc.")]
         CH_Officers = 3,
         [Description("If I am configured to welcome new users, I will do it here.")]
-        CH_New_Users = 4
+        CH_User_Join = 4,
+        [Description("If a user leaves the guild, I will send the message to here.")]
+        CH_User_Left = 5,
     }
 }

@@ -226,7 +226,7 @@ namespace WarBot.Storage.Models
             SetGuildRole(RoleLevel.SuperMember, null);
 
 
-            SetGuildChannel(WarBotChannelType.CH_New_Users, defaultChannel);
+            SetGuildChannel(WarBotChannelType.CH_User_Join, defaultChannel);
             SetGuildChannel(WarBotChannelType.CH_Officers, adminChannel);
             SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, adminChannel);
             SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, defaultChannel);

@@ -18,5 +18,6 @@ namespace WarBot.Core
 
         bool PortalEnabled { get; set; }
         string PortalStartedMessage { get; set; }
+        bool User_Left_Guild { get; set; }
     }
 }

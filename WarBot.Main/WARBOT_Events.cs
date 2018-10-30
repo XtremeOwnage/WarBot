@@ -59,7 +59,7 @@ namespace WarBot
             await Log.ConsoleOUT($"New Guild: {arg.Name}");
 
 
-           //Log a message to the logging server.
+            //Log a message to the logging server.
             try
             {
                 //Build embed.
@@ -79,7 +79,7 @@ namespace WarBot
             //Send a welcome message to the guild.
             try
             {
-                if (cfg.GetGuildChannel(WarBotChannelType.CH_New_Users).IsNotNull(out var CH))
+                if (cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var CH))
                 {
                     //Publish a Welcome Message.
 
@@ -109,29 +109,41 @@ namespace WarBot
             await Log.ConsoleOUT(message.Message);
         }
 
-        private async Task Client_UserJoined(SocketGuildUser arg)
+        private Task Client_UserJoined(SocketGuildUser arg)
         {
-            var cfg = await this.GuildRepo.GetConfig(arg.Guild);
-
-            //Send welcome message
-            try
+            var t = Task.Run(async () =>
             {
-                //Guild must have configured both a new user greeting channel, as well as a greeting message.
-                if (cfg.Notifications.NewUserGreeting != null && cfg.GetGuildChannel(WarBotChannelType.CH_New_Users).IsNotNull(out var ch))
+                var cfg = await this.GuildRepo.GetConfig(arg.Guild);
+
+                //Send welcome message
+                try
                 {
-                    await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg.Notifications.NewUserGreeting}");
+                    //Guild must have configured both a new user greeting channel, as well as a greeting message.
+                    if (cfg.Notifications.NewUserGreeting != null && cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var ch))
+                    {
+                        await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg.Notifications.NewUserGreeting}");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                await Log.Error(arg.Guild, ex);
-            }
-
+                catch (Exception ex)
+                {
+                    await Log.Error(arg.Guild, ex);
+                }
+            });
+            return Task.CompletedTask;
         }
 
-        private async Task Client_UserLeft(SocketGuildUser arg)
+        private Task Client_UserLeft(SocketGuildUser arg)
         {
-
+            var t = Task.Run(async () =>
+            {
+                var cfg = await this.GuildRepo.GetConfig(arg.Guild);
+                var ch = cfg.GetGuildChannel(WarBotChannelType.CH_User_Left);
+                if (cfg.Notifications.User_Left_Guild && ch != null)
+                {
+                    await ch.SendMessageAsync($"{arg.Mention} has left the guild.");
+                }
+            });
+            return Task.CompletedTask;
         }
 
         private async Task Client_RoleDeleted(SocketRole arg)

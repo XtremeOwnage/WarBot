@@ -63,36 +63,38 @@ namespace WarBot.Modules.Dialogs
 
                     await NextStep($"My prefix has been set to '{Config.Prefix}'");
                     break;
-                case SetupStep.Greeting_Should_Greet:
-                    if (Bool == true)
-                        await NextStep();
-                    else if (Bool == false || Skip)
-                    {
-                        this.Config.Notifications.NewUserGreeting = null;
-                        this.Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, null);
-                        await SkipStep("I will not send new user greetings.");
-                    }
-                    else
-                        await SendAsync(msg_BoolParseFailed);
-                    break;
-                case SetupStep.Greeting_Channel_NewUsers:
+                case SetupStep.User_Left_Channel:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, null);
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Left, null);
+                        await SkipStep("I will not send notifications when a user leaves.");
+                    }
+                    else if (CH != null)
+                    {
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Left, CH);
+                        await NextStep($"When a user leaves, I will post to {CH.Mention}");
+                    }
+                    else
+                        await SendAsync(msg_ChannelExpected);
+                    break;
+                case SetupStep.User_Join_Channel:
+                    if (Skip)
+                    {
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
                         await SkipStep("I will not send new user greetings.");
                     }
                     else if (CH != null)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, CH);
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, CH);
                         await NextStep($"New user greetings will go to {CH.Mention}");
                     }
                     else
                         await SendAsync(msg_ChannelExpected);
                     break;
-                case SetupStep.Greeting_Message:
+                case SetupStep.User_Join_Message:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_New_Users, null);
+                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
                         await SkipStep("I will not send new user greetings.");
                     }
                     else
@@ -100,7 +102,7 @@ namespace WarBot.Modules.Dialogs
                         Config.Notifications.NewUserGreeting = Message;
                         await NextStep("New users joining the server will receive this message:\r" +
                             $"\n{User.Mention}, {Message}\r" +
-                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.CH_New_Users).Mention}");
+                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.CH_User_Join).Mention}");
                     }
                     break;
                 case SetupStep.Channel_Updates:
@@ -134,7 +136,7 @@ namespace WarBot.Modules.Dialogs
                     else
                         await SendAsync(msg_ChannelExpected);
                     break;
-                case SetupStep.Channel_WAR:
+                case SetupStep.WAR_Channel:
                     if (Skip || Bool == false)
                     {
                         Config.SetGuildChannel(Core.WarBotChannelType.CH_WAR_Announcements, null);
@@ -331,7 +333,7 @@ namespace WarBot.Modules.Dialogs
         private async Task StartStep(SetupStep step)
         {
             CurrentStep = step;
-            const string suffix = "\n\r\n*You may always say 'skip' to continue to the next step, 'back' to return to the previous step, or 'stop' to cancel this dialog.*\r";
+            const string suffix = "\n\r\n*You may always say 'skip' to disable this feature, 'back' to return to the previous step, or 'stop' to cancel this dialog.*\r";
             switch (step)
             {
                 case SetupStep.Initial:
@@ -346,17 +348,18 @@ namespace WarBot.Modules.Dialogs
                         $"\nWhat prefix should I use?" +
                         suffix);
                     return;
-                case SetupStep.Greeting_Should_Greet:
-                    await SendAsync("Would you like me to greet new users joining your server?\r" +
-                        suffix);
-                    break;
-                case SetupStep.Greeting_Channel_NewUsers:
+                case SetupStep.User_Join_Channel:
                     await SendAsync("Which channel would you like me to use for greeting new users?\r" +
                         "\nIt is recommend the new users can see the new channel, but, you can set this to a private channel to notify your officers.\r" +
-                        $"\nPlease tag the channel like this: {this.Channel.Mention}");
+                        $"\nPlease tag the channel like this: {this.Channel.Mention}"
+                        + suffix);
                     break;
-                case SetupStep.Greeting_Message:
+                case SetupStep.User_Join_Message:
                     await SendAsync("What message would you like me to send to new users?");
+                    break;
+                case SetupStep.User_Left_Channel:
+                    await SendAsync("What channel would you like me to send a notification to when users leave?\r" +
+                        "\nIf you do not want this feature, please say 'skip'.");
                     break;
                 case SetupStep.Channel_Updates:
                     await SendAsync("Occasionally, my developer will add significant new features to me.\r" +
@@ -370,7 +373,7 @@ namespace WarBot.Modules.Dialogs
                         "\nIf so, please tell me which channel to use. If you do not want this, say 'No'.\r" +
                         suffix);
                     break;
-                case SetupStep.Channel_WAR:
+                case SetupStep.WAR_Channel:
                     await SendAsync("I assume you invited me to your server, for the purpose of alerting for Hustle Castle War events.\r" +
                         "\nPlease let me know which channel I should send war announcments to.\r" +
                         "\nIf you say 'No' or 'Skip', I will disable all war-related announcements.");
@@ -483,30 +486,29 @@ namespace WarBot.Modules.Dialogs
             Initial,
 
             //Setup the prefix for the bot.
-            [Step(WarBot_Prefix, Greeting_Should_Greet)]
+            [Step(WarBot_Prefix, User_Join_Channel)]
             WarBot_Prefix,
 
-            [Step(WarBot_Prefix, Greeting_Channel_NewUsers, Channel_Updates)]
-            //Determine if we should greet new users.
-            Greeting_Should_Greet,
+            [Step(WarBot_Prefix, User_Join_Message, User_Left_Channel)]
+            User_Join_Channel,
 
-            [Step(Greeting_Should_Greet, Greeting_Message, Channel_Updates)]
-            Greeting_Channel_NewUsers,
+            [Step(User_Join_Channel, User_Left_Channel)]
+            User_Join_Message,
 
-            [Step(Greeting_Channel_NewUsers, Channel_Updates)]
-            Greeting_Message,
+            [Step(User_Join_Channel, Channel_Updates)]
+            User_Left_Channel,
 
             //Configure various channels
-            [Step(Greeting_Should_Greet, Channel_Officers)]
+            [Step(User_Left_Channel, Channel_Officers)]
             Channel_Updates,
 
-            [Step(Channel_Updates, Channel_WAR)]
+            [Step(Channel_Updates, WAR_Channel)]
             Channel_Officers,
 
             //Hustle Castle - War Related Settings
             [Step(Channel_Officers, WAR_SendPrepStarted, Portal_Started)]
-            Channel_WAR,
-            [Step(Channel_WAR, WAR_PrepStartedMessage, WAR_SendPrepEnding)]
+            WAR_Channel,
+            [Step(WAR_Channel, WAR_PrepStartedMessage, WAR_SendPrepEnding)]
             WAR_SendPrepStarted,
             [Step(WAR_SendPrepStarted, WAR_SendPrepEnding)]
             WAR_PrepStartedMessage,
@@ -520,13 +522,13 @@ namespace WarBot.Modules.Dialogs
             WAR_WarStartedMessage,
 
             //Portal Enabled / Portal Message
-            [Step(Channel_WAR, Portal_Started_Message, Should_Set_Roles)]
+            [Step(WAR_Channel, Portal_Started_Message, Should_Set_Roles)]
             Portal_Started,
             [Step(Portal_Started, Should_Set_Roles)]
             Portal_Started_Message,
 
             //Roles    
-            [Step(Channel_WAR, Role_Guest, Set_Website)]
+            [Step(WAR_Channel, Role_Guest, Set_Website)]
             Should_Set_Roles,
             [Step(Should_Set_Roles, Role_Member)]
             Role_Guest,

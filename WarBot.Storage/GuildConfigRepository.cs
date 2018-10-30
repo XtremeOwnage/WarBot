@@ -94,7 +94,7 @@ namespace WarBot.Storage
                 }
                 if (oldCfg.Channel_Member?.ID != null && (Guild.GetChannel(oldCfg.Channel_Member.ID) as ITextChannel).IsNotNull(out var memberChannel))
                 {
-                    newCfg.SetGuildChannel(WarBotChannelType.CH_New_Users, memberChannel);
+                    newCfg.SetGuildChannel(WarBotChannelType.CH_User_Join, memberChannel);
                     newCfg.SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, memberChannel);
                 }
 
