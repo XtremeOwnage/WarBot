@@ -72,10 +72,13 @@ namespace WarBot.Modules.CommandModuleBase
             try
             {
                 string from = $"{Context.User.Username}#{Context.User.Discriminator}";
-                SocketDMChannel dm = Who.GetOrCreateDMChannelAsync().Result as SocketDMChannel;
-                RestUserMessage m = dm.SendMessageAsync($"New private message from {from}.\r\n" + Message).Result;
+                var dm = await Who.GetOrCreateDMChannelAsync();
+                var m = await dm.SendMessageAsync($"New private message from {from}.\r\n" + Message);
+
                 if (m != null)
                     await ReplyAsync("Success.");
+                else
+                    await ReplyAsync("Failure?");
             }
             catch (Exception ex)
             {

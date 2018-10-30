@@ -8,9 +8,9 @@ namespace WarBot.Util
 
     public class Update
     {
-        public const string CurrentVersion = "3.0";
-        const bool SendUpdateNotificationForCurrentVersion = true;
-        const string UpdateNotesURL = "https://github.com/XtremeOwnage/WarBot/blob/master/version3.md";
+        public const string CurrentVersion = "3.2";
+        const bool SendUpdateNotificationForCurrentVersion = false;
+        const string UpdateNotesURL = "https://github.com/XtremeOwnage/WarBot/blob/master/ChangeLogs/v3.2.md";
 
         public static async Task UpdateCheck(IGuildConfig Cfg, WARBOT bot)
         {
@@ -38,11 +38,11 @@ namespace WarBot.Util
                         await CH.SendMessageAsync(embed: eb.Build());
                     }
 
-                    await bot.Log.GuildUpdated(Cfg, CurrentVersion, UpdateSentToClan);
-
                     //Update the config's version
                     Cfg.BotVersion = CurrentVersion;
                     await Cfg.SaveConfig();
+
+                    await bot.Log.GuildUpdated(Cfg, CurrentVersion, UpdateSentToClan);
                 }
                 else
                 {
@@ -53,6 +53,7 @@ namespace WarBot.Util
             {
                 //Update the config's version.
                 Cfg.BotVersion = CurrentVersion;
+                await Cfg.SaveConfig();
             }
         }
     }
