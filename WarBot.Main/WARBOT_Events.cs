@@ -76,9 +76,10 @@ namespace WarBot
             //Send a welcome message to the guild.
             try
             {
-                var CH = await ChannelHelper.findFirstChannelSendable(arg);
+                var CH = await ChannelHelper.FindChannel_For_Welcome_Message(arg);
                 if (CH != null)
                 {
+
                     //Publish a Welcome Message.
 
                     var eb = new Discord.EmbedBuilder()

@@ -12,7 +12,7 @@ namespace WarBot.Core
         /// If we are unable to find a channel which we can send messages to, we will create a new channel, if we have permissions.
         /// </summary>
         /// <returns></returns>
-        public static async Task<IMessageChannel> findFirstChannelSendable(SocketGuild Guild)
+        public static async Task<IMessageChannel> FindChannel_For_Welcome_Message(SocketGuild Guild)
         {
             var myUser = Guild.CurrentUser;
 
@@ -34,7 +34,8 @@ namespace WarBot.Core
             {
                 var dm = await Guild.Owner.GetOrCreateDMChannelAsync();
                 await dm.SendMessageAsync($"I am unable to send the following message to your discord guild {Guild.Name} because, I lack the SEND_MESSAGES permission for all channels.\r" +
-                    $"\nTo note: I will not be very useful if I cannot send messages to your guild.");
+                    $"\nTo note: I will not be very useful if I cannot send messages to your guild.\r" +
+                    $"\nPlease grant me the permissions to send messages in a guild channel, and type 'bot, setup' to configure me.");
 
                 return dm;
             }
