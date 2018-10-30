@@ -103,10 +103,16 @@ namespace WarBot
             Client.RoleDeleted += Client_RoleDeleted;
             Client.UserJoined += Client_UserJoined;
             Client.UserLeft += Client_UserLeft;
-
+            Client.Connected += Client_Connected;
             ////Login  and start discord api.
             Client.LoginAsync(TokenType.Bot, Config.Discord_API_Token, true).Wait();
             Client.StartAsync().Wait();
+        }
+
+        private Task Client_Connected()
+        {
+            //Initialize Logging
+            return Log.Client_Ready();
         }
 
         private async Task Client_Disconnected(Exception arg)
@@ -118,9 +124,6 @@ namespace WarBot
 
         private Task Client_Ready()
         {
-            //Initialize Logging
-            Log.Client_Ready().Wait();
-
             //Set status to online.
             return Client.SetStatusAsync(UserStatus.Online);
         }
