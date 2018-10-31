@@ -143,7 +143,8 @@ namespace WarBot
                 var ch = cfg.GetGuildChannel(WarBotChannelType.CH_User_Left);
                 if (cfg.Notifications.User_Left_Guild && ch != null)
                 {
-                    await ch.SendMessageAsync($"{arg.Mention} has left the guild.");
+                    string name = !string.IsNullOrWhiteSpace(arg.Nickname) ? arg.Nickname : arg.Username;
+                    await ch.SendMessageAsync($"{name} has left the guild.");
                 }
             });
             return Task.CompletedTask;
