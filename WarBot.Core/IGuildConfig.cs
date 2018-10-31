@@ -34,6 +34,10 @@ namespace WarBot.Core
         /// </summary>
         INotificationSettings Notifications { get; }
 
+        /// <summary>
+        /// A reference to WarBot's logging system.
+        /// </summary>
+        ILog Log { get; }
         ITextChannel GetGuildChannel(WarBotChannelType role);
         void SetGuildChannel(WarBotChannelType role, ITextChannel Channel);
 
@@ -55,7 +59,7 @@ namespace WarBot.Core
         /// Loads all of the references, sets the save method... etc.
         /// Must be called before a config can be utilized!!
         /// </summary>
-        void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc);
+        void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc, IWARBOT Bot);
         /// <summary>
         /// Save this config to disk.
         /// </summary>

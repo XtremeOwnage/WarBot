@@ -135,6 +135,9 @@ namespace WarBot.Storage.Models
         }
         #endregion
         #region IGuildConfig Implementation
+        [NotMapped]
+        public ILog Log { get; private set; }
+
         string IGuildConfig.Website
         {
             get => this.Website;
@@ -162,8 +165,11 @@ namespace WarBot.Storage.Models
         INotificationSettings IGuildConfig.Notifications => this.NotificationSettings;
 
 
-        public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc)
+
+        public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc, IWARBOT Bot)
         {
+            this.Log = Bot.Log;
+
             //Initialize the stored references.
             foreach (var role in this.Roles.ToList())
             {
@@ -194,44 +200,19 @@ namespace WarBot.Storage.Models
         public async Task SaveConfig() => await this.saveFunc.Invoke(this);
 
 
-        public async Task SetDefaults(SocketGuild Guild)
+        public Task SetDefaults(SocketGuild Guild)
         {
 
             this.Value = Guild;
             this.Name = Guild.Name;
 
-            var firtAdminRole = Guild.Roles
-                .OrderByDescending(o => o.Position)
-                .Where(o => o.Permissions.Administrator == true)
-                .FirstOrDefault();
-
-            var defaultChannel = await ChannelHelper
-                .findDefaultChannel(Guild);
-
-            var adminChannel = await ChannelHelper
-                .findFirstAdminChannel(Guild);
-
-            //These two roles should never be set, Just a sanity check to ensure they are empty.
-            SetGuildRole(RoleLevel.GlobalAdmin, null);
-            SetGuildRole(RoleLevel.None, null);
-
-
-            SetGuildRole(RoleLevel.ServerAdmin, firtAdminRole);
-            SetGuildRole(RoleLevel.Leader, firtAdminRole);
-
-            //We will empty these roles. Up to the server owner to configure.
-            SetGuildRole(RoleLevel.Member, null);
-            SetGuildRole(RoleLevel.Officer, null);
-            SetGuildRole(RoleLevel.Guest, null);
-            SetGuildRole(RoleLevel.SuperMember, null);
-
-
-            SetGuildChannel(WarBotChannelType.CH_User_Join, defaultChannel);
-            SetGuildChannel(WarBotChannelType.CH_Officers, adminChannel);
-            SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, adminChannel);
-            SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, defaultChannel);
+            //Clear all configured roles, and channels.
+            this.ClearAllRoles();
+            this.Channels.Clear();
 
             NotificationSettings.setDefaults();
+
+            return Task.CompletedTask;
         }
         #endregion
 

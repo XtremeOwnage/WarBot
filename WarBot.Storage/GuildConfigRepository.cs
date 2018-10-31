@@ -1,10 +1,7 @@
-using Discord;
 using Discord.WebSocket;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WarBot.Core;
@@ -52,7 +49,7 @@ namespace WarBot.Storage
             {
 
                 //Inflate the object before returning it.
-                g.Initialize(Guild, Save);
+                g.Initialize(Guild, Save, bot);
 
                 //Add the object to the local cache.
                 configStore.TryAdd(Guild.Id, g);
@@ -60,83 +57,24 @@ namespace WarBot.Storage
                 //Return the cached object.
                 return configStore[Guild.Id];
             }
-
-            //Past this point, there was no config stored in the database. Look at the old config files to determine if we can find a json file to update.
-            Console.WriteLine("No config found for guild " + Guild.Name);
-            var newCfg = Storage.Models.DiscordGuild.Create(Guild);
-
-
-            var cfgTxt = await TryReadConfigFile(Guild);
-            //There is a old-json based config. lets migrate it to the new database.
-            if (!string.IsNullOrEmpty(cfgTxt) && (JsonConvert.DeserializeObject<Legacy.LegacyGuildConfig>(cfgTxt)).IsNotNull(out var oldCfg))
+            else //Create a new config for this guild.
             {
-                Console.WriteLine("Successfully found legacy config to migrate.");
-                //Simple settings.
-                newCfg.BotVersion = oldCfg.BotVersion;
-                newCfg.Website = oldCfg.WebsiteURL;
-                newCfg.Loot = oldCfg.LootURL;
+                var newCfg = Storage.Models.DiscordGuild.Create(Guild);
 
-                //Roles
-                if (oldCfg.Role_Admin?.ID != null && Guild.GetRole(oldCfg.Role_Admin.ID).IsNotNull(out var adminRole))
-                    newCfg.SetGuildRole(RoleLevel.ServerAdmin, adminRole);
-                if (oldCfg.Role_Leader?.ID != null && Guild.GetRole(oldCfg.Role_Leader.ID).IsNotNull(out var leaderRole))
-                    newCfg.SetGuildRole(RoleLevel.Leader, leaderRole);
-                if (oldCfg.Role_Officer?.ID != null && Guild.GetRole(oldCfg.Role_Officer.ID).IsNotNull(out var officerRole))
-                    newCfg.SetGuildRole(RoleLevel.Officer, officerRole);
-                if (oldCfg.Role_Member?.ID != null && Guild.GetRole(oldCfg.Role_Member.ID).IsNotNull(out var memberRole))
-                    newCfg.SetGuildRole(RoleLevel.Member, memberRole);
-
-                //Channels
-                if (oldCfg.Channel_Officer?.ID != null && (Guild.GetChannel(oldCfg.Channel_Officer.ID) as ITextChannel).IsNotNull(out var officerChannel))
-                {
-                    newCfg.SetGuildChannel(WarBotChannelType.CH_Officers, officerChannel);
-                    newCfg.SetGuildChannel(WarBotChannelType.CH_WarBot_Updates, officerChannel);
-                }
-                if (oldCfg.Channel_Member?.ID != null && (Guild.GetChannel(oldCfg.Channel_Member.ID) as ITextChannel).IsNotNull(out var memberChannel))
-                {
-                    newCfg.SetGuildChannel(WarBotChannelType.CH_User_Join, memberChannel);
-                    newCfg.SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, memberChannel);
-                }
-
-
-                //Migrate the notification settings over.
-                newCfg.NotificationSettings.War1Enabled = oldCfg.Notifications.War1Enabled;
-                newCfg.NotificationSettings.War2Enabled = oldCfg.Notifications.War2Enabled;
-                newCfg.NotificationSettings.War3Enabled = oldCfg.Notifications.War3Enabled;
-                newCfg.NotificationSettings.War4Enabled = oldCfg.Notifications.War4Enabled;
-                newCfg.NotificationSettings.WarPrepEnding = oldCfg.Notifications.WarPrepAlmostOver;
-                newCfg.NotificationSettings.WarPrepEndingMessage = oldCfg.Notifications.WarPrepEndingMessage;
-                newCfg.NotificationSettings.WarPrepStarted = oldCfg.Notifications.WarPrepStarted;
-                newCfg.NotificationSettings.WarPrepStartedMessage = oldCfg.Notifications.WarPrepStartedMessage;
-                newCfg.NotificationSettings.WarStarted = oldCfg.Notifications.WarStarted;
-                newCfg.NotificationSettings.WarStartedMessage = oldCfg.Notifications.WarStartedMessage;
-                newCfg.NotificationSettings.SendUpdateMessage = oldCfg.Notifications.SendUpdateMessage;
-
-                newCfg.Initialize(Guild, Save);
-
-                await bot.Log.Debug($"Updated config from json to database for {Guild.Name}", Guild);
-
-                await Guild.DefaultChannel.SendMessageAsync("I have migrated your configurations from the old version of me, to the updated version\r\n" +
-                    "Since, this is a massive upgrade, all of your settings may not have been properly updated.\r\n" +
-                    "If you have a free moment, I suggest an administrator to use 'bot, setup' to use my new setup wizard.\r\n" +
-                    "As well, I recommend you read this: https://github.com/XtremeOwnage/WarBot/blob/master/version3.md");
-            }
-            else
-            {
-                Console.WriteLine("Setting defaults for new guild.");
                 await newCfg.SetDefaults(Guild);
 
-                newCfg.Initialize(Guild, Save);
+                newCfg.Initialize(Guild, Save, bot);
+
+                //Add the new Guild to the database.
+                db.Guilds.Add(newCfg);
+
+                //Save the new config.
+                await db.SaveWithOutput();
+
+
+                configStore.TryAdd(Guild.Id, newCfg);
+                return configStore[Guild.Id];
             }
-            //Add the new Guild to the database.
-            db.Guilds.Add(newCfg);
-
-            //Save the new config.
-            await db.SaveWithOutput();
-
-
-            configStore.TryAdd(Guild.Id, newCfg);
-            return configStore[Guild.Id];
         }
 
         private async Task Save<T>(T Cfg) where T : IGuildConfig
@@ -151,24 +89,5 @@ namespace WarBot.Storage
             }
         }
 
-        private async Task<string> TryReadConfigFile(IGuild guild)
-        {
-            try
-            {
-                var path = Path.Combine("./guilds/", guild.Id.ToString());
-                if (File.Exists(path))
-                    return await File.ReadAllTextAsync(path);
-
-                Console.WriteLine("Unable to find legacy config.");
-                return null;
-            }
-            catch (Exception ex)
-            {
-                await bot.Log.ConsoleOUT(ex.Message);
-                return null;
-            }
-        }
     }
-
-
 }

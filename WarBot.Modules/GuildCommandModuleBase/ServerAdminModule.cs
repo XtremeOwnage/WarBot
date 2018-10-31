@@ -14,11 +14,10 @@ namespace WarBot.Modules.GuildCommandModules
         [CommandUsage("{prefix} {command}")]
         public async Task Leave()
         {
-
             var eb = new EmbedBuilder()
                 .WithTitle("GoodBye 😭")
                 .WithDescription("I am sorry I did not meet the expectations of your guild. If you wish to invite me back, you may click this embed.")
-                .WithUrl("https://discordapp.com/oauth2/authorize?client_id=437983722193551363&scope=bot&permissions=0x00000008");
+                .WithUrl($"https://discordapp.com/oauth2/authorize?client_id={bot.Client.CurrentUser.Id}&scope=bot&permissions=0x00000008");
 
 
             if (PermissionHelper.TestBotPermission(Context.GuildChannel, ChannelPermission.SendMessages))

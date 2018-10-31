@@ -22,9 +22,6 @@ namespace WarBot
 
                 foreach (var Dialog in matchingDialogs)
                 {
-                    //Send a message to the user/channel, that we are closing the dialog.
-                    await Dialog.Value.CloseDialog_GuildRemoved();
-
                     //Remove the dialog from the stack.
                     this.Dialogs.TryRemove(Dialog.Key, out var _);
                 }
@@ -79,8 +76,10 @@ namespace WarBot
             //Send a welcome message to the guild.
             try
             {
-                if (cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var CH))
+                var CH = await ChannelHelper.FindChannel_For_Welcome_Message(arg);
+                if (CH != null)
                 {
+
                     //Publish a Welcome Message.
 
                     var eb = new Discord.EmbedBuilder()
@@ -95,6 +94,10 @@ namespace WarBot
                         .WithImageUrl("http://i1223.photobucket.com/albums/dd516/ericmck2000/download.jpg");
 
                     await CH.SendMessageAsync(embed: eb.Build());
+                }
+                else
+                {
+                    await Log.Error(arg, new Exception("Unable to send my welcome message. No permissions."));
                 }
             }
             catch (Exception ex)
@@ -140,7 +143,8 @@ namespace WarBot
                 var ch = cfg.GetGuildChannel(WarBotChannelType.CH_User_Left);
                 if (cfg.Notifications.User_Left_Guild && ch != null)
                 {
-                    await ch.SendMessageAsync($"{arg.Mention} has left the guild.");
+                    string name = !string.IsNullOrWhiteSpace(arg.Nickname) ? arg.Nickname : arg.Username;
+                    await ch.SendMessageAsync($"{name} has left the guild.");
                 }
             });
             return Task.CompletedTask;
@@ -223,7 +227,7 @@ namespace WarBot
                         foreach (var r in AffectedChannels)
                             eb.AddField("Purpose", r.Key.ToString());
 
-                        eb.AddField("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", null);
+                        eb.AddField("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", "_ _");
 
                         var OfficersChannel = cfg.GetGuildChannel(WarBotChannelType.CH_Officers);
                         //It was the officers 
