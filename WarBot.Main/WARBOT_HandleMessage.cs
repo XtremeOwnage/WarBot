@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WarBot.Core;
 using WarBot.Core.Dialogs;
 using WarBot.Core.ModuleType;
+using static WarBot.Attributes.RoleLevelAttribute;
 
 namespace WarBot
 {
@@ -74,6 +75,35 @@ namespace WarBot
                     var context = new GuildCommandContext(Client, message, cfg, this);
 
                     var result = await commands.ExecuteAsync(context, Msg, kernel, MultiMatchHandling.Best);
+
+                    //Return an error to the user, if we can send to this channel.
+                    if (!result.IsSuccess && PermissionHelper.TestBotPermission(tch, Discord.ChannelPermission.SendMessages))
+                    {
+                        switch (result.Error.Value)
+                        {
+                            case CommandError.UnknownCommand:
+                                break;
+                            case CommandError.ParseFailed:
+                                break;
+                            case CommandError.BadArgCount:
+                                break;
+                            case CommandError.ObjectNotFound:
+                                break;
+                            case CommandError.MultipleMatches:
+                                break;
+                            case CommandError.UnmetPrecondition when result is AccessDeniedPreconditionResult access:
+                                await tch.SendMessageAsync($"You do not have access to this command. You require the {access.RequiredRole.ToString()} role.");
+                                break;
+                            case CommandError.UnmetPrecondition when result is PreconditionResult res:
+                                await tch.SendMessageAsync(res.ErrorReason);
+                                break;
+                            case CommandError.Exception:
+                                await tch.SendMessageAsync("An error has occured. The details will be reported for remediation.");
+                                break;
+                            case CommandError.Unsuccessful:
+                                break;
+                        }
+                    }
 
                     await Log.ChatMessage(message, tch.Guild, result);
                 }
