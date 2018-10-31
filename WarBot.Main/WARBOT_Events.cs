@@ -226,7 +226,7 @@ namespace WarBot
                         foreach (var r in AffectedChannels)
                             eb.AddField("Purpose", r.Key.ToString());
 
-                        eb.AddField("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", null);
+                        eb.AddField("I will remove this channel from my configuration. Please update the configuration if you wish to use it again.", "_ _");
 
                         var OfficersChannel = cfg.GetGuildChannel(WarBotChannelType.CH_Officers);
                         //It was the officers 
