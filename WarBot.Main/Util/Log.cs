@@ -149,7 +149,8 @@ namespace WarBot.Util
 
             }
             else if (!Result.IsSuccess)
-                eb.AddField("Failure Reason", Result.ErrorReason);
+                eb.AddField("Error Type", Result.Error?.ToString() ?? "Unknown")
+                    .AddField("Failure Reason", Result.ErrorReason);
 
             if (Message.Embeds.Count == 0)
                 eb.AddField("Message", cleanMessageText(Message));
