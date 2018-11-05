@@ -25,8 +25,6 @@ namespace WarBot.Storage.Models
                 EntityId = Guild.Id,
                 Name = Guild.Name,
                 Value = Guild,
-                BotVersion = "2.5",
-                NotificationSettings = GuildNotificationsSettings.CreateNew(),
                 WarBOT_Prefix = "bot,"
             };
         }
@@ -84,6 +82,33 @@ namespace WarBot.Storage.Models
         /// </summary>
         public virtual List<GuildChannel> Channels { get; } = new List<GuildChannel>();
 
+        #region GuildSettings
+        public virtual List<GuildSetting> Settings { get; } = new List<GuildSetting>();
+        public IGuildSetting this[Setting_Key Key]
+        {
+            get
+            {
+                //If it doesn't exist, create it.
+                if (Settings.FirstOrDefault(o => o.Key == Key).IsNotNull(out var setting))
+                    return setting;
+
+                this[Key] = new GuildSetting(Key);
+
+                return Settings.FirstOrDefault(o => o.Key == Key);
+            }
+            set
+            {
+                if (value is GuildSetting gs) //its a new value.
+                {
+                    Settings.Add(gs);
+                }
+                else
+                {
+                    throw new Exception("Non GuildSetting IGuildSetting detected??");
+                }
+            }
+        }
+        #endregion
         #region Channels and Roles
         //Clear's all configured roles.
         public void ClearAllRoles()
@@ -162,12 +187,6 @@ namespace WarBot.Storage.Models
         SocketGuild IGuildConfig.Guild => this.Value;
         SocketGuildUser IGuildConfig.CurrentUser => this.Value.CurrentUser;
 
-        public IGuildSetting this[Setting_Key Key]
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
         public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc, IWARBOT Bot)
         {
             this.Log = Bot.Log;
@@ -192,7 +211,6 @@ namespace WarBot.Storage.Models
                 //If the value is null, remove it from the config.
                 else
                     this.Channels.Remove(channel);
-
             }
 
             this.Value = Guild;

@@ -23,10 +23,14 @@ namespace WarBot.Util
         /// <returns></returns>
         private bool shouldSendSpecificWar(IGuildConfig cfg, byte WarNo)
         {
-            if (WarNo == 1) return cfg.Notifications.War1Enabled;
-            if (WarNo == 2) return cfg.Notifications.War2Enabled;
-            if (WarNo == 3) return cfg.Notifications.War3Enabled;
-            if (WarNo == 4) return cfg.Notifications.War4Enabled;
+            if (WarNo == 1)
+                return cfg[Setting_Key.WAR_1].Enabled;
+            if (WarNo == 2)
+                return cfg[Setting_Key.WAR_2].Enabled;
+            if (WarNo == 3)
+                return cfg[Setting_Key.WAR_3].Enabled;
+            if (WarNo == 4)
+                return cfg[Setting_Key.WAR_4].Enabled;
 
             else throw new ArgumentOutOfRangeException("There are only 4 wars. The value passed was not between 1 and 4.");
         }
@@ -39,7 +43,7 @@ namespace WarBot.Util
                 .Select(cfg => new Action(() =>
                 {
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepStarted)
+                    if (!cfg[Setting_Key.WAR_PREP_STARTED].Enabled)
                         return;
                     //Guild elected out of this specific war.
                     else if (!shouldSendSpecificWar(cfg, WarNo))
@@ -62,7 +66,7 @@ namespace WarBot.Util
                 .Select(cfg => new Action(() =>
                 {
                     //Guild has elected out for this notification.
-                    if (!cfg.Notifications.WarPrepEnding)
+                    if (!cfg[Setting_Key.WAR_PREP_ENDING].Enabled)
                         return;
                     //Guild elected out of this specific war.
                     else if (!shouldSendSpecificWar(cfg, WarNo))
@@ -85,7 +89,7 @@ namespace WarBot.Util
                   .Select(cfg => new Action(() =>
                   {
                       //Guild has elected out for this notification.
-                      if (!cfg.Notifications.WarStarted)
+                      if (!cfg[Setting_Key.WAR_STARTED].Enabled)
                           return;
                       //Guild elected out of this specific war.
                       else if (!shouldSendSpecificWar(cfg, WarNo))
@@ -108,7 +112,7 @@ namespace WarBot.Util
                  .Select(cfg => new Action(() =>
                  {
                      //Guild has elected out for this notification.
-                     if (!cfg.Notifications.PortalEnabled)
+                     if (!cfg[Setting_Key.PORTAL_STARTED].Enabled)
                          return;
 
                      //Send the message.

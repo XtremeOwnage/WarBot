@@ -21,8 +21,7 @@ namespace WarBot.Modules.GuildCommandModules
             if (Message.Length < 1)
                 Message = null;
 
-            this.cfg.Notifications.PortalEnabled = true;
-            this.cfg.Notifications.PortalStartedMessage = Message;
+            cfg[Setting_Key.PORTAL_STARTED].Set(true, Message);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
@@ -34,7 +33,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisablePortal()
         {
-            cfg.Notifications.PortalEnabled = false;
+            cfg[Setting_Key.PORTAL_STARTED].Enabled = false;
             await cfg.SaveConfig();
             await ReplyAsync("I will no longer send a message when the portal is opened.");
         }
@@ -46,7 +45,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnablePortal()
         {
-            cfg.Notifications.PortalEnabled = true;
+            cfg[Setting_Key.PORTAL_STARTED].Enabled = true;
             await cfg.SaveConfig();
             await ReplyAsync("I will send a message when the portal is opened.");
         }

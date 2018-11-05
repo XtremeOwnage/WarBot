@@ -13,7 +13,7 @@ namespace WarBot.Core
         /// </summary>
         /// <param name="Key">Setting key to find.</param>
         /// <returns>The setting, if one exists.</returns>
-        IGuildSetting this[Setting_Key Key] { get; set; }
+        IGuildSetting this[Setting_Key Key] { get;  }
         /// <summary>
         /// The prefix to which warbot will respond to.
         /// </summary>

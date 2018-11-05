@@ -36,6 +36,13 @@ namespace WarBot.Storage
             Console.WriteLine("Applying Migrations");
 
             this.Database.Migrate();
+
+            Console.WriteLine("Performing custom migration scripts.");
+            //Perform our custom migrations script.
+            Scripted_Migrations._3_4_MoveNotificationsToGuildSettings.Execute(this);
+
+            Console.WriteLine("Saving Context.");
+            this.SaveChanges();
         }
 
         public async Task SaveWithOutput()

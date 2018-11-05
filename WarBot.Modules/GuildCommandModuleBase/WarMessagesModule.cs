@@ -16,7 +16,7 @@ namespace WarBot.Modules.GuildCommandModules
 
         [RoleLevel(RoleLevel.Leader)]
         [Command("set war prep started")]
-        [Summary("This message is triggered when preperation peroid starts for clan wars.")]
+        [Summary("Enable and set the message when war preperation starts.")]
         [CommandUsage("{prefix} {command} @Role, Please place your troops!!")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task SetWarPrepStarted([Remainder] string Message)
@@ -24,14 +24,14 @@ namespace WarBot.Modules.GuildCommandModules
             if (Message.Length < 1)
                 Message = null;
 
-            this.cfg.Notifications.WarPrepStartedMessage = Message;
+            cfg[Setting_Key.WAR_PREP_STARTED].Set(true, Message);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
 
         [RoleLevel(RoleLevel.Leader)]
         [Command("set war prep ending")]
-        [Summary("This message is triggered 15 minutes before the war starts.")]
+        [Summary("Enable and set the message 15 minutes before war starts.")]
         [CommandUsage("{prefix} {command} @Role, War is starting soon!")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task SetWarPrepEnding([Remainder] string Message)
@@ -39,14 +39,14 @@ namespace WarBot.Modules.GuildCommandModules
             if (Message.Length < 1)
                 Message = null;
 
-            this.cfg.Notifications.WarPrepEndingMessage = Message;
+            cfg[Setting_Key.WAR_PREP_ENDING].Set(true, Message);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
 
         [RoleLevel(RoleLevel.Leader)]
         [Command("set war started")]
-        [Summary("This message is triggered when the war starts")]
+        [Summary("Enable and set the message when war starts.")]
         [CommandUsage("{prefix} {command} @Role, War has started.")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task SetWarStarted([Remainder] string Message)
@@ -54,7 +54,7 @@ namespace WarBot.Modules.GuildCommandModules
             if (Message.Length < 1)
                 Message = null;
 
-            this.cfg.Notifications.WarStartedMessage = Message;
+            cfg[Setting_Key.WAR_STARTED].Set(true, Message);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
@@ -67,7 +67,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task ClearWarPrepStarted()
         {
-            this.cfg.Notifications.WarPrepStartedMessage = null;
+            cfg[Setting_Key.WAR_PREP_STARTED].Set(true, null);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
@@ -79,7 +79,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task ClearWarPrepEnding()
         {
-            this.cfg.Notifications.WarPrepEndingMessage = null;
+            cfg[Setting_Key.WAR_PREP_ENDING].Set(true, null);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
@@ -91,7 +91,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task ClearWarStarted()
         {
-            this.cfg.Notifications.WarStartedMessage = null;
+            cfg[Setting_Key.WAR_STARTED].Set(true, null);
             await cfg.SaveConfig();
             await ReplyAsync("Done.");
         }
@@ -107,22 +107,22 @@ namespace WarBot.Modules.GuildCommandModules
             switch (War)
             {
                 case 1:
-                    cfg.Notifications.War1Enabled = false;
+                    cfg[Setting_Key.WAR_1].Disable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
                 case 2:
-                    cfg.Notifications.War2Enabled = false;
+                    cfg[Setting_Key.WAR_2].Disable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
                 case 3:
-                    cfg.Notifications.War3Enabled = false;
+                    cfg[Setting_Key.WAR_3].Disable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
                 case 4:
-                    cfg.Notifications.War4Enabled = false;
+                    cfg[Setting_Key.WAR_4].Disable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
@@ -142,22 +142,22 @@ namespace WarBot.Modules.GuildCommandModules
             switch (War)
             {
                 case 1:
-                    cfg.Notifications.War1Enabled = true;
+                    cfg[Setting_Key.WAR_1].Enable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
                 case 2:
-                    cfg.Notifications.War2Enabled = true;
+                    cfg[Setting_Key.WAR_2].Enable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
                 case 3:
-                    cfg.Notifications.War3Enabled = true;
+                    cfg[Setting_Key.WAR_3].Enable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
                 case 4:
-                    cfg.Notifications.War4Enabled = true;
+                    cfg[Setting_Key.WAR_4].Enable();
                     await cfg.SaveConfig();
                     await ReplyAsync("Done.");
                     break;
@@ -176,7 +176,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableWarPrepStarted()
         {
-            cfg.Notifications.WarPrepStarted = false;
+            cfg[Setting_Key.WAR_PREP_STARTED].Disable();
             await cfg.SaveConfig();
             await ReplyAsync("I will no longer send a message when war prep starts.");
         }
@@ -188,7 +188,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableWarPrepStarted()
         {
-            cfg.Notifications.WarPrepStarted = true;
+            cfg[Setting_Key.WAR_PREP_STARTED].Enable();
             await cfg.SaveConfig();
             await ReplyAsync("I will send a message when the war prep starts.");
         }
@@ -200,7 +200,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableWarPrepEnding()
         {
-            cfg.Notifications.WarPrepEnding = false;
+            cfg[Setting_Key.WAR_PREP_ENDING].Disable();
             await cfg.SaveConfig();
             await ReplyAsync("I will no longer send a message 15 minutes before war starts");
         }
@@ -212,7 +212,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableWarPrepEnding()
         {
-            cfg.Notifications.WarPrepEnding = true;
+            cfg[Setting_Key.WAR_PREP_ENDING].Enable();
             await cfg.SaveConfig();
             await ReplyAsync("I will send messages 15 minutes before war starts");
         }
@@ -224,7 +224,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableWarStarted()
         {
-            cfg.Notifications.WarStarted = false;
+            cfg[Setting_Key.WAR_STARTED].Disable();
             await cfg.SaveConfig();
             await ReplyAsync("I will no longer send notifications when the war starts.");
         }
@@ -236,7 +236,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableWarStarted()
         {
-            cfg.Notifications.WarStarted = true;
+            cfg[Setting_Key.WAR_STARTED].Enable();
             await cfg.SaveConfig();
             await ReplyAsync("I will send notifications when the war starts.");
         }

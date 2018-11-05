@@ -19,8 +19,8 @@ namespace WarBot.Modules.GuildCommandModules
         public async Task EnableUserLeft(SocketTextChannel Channel)
         {
             //Update the config.
-            cfg.SetGuildChannel(WarBotChannelType.CH_User_Left, Channel);
-            cfg.Notifications.User_Left_Guild = true;
+            cfg.SetGuildChannel(WarBotChannelType.USER_LEFT, Channel);
+            cfg[Setting_Key.USER_LEFT].Enable();
 
             await cfg.SaveConfig();
 
@@ -34,7 +34,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableLeave()
         {
-            cfg.Notifications.User_Left_Guild = false;
+            cfg[Setting_Key.USER_LEFT].Disable();
             await cfg.SaveConfig();
 
             await ReplyAsync($"The message has been disabled.");
@@ -50,20 +50,18 @@ namespace WarBot.Modules.GuildCommandModules
         {
             //Update the config.
             if (Channel != null)
-                cfg.SetGuildChannel(WarBotChannelType.CH_User_Join, Channel);
+                cfg.SetGuildChannel(WarBotChannelType.USER_JOIN, Channel);
 
-            var ch = cfg.GetGuildChannel(WarBotChannelType.CH_User_Join);
+            var ch = cfg.GetGuildChannel(WarBotChannelType.USER_JOIN);
 
             if (!string.IsNullOrWhiteSpace(Message))
             {
-                cfg.Notifications.User_Join_Guild = true;
-                cfg.Notifications.NewUserGreeting = Message;
+                cfg[Setting_Key.USER_JOIN].Set(true, Message);
                 await ReplyAsync($"I will greet new users in {ch.Mention} with the message you provided.");
             }
             else
             {
-                cfg.Notifications.User_Join_Guild = true;
-                cfg.Notifications.NewUserGreeting = null;
+                cfg[Setting_Key.USER_JOIN].Set(true, null);
                 await ReplyAsync($"I will greet new users in {ch.Mention} with a default message.");
             }
 
@@ -79,10 +77,10 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableGreeting()
         {
-            cfg.Notifications.User_Left_Guild = false;
+            cfg[Setting_Key.USER_JOIN].Disable();
             await cfg.SaveConfig();
 
-            await ReplyAsync($"The message has been disabled.");
+            await ReplyAsync($"The notification has been disabled.");
         }
         #endregion
 

@@ -20,7 +20,7 @@ namespace WarBot.Modules.MessageTemplates
         /// <returns></returns>
         private static async Task sendWarMessage(IGuildConfig cfg, Embed embed)
         {
-            var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements) as SocketTextChannel;
+            var ch = cfg.GetGuildChannel(WarBotChannelType.WAR) as SocketTextChannel;
 
             //If there is no channel configured, abort.
             if (ch == null)
@@ -33,7 +33,7 @@ namespace WarBot.Modules.MessageTemplates
                 return;
             }
 
-           await cfg.Log.Error(cfg.Guild, new Exception($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}"));
+            await cfg.Log.Error(cfg.Guild, new Exception($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}"));
 
             StringBuilder sb = new StringBuilder()
                 .AppendLine("ERROR: Missing Permissions")
@@ -58,7 +58,7 @@ namespace WarBot.Modules.MessageTemplates
             catch
             {
                 //Well, out of options. Lets disable this channel for the guild.
-                cfg.SetGuildChannel(WarBotChannelType.CH_WAR_Announcements, null);
+                cfg.SetGuildChannel(WarBotChannelType.WAR, null);
                 await cfg.SaveConfig();
 
                 var error = new UnauthorizedAccessException("Missing permissions to send to WAR Channel. WAR messages disabled for this guild.");
@@ -71,13 +71,13 @@ namespace WarBot.Modules.MessageTemplates
         {
             ///Determine the message to send.
             string Message = "";
-            if (string.IsNullOrEmpty(cfg.Notifications.WarPrepStartedMessage))
+            if (!cfg[Setting_Key.WAR_PREP_STARTED].HasValue)
                 if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out var role) && role.IsMentionable)
                     Message = $"{role.Mention}, WAR Placement has started! Please please your troops in the next two hours!";
                 else
                     Message = "WAR Placement has started! Please please your troops in the next two hours!";
             else
-                Message = cfg.Notifications.WarPrepStartedMessage;
+                Message = cfg[Setting_Key.WAR_PREP_STARTED].Value;
 
             var eb = new EmbedBuilder()
                 .WithTitle("WAR Prep Started")
@@ -89,13 +89,13 @@ namespace WarBot.Modules.MessageTemplates
         {
             ///Determine the message to send.
             string Message = "";
-            if (string.IsNullOrEmpty(cfg.Notifications.WarPrepEndingMessage))
+            if (!cfg[Setting_Key.WAR_PREP_ENDING].HasValue)
                 if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out var role) && role.IsMentionable)
                     Message = $"{role.Mention}, 15 minutes before war starts! Please place your troops if you have not done so already!!!";
                 else
                     Message = "15 minutes before war starts! Please place your troops if you have not done so already!!!";
             else
-                Message = cfg.Notifications.WarPrepEndingMessage;
+                Message = cfg[Setting_Key.WAR_PREP_ENDING].Value;
 
             var eb = new EmbedBuilder()
                 .WithTitle("WAR Prep Ending")
@@ -107,13 +107,13 @@ namespace WarBot.Modules.MessageTemplates
         {
             ///Determine the message to send.
             string Message = "";
-            if (string.IsNullOrEmpty(cfg.Notifications.WarStartedMessage))
+            if (!cfg[Setting_Key.WAR_STARTED].HasValue)
                 if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out var role) && role.IsMentionable)
                     Message = $"{role.Mention}, WAR has started!";
                 else
                     Message = "WAR has started!";
             else
-                Message = cfg.Notifications.WarStartedMessage;
+                Message = cfg[Setting_Key.WAR_STARTED].Value;
 
             var eb = new EmbedBuilder()
                 .WithTitle("WAR Started")

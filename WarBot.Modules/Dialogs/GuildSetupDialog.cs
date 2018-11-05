@@ -66,12 +66,12 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.User_Left_Channel:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Left, null);
+                        Config.SetGuildChannel(Core.WarBotChannelType.USER_LEFT, null);
                         await SkipStep("I will not send notifications when a user leaves.");
                     }
                     else if (CH != null)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Left, CH);
+                        Config.SetGuildChannel(Core.WarBotChannelType.USER_LEFT, CH);
                         await NextStep($"When a user leaves, I will post to {CH.Mention}");
                     }
                     else
@@ -80,13 +80,13 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.User_Join_Channel:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
-                        Config.Notifications.User_Join_Guild = false;
+                        Config.SetGuildChannel(Core.WarBotChannelType.USER_JOIN, null);
+                        Config[Setting_Key.USER_JOIN].Enabled = false;
                         await SkipStep("I will not send new user greetings.");
                     }
                     else if (CH != null)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, CH);
+                        Config.SetGuildChannel(Core.WarBotChannelType.USER_JOIN, CH);
                         await NextStep($"New user greetings will go to {CH.Mention}");
                     }
                     else
@@ -95,30 +95,28 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.User_Join_Message:
                     if (Skip)
                     {
-                        Config.Notifications.NewUserGreeting = null;
-                        Config.Notifications.User_Join_Guild = true;
+                        Config[Setting_Key.USER_JOIN].Set(true, null);
                         await SkipStep("I will send a default message.");
                     }
                     else
                     {
-                        Config.Notifications.NewUserGreeting = Message;
-                        Config.Notifications.User_Join_Guild = true;
+                        Config[Setting_Key.USER_JOIN].Set(true, Message);
                         await NextStep("New users joining the server will receive this message:\r" +
                             $"\n{User.Mention}, {Message}\r" +
-                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.CH_User_Join).Mention}");
+                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.USER_JOIN).Mention}");
                     }
                     break;
                 case SetupStep.Channel_Updates:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_WarBot_Updates, null);
-                        Config.Notifications.SendUpdateMessage = false;
+                        Config.SetGuildChannel(Core.WarBotChannelType.WARBOT_UPDATES, null);
+                        Config[Setting_Key.WARBOT_UPDATES].Enabled = false;
                         await SkipStep("I will not send notifications when I am updated.");
                     }
                     else if (CH != null)
                     {
-                        Config.Notifications.SendUpdateMessage = true;
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_WarBot_Updates, CH);
+                        Config.SetGuildChannel(Core.WarBotChannelType.WARBOT_UPDATES, CH);
+                        Config[Setting_Key.WARBOT_UPDATES].Enabled = true;
                         await NextStep($"My update notifications will be sent to {CH.Mention}.");
                     }
                     else
@@ -142,16 +140,16 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_Channel:
                     if (Skip || Bool == false)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_WAR_Announcements, null);
-                        Config.Notifications.WarPrepStarted = false;
-                        Config.Notifications.WarPrepEnding = false;
-                        Config.Notifications.WarStarted = false;
+                        Config.SetGuildChannel(Core.WarBotChannelType.WAR, null);
+                        Config[Setting_Key.WAR_PREP_STARTED].Enabled = false;
+                        Config[Setting_Key.WAR_PREP_ENDING].Enabled = false;
+                        Config[Setting_Key.WAR_STARTED].Enabled = false;
                         await SkipStep("I will not send any type of announcements for hustle castle clan wars.\r" +
                             "\nYou may enable this feature later if you wish.");
                     }
                     else if (CH != null)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_WAR_Announcements, CH);
+                        Config.SetGuildChannel(Core.WarBotChannelType.WAR, CH);
                         await NextStep($"My war announcements will be sent to {CH.Mention}.");
                     }
                     else
@@ -160,12 +158,11 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_SendPrepStarted:
                     if (Bool == true)
                     {
-                        this.Config.Notifications.WarPrepStarted = true;
                         await NextStep();
                     }
                     else if (Bool == false || Skip)
                     {
-                        this.Config.Notifications.WarPrepStarted = false;
+                        Config[Setting_Key.WAR_PREP_STARTED].Set(false, null);
                         await SkipStep("I will not send notifications when war prep starts.");
                     }
                     else
@@ -174,12 +171,12 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_PrepStartedMessage:
                     if (Skip)
                     {
-                        this.Config.Notifications.WarPrepStartedMessage = null;
+                        Config[Setting_Key.WAR_PREP_STARTED].Set(true, null);
                         await SkipStep("I will use my default notification when war prep starts.");
                     }
                     else
                     {
-                        this.Config.Notifications.WarPrepStartedMessage = Message;
+                        Config[Setting_Key.WAR_PREP_STARTED].Set(true, Message);
                         await NextStep("The war prep started message has been set to:\r" +
                             $"\n{Message}");
                     }
@@ -188,13 +185,11 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_SendPrepEnding:
                     if (Bool == true)
                     {
-                        this.Config.Notifications.WarPrepEnding = true;
                         await NextStep();
                     }
                     else if (Bool == false || Skip)
                     {
-                        this.Config.Notifications.WarPrepEnding = false;
-                        this.Config.Notifications.WarPrepEndingMessage = null;
+                        Config[Setting_Key.WAR_PREP_ENDING].Set(false, null);
                         await SkipStep("I will not send notifications for war prep ending.");
                     }
                     //Failed to parse a boolean.
@@ -204,12 +199,12 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_PrepEndingMessage:
                     if (Skip)
                     {
-                        this.Config.Notifications.WarPrepEndingMessage = null;
+                        Config[Setting_Key.WAR_PREP_ENDING].Set(true, null);
                         await NextStep("I will use my default notification when war prep is ending.");
                     }
                     else
                     {
-                        this.Config.Notifications.WarPrepEndingMessage = Message;
+                        Config[Setting_Key.WAR_PREP_ENDING].Set(true, Message);
                         await NextStep("The war prep ending message has been set to:\r" +
                             $"\n{Message}");
                     }
@@ -218,13 +213,11 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_SendWarStarted:
                     if (Bool == true)
                     {
-                        this.Config.Notifications.WarStarted = true;
                         await NextStep();
                     }
                     else if (Bool == false || Skip)
                     {
-                        this.Config.Notifications.WarStarted = false;
-                        this.Config.Notifications.WarStartedMessage = null;
+                        Config[Setting_Key.WAR_STARTED].Set(false, null);
                         await SkipStep("I will not send a notification when clan wars start.");
                     }
                     else
@@ -233,12 +226,12 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.WAR_WarStartedMessage:
                     if (Skip)
                     {
-                        this.Config.Notifications.WarStartedMessage = null;
+                        Config[Setting_Key.WAR_STARTED].Set(true, null);
                         await SkipStep("I will use my default notification after war has started.");
                     }
                     else
                     {
-                        this.Config.Notifications.WarStartedMessage = Message;
+                        Config[Setting_Key.WAR_STARTED].Set(true, Message);
                         await NextStep("The war started message has been set to:\r" +
                             $"\n{Message}");
                     }
@@ -259,8 +252,7 @@ namespace WarBot.Modules.Dialogs
                         await NextStep();
                     else if (Bool == false || Skip)
                     {
-                        this.Config.Notifications.PortalEnabled = false;
-                        this.Config.Notifications.PortalStartedMessage = null;
+                        Config[Setting_Key.PORTAL_STARTED].Set(false, null);
                         await SkipStep("I will not send a notification when the portal opens.");
                     }
                     else
@@ -269,14 +261,12 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.Portal_Started_Message:
                     if (Skip)
                     {
-                        this.Config.Notifications.PortalEnabled = true;
-                        this.Config.Notifications.PortalStartedMessage = null;
+                        Config[Setting_Key.PORTAL_STARTED].Set(true, null);
                         await SkipStep("I will use my default notification when the portal opens.");
                     }
                     else
                     {
-                        this.Config.Notifications.PortalEnabled = true;
-                        this.Config.Notifications.PortalStartedMessage = Message;
+                        Config[Setting_Key.PORTAL_STARTED].Set(true, Message);
                         await NextStep("The war started message has been set to:\r" +
                             $"\n{Message}");
                     }

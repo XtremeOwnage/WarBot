@@ -18,13 +18,13 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableALLNotifications()
         {
-            cfg[Setting_Key.WAR_PREP_STARTED].Enable = false;
-            cfg[Setting_Key.WAR_PREP_ENDING].Enable = false;
-            cfg[Setting_Key.WAR_STARTED].Enable = false;
-            cfg[Setting_Key.USER_JOIN].Enable = false;
-            cfg[Setting_Key.USER_LEFT].Enable = false;
-            cfg[Setting_Key.WARBOT_UPDATES].Enable = false;
-            cfg[Setting_Key.PORTAL_STARTED].Enable = false;
+            cfg[Setting_Key.WAR_PREP_STARTED].Enabled = false;
+            cfg[Setting_Key.WAR_PREP_ENDING].Enabled = false;
+            cfg[Setting_Key.WAR_STARTED].Enabled = false;
+            cfg[Setting_Key.USER_JOIN].Enabled = false;
+            cfg[Setting_Key.USER_LEFT].Enabled = false;
+            cfg[Setting_Key.WARBOT_UPDATES].Enabled = false;
+            cfg[Setting_Key.PORTAL_STARTED].Enabled = false;
             await cfg.SaveConfig();
 
             await ReplyAsync("All notifications have been disabled.");
@@ -37,13 +37,13 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableALLNotifications()
         {
-            cfg[Setting_Key.WAR_PREP_STARTED].Enable = true;
-            cfg[Setting_Key.WAR_PREP_ENDING].Enable = true;
-            cfg[Setting_Key.WAR_STARTED].Enable = true;
-            cfg[Setting_Key.USER_JOIN].Enable = true;
-            cfg[Setting_Key.USER_LEFT].Enable = true;
-            cfg[Setting_Key.WARBOT_UPDATES].Enable = true;
-            cfg[Setting_Key.PORTAL_STARTED].Enable = true;
+            cfg[Setting_Key.WAR_PREP_STARTED].Enabled = true;
+            cfg[Setting_Key.WAR_PREP_ENDING].Enabled = true;
+            cfg[Setting_Key.WAR_STARTED].Enabled = true;
+            cfg[Setting_Key.USER_JOIN].Enabled = true;
+            cfg[Setting_Key.USER_LEFT].Enabled = true;
+            cfg[Setting_Key.WARBOT_UPDATES].Enabled = true;
+            cfg[Setting_Key.PORTAL_STARTED].Enabled = true;
             await cfg.SaveConfig();
 
             await ReplyAsync("All notifications have been enabled.");
@@ -56,7 +56,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableUPdateN()
         {
-            cfg[Setting_Key.WARBOT_UPDATES].Enable = false;
+            cfg[Setting_Key.WARBOT_UPDATES].Enabled = false;
             await cfg.SaveConfig();
             await ReplyAsync("I will no longer alert you when I have new features added.");
         }
@@ -68,7 +68,7 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableUpdateN()
         {
-            cfg[Setting_Key.WARBOT_UPDATES].Enable = true;
+            cfg[Setting_Key.WARBOT_UPDATES].Enabled = true;
             await cfg.SaveConfig();
             await ReplyAsync("I will alert you when I have new features added or have been updated.");
         }
