@@ -6,6 +6,8 @@ namespace WarBot.Storage.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            //SQL Lite does not support dropping keys or columns.
+            //So, I guess these values will just float around the schema for a while........ /Shrugs.
             //migrationBuilder.DropForeignKey(
             //    name: "FK_Guilds_GuildNotificationsSettings_NotificationSettingsID",
             //    table: "Guilds");
