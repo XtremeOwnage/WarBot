@@ -121,11 +121,21 @@ namespace WarBot
                 //Send welcome message
                 try
                 {
-                    //Guild must have configured both a new user greeting channel, as well as a greeting message.
-                    if (cfg.Notifications.NewUserGreeting != null && cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var ch))
+                    if (cfg.Notifications.User_Join_Guild == true && cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var ch))
                     {
-                        await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg.Notifications.NewUserGreeting}");
+                        if (!string.IsNullOrWhiteSpace(cfg.Notifications.NewUserGreeting))
+                        {
+                            await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg.Notifications.NewUserGreeting}");
+                        }
+                        else
+                        {
+                            //Send a default message.
+                            await ch.SendMessageAsync(text: $"Welcome {arg.Mention}!");
+                        }
                     }
+
+                    //Guild must have configured both a new user greeting channel, as well as a greeting message.
+
                 }
                 catch (Exception ex)
                 {
