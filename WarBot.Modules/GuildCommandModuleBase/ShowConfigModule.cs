@@ -150,9 +150,11 @@ namespace WarBot.Modules.GuildCommandModules
                 if (!string.IsNullOrWhiteSpace(cfg.Notifications.PortalStartedMessage))
                     embed.AddField("Portal Started Message", cfg.Notifications.PortalStartedMessage);
 
-                if (!string.IsNullOrWhiteSpace(cfg.Notifications.NewUserGreeting))
-                    embed.AddField("New User Greeting", cfg.Notifications.NewUserGreeting);
+                embed.AddField("User Join Enabled", cfg.Notifications.User_Join_Guild);
                 embed.AddField("User Left Enabled", cfg.Notifications.User_Left_Guild);
+
+                if (!string.IsNullOrWhiteSpace(cfg.Notifications.NewUserGreeting))
+                    embed.AddField("User Join Message", cfg.Notifications.NewUserGreeting);
 
                 await ReplyAsync(embed: embed.Build());
             }
