@@ -81,6 +81,7 @@ namespace WarBot.Modules.Dialogs
                     if (Skip)
                     {
                         Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
+                        Config.Notifications.User_Join_Guild = false;
                         await SkipStep("I will not send new user greetings.");
                     }
                     else if (CH != null)
@@ -94,12 +95,14 @@ namespace WarBot.Modules.Dialogs
                 case SetupStep.User_Join_Message:
                     if (Skip)
                     {
-                        Config.SetGuildChannel(Core.WarBotChannelType.CH_User_Join, null);
-                        await SkipStep("I will not send new user greetings.");
+                        Config.Notifications.NewUserGreeting = null;
+                        Config.Notifications.User_Join_Guild = true;
+                        await SkipStep("I will send a default message.");
                     }
                     else
                     {
                         Config.Notifications.NewUserGreeting = Message;
+                        Config.Notifications.User_Join_Guild = true;
                         await NextStep("New users joining the server will receive this message:\r" +
                             $"\n{User.Mention}, {Message}\r" +
                             $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.CH_User_Join).Mention}");
@@ -355,7 +358,8 @@ namespace WarBot.Modules.Dialogs
                         + suffix);
                     break;
                 case SetupStep.User_Join_Message:
-                    await SendAsync("What message would you like me to send to new users?");
+                    await SendAsync("What message would you like me to send to new users?\r" +
+                        "\nYou may 'skip' to use a default message.");
                     break;
                 case SetupStep.User_Left_Channel:
                     await SendAsync("What channel would you like me to send a notification to when users leave?\r" +
