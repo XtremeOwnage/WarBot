@@ -19,7 +19,6 @@ namespace WarBot.Core
         
 
         bool User_Left_Guild { get; set; }
-        bool User_Join_Guild { get; set; }
         bool PortalEnabled { get; set; }
     }
 }
