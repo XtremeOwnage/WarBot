@@ -7,7 +7,7 @@ namespace WarBot.Storage.Models
     /// <summary>
     /// A secondary storage for guild settings.
     /// </summary>
-    public class GuildNotificationsSettings : INotificationSettings
+    public class GuildNotificationsSettings
     {
         public GuildNotificationsSettings() { }
 
@@ -73,12 +73,5 @@ namespace WarBot.Storage.Models
 
         public bool User_Left_Guild { get; set; } = false;
 
-        #region INotificationSettings
-        string INotificationSettings.NewUserGreeting
-        {
-            get => string.IsNullOrEmpty(GreetingMessage) ? null : GreetingMessage;
-            set => GreetingMessage = value;
-        }
-        #endregion
     }
 }

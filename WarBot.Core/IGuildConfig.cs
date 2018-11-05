@@ -36,11 +36,6 @@ namespace WarBot.Core
         SocketGuildUser CurrentUser { get; }
 
         /// <summary>
-        /// Common notification settings.
-        /// </summary>
-        INotificationSettings Notifications { get; }
-
-        /// <summary>
         /// A reference to WarBot's logging system.
         /// </summary>
         ILog Log { get; }

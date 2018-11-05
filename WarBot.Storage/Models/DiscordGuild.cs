@@ -162,9 +162,11 @@ namespace WarBot.Storage.Models
         SocketGuild IGuildConfig.Guild => this.Value;
         SocketGuildUser IGuildConfig.CurrentUser => this.Value.CurrentUser;
 
-        INotificationSettings IGuildConfig.Notifications => this.NotificationSettings;
-
-
+        public IGuildSetting this[Setting_Key Key]
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         public void Initialize(SocketGuild Guild, Func<IGuildConfig, Task> SaveFunc, IWARBOT Bot)
         {
