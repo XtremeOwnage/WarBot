@@ -40,6 +40,13 @@ namespace WarBot.Modules.GuildCommandModules
             await ReplyAsync($"The message has been disabled.");
         }
         #endregion
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable greeting"), Alias("set greeting")]
+        [Summary("Enables message  when users leave a discord guild.")]
+        [CommandUsage("{prefix} {command} Your Message Goes Here")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableGreeting_MsgOnly([Remainder] string Message = null) => await EnableGreeting(null, Message);
+
         #region User Joined
         [RoleLevel(RoleLevel.Leader)]
         [Command("enable greeting"), Alias("set greeting")]
