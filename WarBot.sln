@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangeLogs", "ChangeLogs", 
 		ChangeLogs\v3.2.md = ChangeLogs\v3.2.md
 		ChangeLogs\v3.3.md = ChangeLogs\v3.3.md
 		ChangeLogs\v3.4.md = ChangeLogs\v3.4.md
+		ChangeLogs\v3.5.md = ChangeLogs\v3.5.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Base", "1. Base", "{4A99772F-EA7A-4CA8-9D33-12FF9F00E745}"

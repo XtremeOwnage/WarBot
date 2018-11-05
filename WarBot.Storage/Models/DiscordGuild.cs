@@ -52,11 +52,6 @@ namespace WarBot.Storage.Models
         public string WarBOT_Prefix { get; set; }
 
         /// <summary>
-        /// Common notification settings.
-        /// </summary>
-        public virtual GuildNotificationsSettings NotificationSettings { get; private set; }
-
-        /// <summary>
         /// The last version of the bot, this guild was utilizing. Used to send update notifications.
         /// </summary>
         public string BotVersion { get; set; }
@@ -229,8 +224,6 @@ namespace WarBot.Storage.Models
             //Clear all configured roles, and channels.
             this.ClearAllRoles();
             this.Channels.Clear();
-
-            NotificationSettings.setDefaults();
 
             return Task.CompletedTask;
         }
