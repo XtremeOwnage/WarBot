@@ -22,6 +22,9 @@ namespace WarBot.Modules.GuildCommandModules
             cfg.Notifications.WarPrepEnding = false;
             cfg.Notifications.WarStarted = false;
             cfg.Notifications.SendUpdateMessage = false;
+            cfg.Notifications.User_Left_Guild = false;
+            cfg.Notifications.User_Join_Guild = false;
+            cfg.Notifications.PortalEnabled = false;
 
             await cfg.SaveConfig();
 
@@ -39,6 +42,9 @@ namespace WarBot.Modules.GuildCommandModules
             cfg.Notifications.WarPrepEnding = true;
             cfg.Notifications.WarStarted = true;
             cfg.Notifications.SendUpdateMessage = true;
+            cfg.Notifications.User_Left_Guild = true;
+            cfg.Notifications.User_Join_Guild = true;
+            cfg.Notifications.PortalEnabled = true;
 
             await cfg.SaveConfig();
 
