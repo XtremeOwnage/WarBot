@@ -8,6 +8,7 @@ namespace WarBot.Util
 
     public class Update
     {
+        //test
         public const string CurrentVersion = "3.5";
         const bool SendUpdateNotificationForCurrentVersion = false;
         const string UpdateNotesURL = "https://github.com/XtremeOwnage/WarBot/blob/master/ChangeLogs/v3.5.md";
