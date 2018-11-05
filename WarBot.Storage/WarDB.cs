@@ -36,6 +36,7 @@ namespace WarBot.Storage
             Console.WriteLine("Applying Migrations");
 
             this.Database.Migrate();
+
         }
 
         public async Task SaveWithOutput()

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WarBot.Storage;
 
 namespace WarBot.Storage.Migrations
 {
     [DbContext(typeof(WarDB))]
-    partial class WarDBModelSnapshot : ModelSnapshot
+    [Migration("20181105205708_Settings_Table")]
+    partial class Settings_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,11 +83,15 @@ namespace WarBot.Storage.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int?>("NotificationSettingsID");
+
                     b.Property<string>("WarBOT_Prefix");
 
                     b.Property<string>("Website");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("NotificationSettingsID");
 
                     b.ToTable("Guilds");
                 });
@@ -126,6 +132,46 @@ namespace WarBot.Storage.Migrations
                     b.HasIndex("GuildID");
 
                     b.ToTable("GuildChannel");
+                });
+
+            modelBuilder.Entity("WarBot.Storage.Models.GuildNotificationsSettings", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("GreetingMessage");
+
+                    b.Property<bool>("PortalEnabled");
+
+                    b.Property<string>("PortalStartedMessage");
+
+                    b.Property<bool>("SendUpdateMessage");
+
+                    b.Property<bool>("User_Left_Guild");
+
+                    b.Property<bool>("War1Enabled");
+
+                    b.Property<bool>("War2Enabled");
+
+                    b.Property<bool>("War3Enabled");
+
+                    b.Property<bool>("War4Enabled");
+
+                    b.Property<bool>("WarPrepEnding");
+
+                    b.Property<string>("WarPrepEndingMessage");
+
+                    b.Property<bool>("WarPrepStarted");
+
+                    b.Property<string>("WarPrepStartedMessage");
+
+                    b.Property<bool>("WarStarted");
+
+                    b.Property<string>("WarStartedMessage");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("GuildNotificationsSettings");
                 });
 
             modelBuilder.Entity("WarBot.Storage.Models.GuildRole", b =>
@@ -305,6 +351,13 @@ namespace WarBot.Storage.Migrations
                         .WithMany("Votes")
                         .HasForeignKey("PollID")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WarBot.Storage.Models.DiscordGuild", b =>
+                {
+                    b.HasOne("WarBot.Storage.Models.GuildNotificationsSettings", "NotificationSettings")
+                        .WithMany()
+                        .HasForeignKey("NotificationSettingsID");
                 });
 
             modelBuilder.Entity("WarBot.Storage.Models.GuildChannel", b =>

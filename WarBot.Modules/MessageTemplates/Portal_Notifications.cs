@@ -19,7 +19,7 @@ namespace WarBot.Modules.MessageTemplates
         /// <returns></returns>
         private static async Task sendMessage(IGuildConfig cfg, Embed embed)
         {
-            var ch = cfg.GetGuildChannel(WarBotChannelType.CH_WAR_Announcements) as SocketTextChannel;
+            var ch = cfg.GetGuildChannel(WarBotChannelType.WAR) as SocketTextChannel;
 
             //If there is no channel configured, abort.
             if (ch == null)
@@ -49,13 +49,13 @@ namespace WarBot.Modules.MessageTemplates
         {
             ///Determine the message to send.
             string Message = "";
-            if (string.IsNullOrEmpty(cfg.Notifications.PortalStartedMessage))
+            if (!cfg[Setting_Key.PORTAL_STARTED].HasValue)
                 if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out var role) && role.IsMentionable)
                     Message = $"{role.Mention}, The portal has opened!";
                 else
                     Message = "The portal has opened!";
             else
-                Message = cfg.Notifications.WarStartedMessage;
+                Message = cfg[Setting_Key.PORTAL_STARTED].Value;
 
             var eb = new EmbedBuilder()
                 .WithTitle("Portal")

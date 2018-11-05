@@ -121,11 +121,21 @@ namespace WarBot
                 //Send welcome message
                 try
                 {
-                    //Guild must have configured both a new user greeting channel, as well as a greeting message.
-                    if (cfg.Notifications.NewUserGreeting != null && cfg.GetGuildChannel(WarBotChannelType.CH_User_Join).IsNotNull(out var ch))
+                    if (cfg[Setting_Key.USER_JOIN].Enabled && cfg.GetGuildChannel(WarBotChannelType.USER_JOIN).IsNotNull(out var ch))
                     {
-                        await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg.Notifications.NewUserGreeting}");
+                        if (cfg[Setting_Key.USER_JOIN].HasValue)
+                        {
+                            await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg[Setting_Key.USER_JOIN].Value}");
+                        }
+                        else
+                        {
+                            //Send a default message.
+                            await ch.SendMessageAsync(text: $"Welcome {arg.Mention}!");
+                        }
                     }
+
+                    //Guild must have configured both a new user greeting channel, as well as a greeting message.
+
                 }
                 catch (Exception ex)
                 {
@@ -140,8 +150,8 @@ namespace WarBot
             var t = Task.Run(async () =>
             {
                 var cfg = await this.GuildRepo.GetConfig(arg.Guild);
-                var ch = cfg.GetGuildChannel(WarBotChannelType.CH_User_Left);
-                if (cfg.Notifications.User_Left_Guild && ch != null)
+                var ch = cfg.GetGuildChannel(WarBotChannelType.USER_LEFT);
+                if (cfg[Setting_Key.USER_LEFT].Enabled && ch != null)
                 {
                     string name = !string.IsNullOrWhiteSpace(arg.Nickname) ? arg.Nickname : arg.Username;
                     await ch.SendMessageAsync($"{name} has left the guild.");

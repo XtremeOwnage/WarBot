@@ -128,31 +128,33 @@ namespace WarBot.Modules.GuildCommandModules
             if (parts.Contains(c_NOTIFICATION))
             {
                 var embed = new EmbedBuilder()
-                    .WithTitle("Bot Configuration - War Notifications")
-                    .AddField("War Prep Started Enabled", cfg.Notifications.WarPrepStarted)
-                    .AddField("War Prep Ending Enabled", cfg.Notifications.WarPrepEnding)
-                    .AddField("War Started Enabled", cfg.Notifications.WarStarted);
+                    .WithTitle("Bot Configuration - Notifications")
+                    .AddField("War Prep Started Enabled", cfg[Setting_Key.WAR_PREP_STARTED].Enabled)
+                    .AddField("War Prep Ending Enabled", cfg[Setting_Key.WAR_PREP_ENDING].Enabled)
+                    .AddField("War Started Enabled", cfg[Setting_Key.WAR_STARTED].Enabled);
 
-                if (!string.IsNullOrWhiteSpace(cfg.Notifications.WarPrepStartedMessage))
-                    embed.AddField("War Prep Started Message", cfg.Notifications.WarPrepStartedMessage);
-                if (!string.IsNullOrWhiteSpace(cfg.Notifications.WarPrepEndingMessage))
-                    embed.AddField("War Prep Ending Message", cfg.Notifications.WarPrepEndingMessage);
-                if (!string.IsNullOrWhiteSpace(cfg.Notifications.WarStartedMessage))
-                    embed.AddField("War Started Message", cfg.Notifications.WarStartedMessage);
+                if (cfg[Setting_Key.WAR_PREP_STARTED].HasValue)
+                    embed.AddField("War Prep Started Message", cfg[Setting_Key.WAR_PREP_STARTED].Value);
+                if (cfg[Setting_Key.WAR_PREP_ENDING].HasValue)
+                    embed.AddField("War Prep Ending Message", cfg[Setting_Key.WAR_PREP_ENDING].Value);
+                if (cfg[Setting_Key.WAR_STARTED].HasValue)
+                    embed.AddField("War Started Message", cfg[Setting_Key.WAR_STARTED].Value);
 
                 embed
-                    .AddField("War 1 Enabled (2am CST)", cfg.Notifications.War1Enabled)
-                    .AddField("War 2 Enabled (8am CST)", cfg.Notifications.War2Enabled)
-                    .AddField("War 3 Enabled (2pm CST)", cfg.Notifications.War3Enabled)
-                    .AddField("War 4 Enabled (8pm CST)", cfg.Notifications.War4Enabled)
-                    .AddField("Portal Remindar Enabled", cfg.Notifications.PortalEnabled);
+                    .AddField("War 1 Enabled (2am CST)", cfg[Setting_Key.WAR_1].Enabled)
+                    .AddField("War 2 Enabled (8am CST)", cfg[Setting_Key.WAR_2].Enabled)
+                    .AddField("War 3 Enabled (2pm CST)", cfg[Setting_Key.WAR_3].Enabled)
+                    .AddField("War 4 Enabled (8pm CST)", cfg[Setting_Key.WAR_4].Enabled)
+                    .AddField("Portal Remindar Enabled", cfg[Setting_Key.PORTAL_STARTED].Enabled);
 
-                if (!string.IsNullOrWhiteSpace(cfg.Notifications.PortalStartedMessage))
-                    embed.AddField("Portal Started Message", cfg.Notifications.PortalStartedMessage);
+                if (cfg[Setting_Key.PORTAL_STARTED].HasValue)
+                    embed.AddField("Portal Started Message", cfg[Setting_Key.PORTAL_STARTED].Value);
 
-                if (!string.IsNullOrWhiteSpace(cfg.Notifications.NewUserGreeting))
-                    embed.AddField("New User Greeting", cfg.Notifications.NewUserGreeting);
-                embed.AddField("User Left Enabled", cfg.Notifications.User_Left_Guild);
+                embed.AddField("User Join Enabled", cfg[Setting_Key.USER_JOIN].Enabled);
+                embed.AddField("User Left Enabled", cfg[Setting_Key.USER_LEFT].Enabled);
+
+                if (cfg[Setting_Key.USER_JOIN].HasValue)
+                    embed.AddField("User Join Message", cfg[Setting_Key.USER_JOIN].Value);
 
                 await ReplyAsync(embed: embed.Build());
             }

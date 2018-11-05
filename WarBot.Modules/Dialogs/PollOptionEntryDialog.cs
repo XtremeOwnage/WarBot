@@ -90,7 +90,7 @@ namespace WarBot.Modules.Dialogs
                 await startStep(State.GET_OPTIONS);
             }
             else if (currState != State.GET_OPTIONS)
-                throw new Exception("This shouldn't be possible? Something broke.");
+                throw new Exception("This shouldn't be possible? Something broke. Current State "+currState.ToString());
             else if ((cmd.Equals("remove") || cmd.Equals("undo")))
             {
                 //Cleanup the message.

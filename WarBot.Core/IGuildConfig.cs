@@ -9,6 +9,12 @@ namespace WarBot.Core
     public interface IGuildConfig
     {
         /// <summary>
+        /// Access to guild settings.
+        /// </summary>
+        /// <param name="Key">Setting key to find.</param>
+        /// <returns>The setting, if one exists.</returns>
+        IGuildSetting this[Setting_Key Key] { get;  }
+        /// <summary>
         /// The prefix to which warbot will respond to.
         /// </summary>
         string Prefix { get; set; }
@@ -28,11 +34,6 @@ namespace WarBot.Core
         /// The current guild user for WarBot.
         /// </summary>
         SocketGuildUser CurrentUser { get; }
-
-        /// <summary>
-        /// Common notification settings.
-        /// </summary>
-        INotificationSettings Notifications { get; }
 
         /// <summary>
         /// A reference to WarBot's logging system.
