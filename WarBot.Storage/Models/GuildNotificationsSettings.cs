@@ -33,6 +33,7 @@ namespace WarBot.Storage.Models
             PortalEnabled = false;
             PortalStartedMessage = null;
             User_Left_Guild = false;
+            User_Join_Guild = false;
             
             return this;
         }
@@ -72,6 +73,8 @@ namespace WarBot.Storage.Models
         public string GreetingMessage { get; set; } = null;
 
         public bool User_Left_Guild { get; set; } = false;
+
+        public bool User_Join_Guild { get; set; } = false;
 
         #region INotificationSettings
         string INotificationSettings.NewUserGreeting

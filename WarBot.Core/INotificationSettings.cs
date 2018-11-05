@@ -13,11 +13,13 @@ namespace WarBot.Core
         string WarPrepStartedMessage { get; set; }
         bool WarStarted { get; set; }
         string WarStartedMessage { get; set; }
-
+        string PortalStartedMessage { get; set; }
         string NewUserGreeting { get; set; }
 
-        bool PortalEnabled { get; set; }
-        string PortalStartedMessage { get; set; }
+        
+
         bool User_Left_Guild { get; set; }
+        bool User_Join_Guild { get; set; }
+        bool PortalEnabled { get; set; }
     }
 }
