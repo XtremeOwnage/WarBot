@@ -9,7 +9,8 @@ using WarBot.Core.ModuleType;
 namespace WarBot.Modules.GuildCommandModules
 {
     public class UserJoinLeaveModule : GuildCommandModuleBase
-    {      
+    {
+        #region User Left
         [RoleLevel(RoleLevel.Leader)]
         [Command("enable leave"), Alias("set leave")]
         [Summary("Enables message to a specific channel when users leave a discord guild.")]
@@ -33,21 +34,57 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task DisableLeave()
         {
-            cfg.Notifications.User_Left_Guild = false;            
+            cfg.Notifications.User_Left_Guild = false;
             await cfg.SaveConfig();
 
             await ReplyAsync($"The message has been disabled.");
         }
+        #endregion
+        #region User Joined
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable greeting"), Alias("set greeting")]
+        [Summary("Enables message to a specific channel when users leave a discord guild.")]
+        [CommandUsage("{prefix} {command} #Channel Your Message Goes Here")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableGreeting(SocketTextChannel Channel = null, [Remainder] string Message = null)
+        {
+            //Update the config.
+            if (Channel != null)
+                cfg.SetGuildChannel(WarBotChannelType.CH_User_Join, Channel);
 
-        
-        [RoleLevel(RoleLevel.ServerAdmin)]
-        [Command("setup")]
-        [Summary("Starts the warbot configuration dialog.")]
+            var ch = cfg.GetGuildChannel(WarBotChannelType.CH_User_Join);
+
+            if (!string.IsNullOrWhiteSpace(Message))
+            {
+                cfg.Notifications.User_Join_Guild = true;
+                cfg.Notifications.NewUserGreeting = Message;
+                await ReplyAsync($"I will greet new users in {ch.Mention} with the message you provided.");
+            }
+            else
+            {
+                cfg.Notifications.User_Join_Guild = true;
+                cfg.Notifications.NewUserGreeting = null;
+                await ReplyAsync($"I will greet new users in {ch.Mention} with a default message.");
+            }
+
+            await cfg.SaveConfig();
+
+            await ReplyAsync($"Done.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable greeting")]
+        [Summary("Disable the message when users leave the server")]
         [CommandUsage("{prefix} {command}")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
-        public async Task EnterSetup()
+        public async Task DisableGreeting()
         {
-            await this.bot.OpenDialog(new Dialogs.SetupDialog(this.Context));
+            cfg.Notifications.User_Left_Guild = false;
+            await cfg.SaveConfig();
+
+            await ReplyAsync($"The message has been disabled.");
         }
+        #endregion
+
     }
 }
