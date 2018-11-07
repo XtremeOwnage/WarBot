@@ -92,7 +92,9 @@ namespace WarBot.Util
         public async Task Error(IGuild guild, Exception ex, [CallerMemberName] string Method = "")
         {
             string Message = $"{guild?.Name} - {Method} - {ex.Message}";
-            await ConsoleOUT(Message);
+
+            //Log the FULL exception
+            await ConsoleOUT(ex.ToString());
 
             var eb = new EmbedBuilder()
                 .WithTitle("Exception")
