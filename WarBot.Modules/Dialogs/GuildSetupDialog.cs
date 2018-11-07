@@ -369,7 +369,7 @@ namespace WarBot.Modules.Dialogs
                     break;
                 case SetupStep.WAR_Channel:
                     await SendAsync("I assume you invited me to your server, for the purpose of alerting for Hustle Castle War events.\r" +
-                        "\nPlease let me know which channel I should send war announcments to.\r" +
+                        "\nPlease let me know which channel I should send war announcements to.\r" +
                         "\nIf you say 'No' or 'Skip', I will disable all war-related announcements.");
                     break;
                 case SetupStep.WAR_SendPrepStarted:
