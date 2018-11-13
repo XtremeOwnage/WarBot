@@ -73,9 +73,9 @@ namespace WarBot.Modules.MessageTemplates
             string Message = "";
             if (!cfg[Setting_Key.WAR_PREP_STARTED].HasValue)
                 if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out var role) && role.IsMentionable)
-                    Message = $"{role.Mention}, WAR Placement has started! Please please your troops in the next two hours!";
+                    Message = $"{role.Mention}, WAR Placement has started! Please place your troops in the next two hours!";
                 else
-                    Message = "WAR Placement has started! Please please your troops in the next two hours!";
+                    Message = "WAR Placement has started! Please place your troops in the next two hours!";
             else
                 Message = cfg[Setting_Key.WAR_PREP_STARTED].Value;
 
