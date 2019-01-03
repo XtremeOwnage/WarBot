@@ -112,7 +112,7 @@ namespace WarBot
         {
             await Console.Out.WriteLineAsync(arg.Message);
 
-            StopToken.Cancel();
+            //StopToken.Cancel();
         }
 
         private Task Client_Ready()
