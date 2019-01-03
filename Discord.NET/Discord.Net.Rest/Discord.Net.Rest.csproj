@@ -33,12 +33,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Discord.Net.Core\Discord.Net.Core.csproj">
-      <Project>{E65AEF26-C39A-4FAD-914B-7D2769E2D464}</Project>
-      <Name>Discord.Net.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>

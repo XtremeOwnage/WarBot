@@ -28,6 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net.Commands" Version="2.0.0" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0-preview3-35497" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Ninject" Version="3.3.4" />
