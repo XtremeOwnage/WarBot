@@ -58,6 +58,8 @@ namespace WarBot
 
         public void Start()
         {
+            Log.ConsoleOUT("Start() called.").Wait();
+
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
             kernel = new StandardKernel();
