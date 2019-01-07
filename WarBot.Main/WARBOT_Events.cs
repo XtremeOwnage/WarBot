@@ -274,7 +274,6 @@ namespace WarBot
             try
             {
                 var cfg = await this.GuildRepo.GetConfig(arg);
-                await Console.Out.WriteLineAsync("Guild Available");
 
                 //Do update check.
                 await Util.Update.UpdateCheck(cfg, this);
