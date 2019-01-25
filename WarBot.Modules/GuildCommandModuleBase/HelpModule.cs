@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using System;
 using System.Linq;
 using System.Text;
@@ -24,8 +23,8 @@ namespace WarBot.Modules.GuildCommandModules
         {
             try
             {
-                var Userrole = Context.GuildUser.GetRole(Context.cfg);
-                var Commands = bot.CommandService.Commands;
+                RoleLevel Userrole = Context.GuildUser.GetRole(Context.cfg);
+                System.Collections.Generic.IEnumerable<CommandInfo> Commands = bot.CommandService.Commands;
 
                 IMessageChannel ch = Context.GuildChannel as IMessageChannel;
                 if (!CH.Equals("CH", StringComparison.OrdinalIgnoreCase))
@@ -34,7 +33,7 @@ namespace WarBot.Modules.GuildCommandModules
                 //Find commands, to which the user has access to.
                 var matchedCommands = Commands
                 .Where(o =>
-                    (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true)
+                    (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out RoleLevelAttribute x) && x.hasPermission(Userrole) == true)
                     || (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault() == null)
                     )
                 .OrderBy(o => o.Name)
@@ -54,28 +53,24 @@ namespace WarBot.Modules.GuildCommandModules
 
                 while (count < matchedCommands.Length)
                 {
-                    var eb = new EmbedBuilder()
-                        .WithTitle($"Commands ({page})");
+                    StringBuilder sb = new StringBuilder();
 
-                    while (count - (page * maxPerPage) < maxPerPage && count < matchedCommands.Length)
+                    while (sb.Length < 1500 && count < matchedCommands.Length)
                     {
                         var i = matchedCommands[count];
-                        var desc = new StringBuilder();
 
-                        if (!String.IsNullOrEmpty(i.Summary))
-                            desc.AppendLine("    **Summary:** " + i.Summary);
+                        sb.AppendLine($"**{i.Name}**");
+                        if (!string.IsNullOrEmpty(i.Summary))
+                            sb.AppendLine("\t**Summary:**" + i.Summary);
                         if (i.Aliases.Count() > 0)
-                            foreach (var a in i.Aliases)
-                                desc.AppendLine($"    **Alias:** {a}");
+                            foreach (string a in i.Aliases)
+                                sb.AppendLine($"\t**Alias:** {a}");
                         if (!string.IsNullOrEmpty(i.Usage))
-                            desc.AppendLine("    **Usage:** " + i.Usage);
+                            sb.AppendLine("\t**Usage:** " + i.Usage);
 
-                        if (string.IsNullOrEmpty(i.Name) || desc.Length == 0)
-                            continue;
-                        eb.AddField(i.Name, desc.ToString());
                         count++;
                     }
-                    await ch.SendMessageAsync(embed: eb.Build());
+                    await ch.SendMessageAsync(sb.ToString());
 
                     page++;
                 }
@@ -84,9 +79,9 @@ namespace WarBot.Modules.GuildCommandModules
                 //A list of commands has been compiled. Lets start sending embeds.
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                await this.bot.Log.Error(this.Context.Guild, ex, nameof(Help));
+                await bot.Log.Error(Context.Guild, ex, nameof(Help));
                 throw;
             }
 
