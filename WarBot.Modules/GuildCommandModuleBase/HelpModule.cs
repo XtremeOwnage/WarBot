@@ -22,64 +22,73 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task Help(string CH = "")
         {
-            var Userrole = Context.GuildUser.GetRole(Context.cfg);
-            var Commands = bot.CommandService.Commands;
-
-            IMessageChannel ch = Context.GuildChannel as IMessageChannel;
-            if (!CH.Equals("CH", StringComparison.OrdinalIgnoreCase))
-                ch = await Context.GuildUser.GetOrCreateDMChannelAsync() as IMessageChannel;
-
-            //Find commands, to which the user has access to.
-            var matchedCommands = Commands
-            .Where(o =>
-                (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true)
-                || (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault() == null)
-                )
-            .OrderBy(o => o.Name)
-            .Select(o => new
+            try
             {
-                o.Name,
-                o.Summary,
-                Usage = o.Attributes.OfType<CommandUsageAttribute>().FirstOrDefault()?.GetUsage(o, Context.cfg),
-                Aliases = o.Aliases.Skip(1)
-            })
-            .ToArray();
+                var Userrole = Context.GuildUser.GetRole(Context.cfg);
+                var Commands = bot.CommandService.Commands;
 
+                IMessageChannel ch = Context.GuildChannel as IMessageChannel;
+                if (!CH.Equals("CH", StringComparison.OrdinalIgnoreCase))
+                    ch = await Context.GuildUser.GetOrCreateDMChannelAsync() as IMessageChannel;
 
-            int count = 0;
-            int maxPerPage = 24;
-            int page = 0;
-
-            while (count < matchedCommands.Length)
-            {
-                var eb = new EmbedBuilder()
-                    .WithTitle($"Commands ({page})");
-
-                while (count - (page * maxPerPage) < maxPerPage && count < matchedCommands.Length)
+                //Find commands, to which the user has access to.
+                var matchedCommands = Commands
+                .Where(o =>
+                    (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault().IsNotNull(out var x) && x.hasPermission(Userrole) == true)
+                    || (o.Preconditions.OfType<RoleLevelAttribute>().FirstOrDefault() == null)
+                    )
+                .OrderBy(o => o.Name)
+                .Select(o => new
                 {
-                    var i = matchedCommands[count];
-                    var desc = new StringBuilder();
+                    o.Name,
+                    o.Summary,
+                    Usage = o.Attributes.OfType<CommandUsageAttribute>().FirstOrDefault()?.GetUsage(o, Context.cfg),
+                    Aliases = o.Aliases.Skip(1)
+                })
+                .ToArray();
 
-                    if (!String.IsNullOrEmpty(i.Summary))
-                        desc.AppendLine("    **Summary:** " + i.Summary);
-                    if (i.Aliases.Count() > 0)
-                        foreach (var a in i.Aliases)
-                            desc.AppendLine($"    **Alias:** {a}");
-                    if (!string.IsNullOrEmpty(i.Usage))
-                        desc.AppendLine("    **Usage:** " + i.Usage);
 
-                    eb.AddField(i.Name, desc.ToString());
-                    count++;
+                int count = 0;
+                int maxPerPage = 24;
+                int page = 0;
+
+                while (count < matchedCommands.Length)
+                {
+                    var eb = new EmbedBuilder()
+                        .WithTitle($"Commands ({page})");
+
+                    while (count - (page * maxPerPage) < maxPerPage && count < matchedCommands.Length)
+                    {
+                        var i = matchedCommands[count];
+                        var desc = new StringBuilder();
+
+                        if (!String.IsNullOrEmpty(i.Summary))
+                            desc.AppendLine("    **Summary:** " + i.Summary);
+                        if (i.Aliases.Count() > 0)
+                            foreach (var a in i.Aliases)
+                                desc.AppendLine($"    **Alias:** {a}");
+                        if (!string.IsNullOrEmpty(i.Usage))
+                            desc.AppendLine("    **Usage:** " + i.Usage);
+
+                        if (string.IsNullOrEmpty(i.Name) || desc.Length == 0)
+                            continue;
+                        eb.AddField(i.Name, desc.ToString());
+                        count++;
+                    }
+                    await ch.SendMessageAsync(embed: eb.Build());
+
+                    page++;
                 }
-                await ch.SendMessageAsync(embed: eb.Build());
 
-                page++;
+
+                //A list of commands has been compiled. Lets start sending embeds.
+
             }
-
-
-            //A list of commands has been compiled. Lets start sending embeds.
-
-
+            catch(Exception ex)
+            {
+                await this.bot.Log.Error(this.Context.Guild, ex, nameof(Help));
+                throw;
+            }
 
         }
     }
