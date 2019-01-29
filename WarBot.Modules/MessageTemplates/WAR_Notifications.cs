@@ -18,7 +18,7 @@ namespace WarBot.Modules.MessageTemplates
         /// <param name="embed"></param>
         /// 
         /// <returns></returns>
-        private static async Task sendWarMessage(IGuildConfig cfg, Embed embed)
+        private static async Task sendWarMessage(IGuildConfig cfg, string Message)
         {
             var ch = cfg.GetGuildChannel(WarBotChannelType.WAR) as SocketTextChannel;
 
@@ -26,10 +26,13 @@ namespace WarBot.Modules.MessageTemplates
             if (ch == null)
                 return;
 
+            if (String.IsNullOrEmpty(Message))
+                throw new NullReferenceException("War message is empty?");
+
             //If we can send to the WAR channel, and we have permissions.
             if (PermissionHelper.TestBotPermission(ch, ChannelPermission.SendMessages))
             {
-                await ch.SendMessageAsync(embed: embed);
+                await ch.SendMessageAsync(Message);
                 return;
             }
 
@@ -53,7 +56,6 @@ namespace WarBot.Modules.MessageTemplates
             {
                 var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
                 await dm.SendMessageAsync(sb.ToString());
-                await dm.SendMessageAsync(embed: embed);
             }
             catch
             {
@@ -79,11 +81,7 @@ namespace WarBot.Modules.MessageTemplates
             else
                 Message = cfg[Setting_Key.WAR_PREP_STARTED].Value;
 
-            var eb = new EmbedBuilder()
-                .WithTitle("WAR Prep Started")
-                .WithDescription(Message);
-
-            await sendWarMessage(cfg, eb.Build());
+            await sendWarMessage(cfg, Message);
         }
         public static async Task War_Prep_Ending(IGuildConfig cfg)
         {
@@ -97,11 +95,7 @@ namespace WarBot.Modules.MessageTemplates
             else
                 Message = cfg[Setting_Key.WAR_PREP_ENDING].Value;
 
-            var eb = new EmbedBuilder()
-                .WithTitle("WAR Prep Ending")
-                .WithDescription(Message);
-
-            await sendWarMessage(cfg, eb.Build());
+            await sendWarMessage(cfg, Message);
         }
         public static async Task War_Started(IGuildConfig cfg)
         {
@@ -115,11 +109,7 @@ namespace WarBot.Modules.MessageTemplates
             else
                 Message = cfg[Setting_Key.WAR_STARTED].Value;
 
-            var eb = new EmbedBuilder()
-                .WithTitle("WAR Started")
-                .WithDescription(Message);
-
-            await sendWarMessage(cfg, eb.Build());
+            await sendWarMessage(cfg, Message);
         }
     }
 }
