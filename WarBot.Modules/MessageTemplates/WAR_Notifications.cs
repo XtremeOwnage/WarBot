@@ -42,21 +42,10 @@ namespace WarBot.Modules.MessageTemplates
                 .AppendLine($"You are receiving this error, because I do not have the proper permissions to send the war notification to channel {ch.Name}.")
                 .AppendLine("Please validate I have the 'SEND_MESSAGES' permission for the specified channel.");
 
-            //Else, we don't have permissions to the WAR Channel. Send a notification to the officers channel.
-            SocketTextChannel och = cfg.GetGuildChannel(WarBotChannelType.CH_Officers) as SocketTextChannel;
-            if (och != null && PermissionHelper.TestBotPermission(och, ChannelPermission.SendMessages))
-            {
-                await och.SendMessageAsync(sb.ToString());
-                return;
-            }
+            bool messageSent = await cfg.Log.MessageServerLeadership(cfg, sb.ToString());
 
-            //We don't have permissions to post to either channel. Lets try and DM the guild's owner... 
-            try
-            {
-                IDMChannel dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
-                await dm.SendMessageAsync(sb.ToString());
-            }
-            catch
+            //If we were unsuccessful in delivaring a message to the guid's leadership, disable the message.
+            if (!messageSent)
             {
                 //Well, out of options. Lets disable this channel for the guild.
                 cfg.SetGuildChannel(WarBotChannelType.WAR, null);
@@ -64,7 +53,6 @@ namespace WarBot.Modules.MessageTemplates
 
                 UnauthorizedAccessException error = new UnauthorizedAccessException("Missing permissions to send to WAR Channel. WAR messages disabled for this guild.");
                 await cfg.Log.Error(cfg.Guild, error, nameof(sendWarMessage));
-
             }
 
         }
@@ -196,5 +184,26 @@ namespace WarBot.Modules.MessageTemplates
 
             await sendWarMessage(cfg, Message);
         }
+
+        /// <summary>
+        /// This will bulk delete all messages from the clan's configured WAR Channel.
+        /// Note- It will not delete pinned messages by design.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <returns></returns>
+        public static async Task clearWarChannel(IGuildConfig cfg)
+        {
+            SocketTextChannel ch = cfg.GetGuildChannel(WarBotChannelType.WAR) as SocketTextChannel;
+
+            //If there is no channel configured, abort.
+            if (ch == null)
+                return;
+            //Bot does not have permissions to manage messages.
+            else if (!ch.TestBotPermission(ChannelPermission.ManageMessages))
+                return;
+
+        }
+
     }
+}
 }
