@@ -5,33 +5,42 @@ using WarBot.Core;
 
 namespace WarBot.Util
 {
+    /// <summary>
+    /// This class is called by the Job Scheduler.
+    /// </summary>
     public class WAR_Messages
     {
         private IWARBOT bot;
         public WAR_Messages(IWARBOT Bot)
         {
-            this.bot = Bot;
+            bot = Bot;
         }
 
         public async Task SendWarPrepStarted(byte WarNo)
         {
-            var Errors = bot.GuildRepo
+            Exception[] Errors = bot.GuildRepo
                 .GetCachedConfigs()
                 .Select(cfg => new Action(() =>
                 {
+                    //If this guild has enabled the ability to clear channel message when war is started, clear messages.
+                    if (cfg[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Enabled)
+                    {
+                        WarBot.Modules.MessageTemplates.WAR_Notifications.clearWarChannel(cfg).Wait();
+                    }
+
                     //Send the message.
                     WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, WarNo).Wait();
                 })).executeParallel(bot.StopToken.Token, 1);
 
             foreach (Exception err in Errors)
             {
-                await this.bot.Log.Error(null, err);
+                await bot.Log.Error(null, err);
             }
         }
 
         public async Task SendWarPrepEnding(byte WarNo)
         {
-            var Errors = bot.GuildRepo
+            Exception[] Errors = bot.GuildRepo
                 .GetCachedConfigs()
                 .Select(cfg => new Action(() =>
                 {
@@ -41,13 +50,13 @@ namespace WarBot.Util
 
             foreach (Exception err in Errors)
             {
-                await this.bot.Log.Error(null, err);
+                await bot.Log.Error(null, err);
             }
         }
 
         public async Task SendWarStarted(byte WarNo)
         {
-            var Errors = bot.GuildRepo
+            Exception[] Errors = bot.GuildRepo
                   .GetCachedConfigs()
                   .Select(cfg => new Action(() =>
                   {
@@ -57,13 +66,13 @@ namespace WarBot.Util
 
             foreach (Exception err in Errors)
             {
-                await this.bot.Log.Error(null, err);
+                await bot.Log.Error(null, err);
             }
         }
 
         public async Task SendPortalOpened()
         {
-            var Errors = bot.GuildRepo
+            Exception[] Errors = bot.GuildRepo
                  .GetCachedConfigs()
                  .Select(cfg => new Action(() =>
                  {
@@ -77,7 +86,7 @@ namespace WarBot.Util
 
             foreach (Exception err in Errors)
             {
-                await this.bot.Log.Error(null, err);
+                await bot.Log.Error(null, err);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WarBot.Core;
@@ -201,10 +202,54 @@ namespace WarBot.Modules.MessageTemplates
                 return;
             //Bot does not have permissions to manage messages.
             else if (!ch.TestBotPermission(ChannelPermission.ManageMessages))
+            {
+                StringBuilder sb = new StringBuilder()
+                    .AppendLine("MISSING PERMISSIONS: MANAGE_MESSAGES")
+                    .AppendLine("You have enabled the ability to clear war messages at the start of each ear.")
+                    .AppendLine("But- I am missing the ability to manage messages for this channel.")
+                    .AppendLine("I have automatically disabled this ability.")
+                    .AppendLine()
+                    .AppendLine("After you have corrected the missing permissions, you may re-enable this functionality by using:")
+                    .AppendLine($"{cfg.Prefix} enable clear war channel");
+
+                await cfg.Log.MessageServerLeadership(cfg, sb.ToString());
+
+                cfg[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Disable();
+                await cfg.SaveConfig();
+
                 return;
+            }
 
+            DateTimeOffset discordBulkCutoffDate = DateTimeOffset.Now.AddDays(-13);
+
+            //Loop through messages.
+            while (true)
+            {
+                System.Collections.Generic.IAsyncEnumerable<System.Collections.Generic.IReadOnlyCollection<IMessage>> asyncresults = ch.GetMessagesAsync(500);
+                System.Collections.Generic.IEnumerable<IMessage> results = await asyncresults.FlattenAsync();
+
+                System.Collections.Generic.List<IMessage> ToBulkDelete = results
+                    .Where(o => !o.IsPinned)
+                    .Where(o => o.CreatedAt > discordBulkCutoffDate)
+                    .ToList();
+
+                try
+                {
+                    //If there are messages to bulk delete, do it.
+                    if (ToBulkDelete.Count > 0)
+                        await ch.DeleteMessagesAsync(ToBulkDelete);
+                    else
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    await cfg.Log.Error(cfg.Guild, ex);
+
+                    //Abort, after we have logged the error.
+                    return;
+                }
+            }
         }
-
     }
 }
-}
+
