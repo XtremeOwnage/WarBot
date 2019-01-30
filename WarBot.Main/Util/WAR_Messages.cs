@@ -50,7 +50,7 @@ namespace WarBot.Util
                         return;
 
                     //Send the message.
-                    WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg).Wait();
+                    WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, WarNo).Wait();
                 })).executeParallel(bot.StopToken.Token, 1);
 
             foreach (Exception err in Errors)
@@ -73,7 +73,7 @@ namespace WarBot.Util
                         return;
 
                     //Send the message.
-                    WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg).Wait();
+                    WarBot.Modules.MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, WarNo).Wait();
                 })).executeParallel(bot.StopToken.Token, 1);
 
             foreach (Exception err in Errors)
@@ -96,7 +96,7 @@ namespace WarBot.Util
                           return;
 
                       //Send the message.
-                      Modules.MessageTemplates.WAR_Notifications.War_Started(cfg).Wait();
+                      Modules.MessageTemplates.WAR_Notifications.War_Started(cfg, WarNo).Wait();
                   })).executeParallel(bot.StopToken.Token, 1);
 
             foreach (Exception err in Errors)

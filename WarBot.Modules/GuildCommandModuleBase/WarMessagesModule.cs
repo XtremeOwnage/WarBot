@@ -249,9 +249,30 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task TestMessages()
         {
-            await MessageTemplates.WAR_Notifications.War_Prep_Started(this.cfg);
-            await MessageTemplates.WAR_Notifications.War_Prep_Ending(this.cfg);
-            await MessageTemplates.WAR_Notifications.War_Started(this.cfg);
+            try
+            {
+                if (cfg[Setting_Key.WAR_PREP_STARTED]?.Value?.Split(';').Length == 4)
+                    for (int i = 1; i < 5; i++)
+                        await MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, i);
+                else
+                    await MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, 1);
+
+                if (cfg[Setting_Key.WAR_PREP_ENDING]?.Value?.Split(';').Length == 4)
+                    for (int i = 1; i < 5; i++)
+                        await MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, i);
+                else
+                    await MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, 1);
+
+                if (cfg[Setting_Key.WAR_STARTED]?.Value?.Split(';').Length == 4)
+                    for (int i = 1; i < 5; i++)
+                        await MessageTemplates.WAR_Notifications.War_Started(cfg, i);
+                else
+                    await MessageTemplates.WAR_Notifications.War_Started(cfg, 1);
+            }
+            catch (System.Exception ex)
+            {
+                await bot.Log.Error(cfg.Guild, ex, "TestWarMessages");
+            }
         }
 
     }
