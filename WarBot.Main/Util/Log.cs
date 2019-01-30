@@ -205,7 +205,7 @@ namespace WarBot.Util
 
         public async Task ConsoleOUT(string Message)
         {
-            return await Console.Out.WriteLineAsync(Message);
+            await Console.Out.WriteLineAsync(Message);
         }
 
 
@@ -213,12 +213,12 @@ namespace WarBot.Util
         #region Private Members
         public async Task sendToChannel(LogChannel ch, string Message)
         {
-            return await sendToChannel(ch, null, Message);
+            await sendToChannel(ch, null, Message);
         }
 
         public async Task sendToChannel(LogChannel ch, Embed embed)
         {
-            return await sendToChannel(ch, embed, "");
+            await sendToChannel(ch, embed, "");
         }
 
         private async Task sendToChannel(LogChannel ch, Embed embed, string Message = "")
