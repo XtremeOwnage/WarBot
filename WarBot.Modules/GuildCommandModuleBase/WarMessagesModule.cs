@@ -252,19 +252,19 @@ namespace WarBot.Modules.GuildCommandModules
             try
             {
                 if (cfg[Setting_Key.WAR_PREP_STARTED]?.Value?.Split(';').Length == 4)
-                    for (int i = 1; i < 5; i++)
+                    for (byte i = 1; i < 5; i++)
                         await MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, i);
                 else
                     await MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, 1);
 
                 if (cfg[Setting_Key.WAR_PREP_ENDING]?.Value?.Split(';').Length == 4)
-                    for (int i = 1; i < 5; i++)
+                    for (byte i = 1; i < 5; i++)
                         await MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, i);
                 else
                     await MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, 1);
 
                 if (cfg[Setting_Key.WAR_STARTED]?.Value?.Split(';').Length == 4)
-                    for (int i = 1; i < 5; i++)
+                    for (byte i = 1; i < 5; i++)
                         await MessageTemplates.WAR_Notifications.War_Started(cfg, i);
                 else
                     await MessageTemplates.WAR_Notifications.War_Started(cfg, 1);

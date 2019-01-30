@@ -69,6 +69,25 @@ namespace WarBot.Modules.MessageTemplates
 
         }
 
+        /// <summary>
+        /// Determine is a guild is elected into a specific war.           
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="WarNo"></param>
+        /// <returns></returns>
+        private static bool shouldSendSpecificWar(IGuildConfig cfg, byte WarNo)
+        {
+            if (WarNo == 1)
+                return cfg[Setting_Key.WAR_1].Enabled;
+            if (WarNo == 2)
+                return cfg[Setting_Key.WAR_2].Enabled;
+            if (WarNo == 3)
+                return cfg[Setting_Key.WAR_3].Enabled;
+            if (WarNo == 4)
+                return cfg[Setting_Key.WAR_4].Enabled;
+
+            else throw new ArgumentOutOfRangeException("There are only 4 wars. The value passed was not between 1 and 4.");
+        }
         private static string getMessageForSpecificWar(string Input, int WarNo)
         {
             if (Input.Split(';').Length == 4)
@@ -81,45 +100,99 @@ namespace WarBot.Modules.MessageTemplates
             }
             return Input;
         }
-        public static async Task War_Prep_Started(IGuildConfig cfg, int WarNo)
+        public static async Task War_Prep_Started(IGuildConfig cfg, byte WarNo)
         {
+            //Guild has elected out for this notification.
+            if (!cfg[Setting_Key.WAR_PREP_STARTED].Enabled)
+                return;
+            //Guild elected out of this specific war.
+            else if (!shouldSendSpecificWar(cfg, WarNo))
+                return;
+
             ///Determine the message to send.
             string Message = "";
-            if (!cfg[Setting_Key.WAR_PREP_STARTED].HasValue)
-                if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out IRole role) && role.IsMentionable)
-                    Message = $"{role.Mention}, WAR Placement has started! Please place your troops in the next two hours!";
-                else
-                    Message = "WAR Placement has started! Please place your troops in the next two hours!";
-            else
+            if (cfg[Setting_Key.WAR_PREP_STARTED].HasValue)
+            {
                 Message = getMessageForSpecificWar(cfg[Setting_Key.WAR_PREP_STARTED].Value, WarNo);
 
-            await sendWarMessage(cfg, Message);
-        }
-        public static async Task War_Prep_Ending(IGuildConfig cfg, int WarNo)
-        {
-            ///Determine the message to send.
-            string Message = "";
-            if (!cfg[Setting_Key.WAR_PREP_ENDING].HasValue)
-                if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out IRole role) && role.IsMentionable)
-                    Message = $"{role.Mention}, 15 minutes before war starts! Please place your troops if you have not done so already!!!";
-                else
-                    Message = "15 minutes before war starts! Please place your troops if you have not done so already!!!";
+                if (!string.IsNullOrEmpty(Message))
+                {
+                    await sendWarMessage(cfg, Message);
+                    return;
+                }
+
+                //If the message is empty- will revert to using the default message instead.
+            }
+
+            //Send a default message.
+            if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out IRole role) && role.IsMentionable)
+                Message = $"{role.Mention}, WAR Placement has started! Please place your troops in the next two hours!";
             else
-                Message = getMessageForSpecificWar(cfg[Setting_Key.WAR_PREP_ENDING].Value, WarNo);
+                Message = "WAR Placement has started! Please place your troops in the next two hours!";
 
             await sendWarMessage(cfg, Message);
         }
-        public static async Task War_Started(IGuildConfig cfg, int WarNo)
+        public static async Task War_Prep_Ending(IGuildConfig cfg, byte WarNo)
         {
+            //Guild has elected out for this notification.
+            if (!cfg[Setting_Key.WAR_PREP_ENDING].Enabled)
+                return;
+            //Guild elected out of this specific war.
+            else if (!shouldSendSpecificWar(cfg, WarNo))
+                return;
+
+            string Message = "";
+            if (cfg[Setting_Key.WAR_PREP_ENDING].HasValue)
+            {
+                Message = getMessageForSpecificWar(cfg[Setting_Key.WAR_PREP_ENDING].Value, WarNo);
+
+                if (!string.IsNullOrEmpty(Message))
+                {
+                    await sendWarMessage(cfg, Message);
+                    return;
+                }
+                //If the message is empty- will revert to using the default message instead.
+            }
+
+            //Send a default message.
+            if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out IRole role) && role.IsMentionable)
+                Message = $"{role.Mention}, 15 minutes before war starts! Please place your troops if you have not done so already!!!";
+            else
+                Message = "15 minutes before war starts! Please place your troops if you have not done so already!!!";
+
+
+            await sendWarMessage(cfg, Message);
+        }
+        public static async Task War_Started(IGuildConfig cfg, byte WarNo)
+        {
+            //Guild has elected out for this notification.
+            if (!cfg[Setting_Key.WAR_STARTED].Enabled)
+                return;
+            //Guild elected out of this specific war.
+            else if (!shouldSendSpecificWar(cfg, WarNo))
+                return;
+
             ///Determine the message to send.
             string Message = "";
-            if (!cfg[Setting_Key.WAR_STARTED].HasValue)
-                if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out IRole role) && role.IsMentionable)
-                    Message = $"{role.Mention}, WAR has started!";
-                else
-                    Message = "WAR has started!";
-            else
+
+            if (cfg[Setting_Key.WAR_STARTED].HasValue)
+            {
                 Message = getMessageForSpecificWar(cfg[Setting_Key.WAR_STARTED].Value, WarNo);
+
+                if (!string.IsNullOrEmpty(Message))
+                {
+                    await sendWarMessage(cfg, Message);
+                    return;
+                }
+                //If the message is empty- will revert to using the default message instead.
+            }
+
+
+            //Send a default message.
+            if (cfg.GetGuildRole(RoleLevel.Member).IsNotNull(out IRole role) && role.IsMentionable)
+                Message = $"{role.Mention}, WAR has started!";
+            else
+                Message = "WAR has started!";
 
             await sendWarMessage(cfg, Message);
         }
