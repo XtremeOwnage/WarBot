@@ -35,6 +35,7 @@ namespace WarBot.Modules.MessageTemplates
                 return;
             }
 
+            //Handle missing permissions below this line.
             await cfg.Log.Error(cfg.Guild, new Exception($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}"));
 
             StringBuilder sb = new StringBuilder()
@@ -76,7 +77,7 @@ namespace WarBot.Modules.MessageTemplates
 
             else throw new ArgumentOutOfRangeException("There are only 4 wars. The value passed was not between 1 and 4.");
         }
-        private static string getMessageForSpecificWar(string Input, int WarNo)
+        private static string getMessageForSpecificWar(string Input, byte WarNo)
         {
             if (Input.Split(';').Length == 4)
             {
