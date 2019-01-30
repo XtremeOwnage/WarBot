@@ -145,7 +145,8 @@ namespace WarBot.Modules.GuildCommandModules
                     .WithTitle("Bot Configuration - Notifications")
                     .AddField("War Prep Started Enabled", cfg[Setting_Key.WAR_PREP_STARTED].Enabled)
                     .AddField("War Prep Ending Enabled", cfg[Setting_Key.WAR_PREP_ENDING].Enabled)
-                    .AddField("War Started Enabled", cfg[Setting_Key.WAR_STARTED].Enabled);
+                    .AddField("War Started Enabled", cfg[Setting_Key.WAR_STARTED].Enabled)
+                    .AddField("Clear War Channel When War Starts", cfg[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Enabled);
 
                 if (cfg[Setting_Key.WAR_PREP_STARTED].HasValue)
                     embed.AddField("War Prep Started Message", cfg[Setting_Key.WAR_PREP_STARTED].Value);
