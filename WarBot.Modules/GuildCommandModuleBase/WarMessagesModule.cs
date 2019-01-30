@@ -206,6 +206,30 @@ namespace WarBot.Modules.GuildCommandModules
         }
 
         [RoleLevel(RoleLevel.Leader)]
+        [Command("enable clear war channel")]
+        [Summary("Enables deleting un-pinned messages from the war channel when a new war starts.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableWarChannelClear()
+        {
+            cfg[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Enable();
+            await cfg.SaveConfig();
+            await ReplyAsync("When wars are started, I will automatically remove messages from the war channel.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("disable clear war channel")]
+        [Summary("Disables the removal of messages from the war channel when a new war is started.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task DisableWarChannelClear()
+        {
+            cfg[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Disable();
+            await cfg.SaveConfig();
+            await ReplyAsync("I will no delete messages from the war channel.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
         [Command("enable war prep ending")]
         [Summary("Enables notification 15 minutes before end of war")]
         [CommandUsage("{prefix} {command}")]
@@ -249,9 +273,33 @@ namespace WarBot.Modules.GuildCommandModules
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task TestMessages()
         {
-            await MessageTemplates.WAR_Notifications.War_Prep_Started(this.cfg);
-            await MessageTemplates.WAR_Notifications.War_Prep_Ending(this.cfg);
-            await MessageTemplates.WAR_Notifications.War_Started(this.cfg);
+            try
+            {
+                //If the clan has specific messages for each war, use those.
+                if (cfg[Setting_Key.WAR_PREP_STARTED]?.Value?.Split(';').Length == 4)
+                    for (byte i = 1; i < 5; i++)
+                        await MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, i);
+                else
+                    await MessageTemplates.WAR_Notifications.War_Prep_Started(cfg, 1);
+
+                //If the clan has specific messages for each war, use those.
+                if (cfg[Setting_Key.WAR_PREP_ENDING]?.Value?.Split(';').Length == 4)
+                    for (byte i = 1; i < 5; i++)
+                        await MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, i);
+                else
+                    await MessageTemplates.WAR_Notifications.War_Prep_Ending(cfg, 1);
+
+                //If the clan has specific messages for each war, use those.
+                if (cfg[Setting_Key.WAR_STARTED]?.Value?.Split(';').Length == 4)
+                    for (byte i = 1; i < 5; i++)
+                        await MessageTemplates.WAR_Notifications.War_Started(cfg, i);
+                else
+                    await MessageTemplates.WAR_Notifications.War_Started(cfg, 1);
+            }
+            catch (System.Exception ex)
+            {
+                await bot.Log.Error(cfg.Guild, ex, "TestWarMessages");
+            }
         }
 
     }

@@ -13,13 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net.Commands" Version="2.0.0" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="2.0.0" />
     <PackageReference Include="Humanizer.Core" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Discord.NET\Discord.Net.Commands\Discord.Net.Commands.csproj" />
-    <ProjectReference Include="..\Discord.NET\Discord.Net.Core\Discord.Net.Core.csproj" />
-    <ProjectReference Include="..\Discord.NET\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj" />
     <ProjectReference Include="..\WarBot.Core\WarBot.Core.csproj" />
     <ProjectReference Include="..\WarBot.Storage\WarBot.Storage.csproj" />
   </ItemGroup>

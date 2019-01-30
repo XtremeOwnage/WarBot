@@ -20,7 +20,7 @@ namespace WarBot.Util
         private WARBOT bot;
         public Log(WARBOT Discord)
         {
-            this.bot = Discord;
+            bot = Discord;
         }
 
         public async Task Client_Ready()
@@ -29,19 +29,19 @@ namespace WarBot.Util
 
             try
             {
-                Channels_Chat = bot.Client.GetChannel(this.bot.Config.Log_CH_Chat) as SocketTextChannel;
-                Channels_Error = bot.Client.GetChannel(this.bot.Config.Log_CH_Errors) as SocketTextChannel;
-                Channels_Debug = bot.Client.GetChannel(this.bot.Config.Log_CH_Debug) as SocketTextChannel;
-                Channels_Activity = bot.Client.GetChannel(this.bot.Config.Log_CH_Guilds) as SocketTextChannel;
+                Channels_Chat = bot.Client.GetChannel(bot.Config.Log_CH_Chat) as SocketTextChannel;
+                Channels_Error = bot.Client.GetChannel(bot.Config.Log_CH_Errors) as SocketTextChannel;
+                Channels_Debug = bot.Client.GetChannel(bot.Config.Log_CH_Debug) as SocketTextChannel;
+                Channels_Activity = bot.Client.GetChannel(bot.Config.Log_CH_Guilds) as SocketTextChannel;
 
                 if (Channels_Chat == null)
-                    await this.Error(null, new NullReferenceException("Unable to locate chat output channel"));
+                    await Error(null, new NullReferenceException("Unable to locate chat output channel"));
                 if (Channels_Error == null)
-                    await this.Error(null, new NullReferenceException("Unable to locate error output channel"));
+                    await Error(null, new NullReferenceException("Unable to locate error output channel"));
                 if (Channels_Debug == null)
-                    await this.Error(null, new NullReferenceException("Unable to locate debug output channel"));
+                    await Error(null, new NullReferenceException("Unable to locate debug output channel"));
                 if (Channels_Activity == null)
-                    await this.Error(null, new NullReferenceException("Unable to locate guild activity channel"));
+                    await Error(null, new NullReferenceException("Unable to locate guild activity channel"));
             }
             catch (Exception ex)
             {
@@ -89,12 +89,54 @@ namespace WarBot.Util
             await sendToChannel(LogChannel.Debug, eb.Build());
         }
 
+        /// <summary>
+        /// This command will attempt to get a message to a guild's owner either via a channel in the guild, or via direct DM.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="ErrorMessage"></param>
+        /// <returns></returns>
+        public async Task<bool> MessageServerLeadership(IGuildConfig cfg, string ErrorMessage)
+        {
+            try
+            {
+                //Else, we don't have permissions to the WAR Channel. Send a notification to the officers channel.
+                SocketTextChannel och = cfg.GetGuildChannel(WarBotChannelType.CH_Officers) as SocketTextChannel;
+                if (och != null && PermissionHelper.TestBotPermission(och, ChannelPermission.SendMessages))
+                {
+                    await och.SendMessageAsync(ErrorMessage);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                await Error(cfg.Guild, ex, nameof(MessageServerLeadership)+".Officer_Channel");
+            }
+
+            //Either the officers channel is not configured, or we do not have permissions to send to it.
+            //Lets attempt to DM the guild's owner instead.
+            try
+            {
+                IDMChannel dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
+                await dm.SendMessageAsync(ErrorMessage);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                await Error(cfg.Guild, ex, nameof(MessageServerLeadership)+".DM_Owner");
+            }
+
+            //We were unsuccessful in sending a message.
+            return false;
+        }
+
         public async Task Error(IGuild guild, Exception ex, [CallerMemberName] string Method = "")
         {
             string Message = $"{guild?.Name} - {Method} - {ex.Message}";
-            await ConsoleOUT(Message);
 
-            var eb = new EmbedBuilder()
+            //Log the FULL exception
+            await ConsoleOUT(ex.ToString());
+
+            EmbedBuilder eb = new EmbedBuilder()
                 .WithTitle("Exception")
                 .WithColor(Color.Red);
 
@@ -140,8 +182,8 @@ namespace WarBot.Util
                 if (!string.IsNullOrEmpty(tr.ErrorReason))
                     eb.AddField("Error Message", tr.ErrorReason, true);
                 if (tr.ParamValues != null)
-                    foreach (var pv in tr.ParamValues.Where(o => !o.IsSuccess))
-                        foreach (var val in pv.Values)
+                    foreach (TypeReaderResult pv in tr.ParamValues.Where(o => !o.IsSuccess))
+                        foreach (TypeReaderValue val in pv.Values)
                         {
                             eb.AddField("Value", val.Value, true)
                                 .AddField("Score", val.Score, true);
@@ -161,16 +203,27 @@ namespace WarBot.Util
 
         }
 
-        public async Task ConsoleOUT(string Message) => await Console.Out.WriteLineAsync(Message);
+        public async Task ConsoleOUT(string Message)
+        {
+            await Console.Out.WriteLineAsync(Message);
+        }
 
 
 
         #region Private Members
-        public async Task sendToChannel(LogChannel ch, string Message) => await sendToChannel(ch, null, Message);
-        public async Task sendToChannel(LogChannel ch, Embed embed) => await sendToChannel(ch, embed, "");
+        public async Task sendToChannel(LogChannel ch, string Message)
+        {
+            await sendToChannel(ch, null, Message);
+        }
+
+        public async Task sendToChannel(LogChannel ch, Embed embed)
+        {
+            await sendToChannel(ch, embed, "");
+        }
+
         private async Task sendToChannel(LogChannel ch, Embed embed, string Message = "")
         {
-            var target = getChannel(ch);
+            SocketTextChannel target = getChannel(ch);
 
             if (target == null)
             {

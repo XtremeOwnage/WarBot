@@ -58,6 +58,8 @@ namespace WarBot
 
         public void Start()
         {
+            Log.ConsoleOUT("Start() called.").Wait();
+
             #region Simple, Stupid DI Solution
             //Initialize simple DI solution.
             kernel = new StandardKernel();
@@ -112,7 +114,7 @@ namespace WarBot
         {
             await Console.Out.WriteLineAsync(arg.Message);
 
-            StopToken.Cancel();
+            //StopToken.Cancel();
         }
 
         private Task Client_Ready()

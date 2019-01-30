@@ -13,10 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net.Commands" Version="2.0.0" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Tababular\Tababular\Tababular.csproj" />
-    <ProjectReference Include="..\Discord.NET\Discord.Net.Commands\Discord.Net.Commands.csproj" />
-    <ProjectReference Include="..\Discord.NET\Discord.Net.Core\Discord.Net.Core.csproj" />
-    <ProjectReference Include="..\Discord.NET\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj" />
   </ItemGroup>
 
 </Project>

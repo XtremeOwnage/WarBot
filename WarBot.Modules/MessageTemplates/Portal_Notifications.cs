@@ -17,7 +17,7 @@ namespace WarBot.Modules.MessageTemplates
         /// <param name="embed"></param>
         /// 
         /// <returns></returns>
-        private static async Task sendMessage(IGuildConfig cfg, Embed embed)
+        private static async Task sendMessage(IGuildConfig cfg, string Message)
         {
             var ch = cfg.GetGuildChannel(WarBotChannelType.WAR) as SocketTextChannel;
 
@@ -25,24 +25,38 @@ namespace WarBot.Modules.MessageTemplates
             if (ch == null)
                 return;
 
+            if (string.IsNullOrEmpty(Message))
+                throw new NullReferenceException("Portal message is empty.");
+
             //Check if we can send to that channel.
             if (PermissionHelper.TestBotPermission(ch, ChannelPermission.SendMessages))
             {
-                await ch.SendMessageAsync(embed: embed);
+                await ch.SendMessageAsync(Message);
             }
             else
             {
-                Console.WriteLine($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}");
-                //We don't have permissions to post to that channel. Lets DM the guild owner.
-                var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
+                try
+                {
+                    Console.WriteLine($"Missing SEND_PERMISSIONS for channel {ch.Name} for guild {cfg.Guild.Name}");
+                    //We don't have permissions to post to that channel. Lets DM the guild owner.
+                    var dm = await cfg.Guild.Owner.GetOrCreateDMChannelAsync();
 
-                StringBuilder sb = new StringBuilder()
-                    .AppendLine("ERROR: Missing Permissions")
-                    .AppendLine($"You are receiving this error, because I do not have the proper permissions to send the notification to channel {ch.Name}.")
-                    .AppendLine("Please validate I have the 'SEND_MESSAGES' permission for the specified channel.");
+                    StringBuilder sb = new StringBuilder()
+                        .AppendLine("ERROR: Missing Permissions")
+                        .AppendLine($"You are receiving this error, because I do not have the proper permissions to send the notification to channel {ch.Name}.")
+                        .AppendLine("Please validate I have the 'SEND_MESSAGES' permission for the specified channel.");
 
-                await dm.SendMessageAsync(sb.ToString());
-                await dm.SendMessageAsync(embed: embed);
+                    await dm.SendMessageAsync(sb.ToString());
+                }
+                catch(Exception ex)
+                {
+                    await cfg.Log.Error(cfg.Guild, ex, "SendMessage_Portal");
+
+                    //Disable portal messages for this guild.
+                    cfg[Setting_Key.PORTAL_STARTED].Disable();
+
+                    await cfg.SaveConfig();
+                }
             }
         }
         public static async Task Portal_Opened(IGuildConfig cfg)
@@ -57,11 +71,7 @@ namespace WarBot.Modules.MessageTemplates
             else
                 Message = cfg[Setting_Key.PORTAL_STARTED].Value;
 
-            var eb = new EmbedBuilder()
-                .WithTitle("Portal")
-                .WithDescription(Message);
-
-            await sendMessage(cfg, eb.Build());
+            await sendMessage(cfg, Message);
         }
     }
 }

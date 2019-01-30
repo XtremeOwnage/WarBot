@@ -13,6 +13,24 @@ namespace WarBot.Modules.CommandModuleBase
 
     public class HelpModule : WarBot.Core.ModuleType.CommandModuleBase
     {
+        [Command("about")]
+        [Summary("Show some information about me.")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task About()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb
+                .AppendLine("I am a discord bot designed around the mobile game Hustle Castle")
+                .AppendLine()
+                .AppendLine("My primary focus is to let you know when recurring in-game events are starting or ending.")
+                .AppendLine("I also provide functionality around role management, voting, and a few other useful discord-related actions.")
+                .AppendLine("If you would like to see me in your server, or would like more information, please visit this page:")
+                .AppendLine("https://github.com/XtremeOwnage/WarBot/blob/master/README.md");
+
+            await Context.Channel.SendMessageAsync(sb.ToString());
+        }
 
         [Command("show help"), Alias("?", "help")]
         [Summary("Show commands you have access to. This is the command you are currently using.")]

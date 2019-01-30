@@ -24,5 +24,7 @@ namespace WarBot.Core
 
         WARBOT_UPDATES = 100,
 
+        CLEAR_WAR_CHANNEL_ON_WAR_START = 200,
+
     }
 }

@@ -47,11 +47,18 @@ namespace WarBot.Modules.CommandModuleBase
             await ReplyAsync("If I have broken functionality, or errors, Please report it at https://github.com/XtremeOwnage/WarBot");
         }
 
-        [Command("who created you")]
+        [Command("who created you"), Alias("who made you")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task WhoIsAwesome()
         {
             await ReplyAsync("I was created by <@381654208073433091>.");
+        }
+
+        [Command("send nudes")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task SendNudes()
+        {
+            await ReplyAsync("You first.");
         }
 
 

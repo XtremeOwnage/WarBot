@@ -27,14 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Dependancies", "0. Depen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tababular", "..\..\Tababular\Tababular\Tababular.csproj", "{C4F988DB-1778-4009-BC05-406504F8FD31}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Commands", "Discord.NET\Discord.Net.Commands\Discord.Net.Commands.csproj", "{1D0EC345-3464-4536-BD32-DF397C3F8FFB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Core", "Discord.NET\Discord.Net.Core\Discord.Net.Core.csproj", "{E65AEF26-C39A-4FAD-914B-7D2769E2D464}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Rest", "Discord.NET\Discord.Net.Rest\Discord.Net.Rest.csproj", "{215A9C5F-7402-41E6-ABBB-956522E9DB40}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.WebSocket", "Discord.NET\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj", "{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangeLogs", "ChangeLogs", "{CE011A00-0AD7-47AD-B129-9AD751098A18}"
 	ProjectSection(SolutionItems) = preProject
 		ChangeLogs\v3.0.md = ChangeLogs\v3.0.md
@@ -43,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangeLogs", "ChangeLogs", 
 		ChangeLogs\v3.3.md = ChangeLogs\v3.3.md
 		ChangeLogs\v3.4.md = ChangeLogs\v3.4.md
 		ChangeLogs\v3.5.md = ChangeLogs\v3.5.md
+		v3.6.md = v3.6.md
+		v3.7.md = v3.7.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Base", "1. Base", "{4A99772F-EA7A-4CA8-9D33-12FF9F00E745}"
@@ -83,22 +77,6 @@ Global
 		{C4F988DB-1778-4009-BC05-406504F8FD31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4F988DB-1778-4009-BC05-406504F8FD31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4F988DB-1778-4009-BC05-406504F8FD31}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D0EC345-3464-4536-BD32-DF397C3F8FFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D0EC345-3464-4536-BD32-DF397C3F8FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D0EC345-3464-4536-BD32-DF397C3F8FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D0EC345-3464-4536-BD32-DF397C3F8FFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E65AEF26-C39A-4FAD-914B-7D2769E2D464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E65AEF26-C39A-4FAD-914B-7D2769E2D464}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E65AEF26-C39A-4FAD-914B-7D2769E2D464}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E65AEF26-C39A-4FAD-914B-7D2769E2D464}.Release|Any CPU.Build.0 = Release|Any CPU
-		{215A9C5F-7402-41E6-ABBB-956522E9DB40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{215A9C5F-7402-41E6-ABBB-956522E9DB40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{215A9C5F-7402-41E6-ABBB-956522E9DB40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{215A9C5F-7402-41E6-ABBB-956522E9DB40}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,10 +88,6 @@ Global
 		{10389E14-F68D-4DEB-B495-8B5DF3235407} = {0B780D73-D3BC-447F-90C4-9BD989F9E32A}
 		{B9C45661-0BCB-4F96-80FC-6F18B8C47194} = {2A81D57F-1ECA-48A4-9DC8-7D6571B38758}
 		{C4F988DB-1778-4009-BC05-406504F8FD31} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
-		{1D0EC345-3464-4536-BD32-DF397C3F8FFB} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
-		{E65AEF26-C39A-4FAD-914B-7D2769E2D464} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
-		{215A9C5F-7402-41E6-ABBB-956522E9DB40} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
-		{9F6CB7F8-EEB0-4582-BC53-D7DFEE3ED50D} = {F16B3A77-11B0-43EF-80C9-47736E32FEC1}
 		{CE011A00-0AD7-47AD-B129-9AD751098A18} = {E7D63BC3-AA9D-4D32-B345-A521B0A246F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
