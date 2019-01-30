@@ -167,6 +167,10 @@ namespace WarBot
             //We need to validate this role was not configured as any of this guild's current roles.
             var AffectedRoles = cfg.GetRoleMap().Where(o => o.Value.Id == arg.Id);
 
+            //Nothing to do.
+            if (AffectedRoles.Count() == 0)
+                return;
+
             try
             {
                 //Determine if there is an officers channel configured. If so, lets send a message.
