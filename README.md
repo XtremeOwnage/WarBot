@@ -256,10 +256,14 @@ Warbot will reply to either bot, {command} or @WarBot {command}.
 
 # Faqs
 
-## The bot is replying, but, is I cannot see any text.
+#### The bot is replying, but, is I cannot see any text.
 
 * You must have link previews enabled. Discord does not distinguish between embeds (a formatted way to display information), and actual link previews.
-* 
+
+#### The bot is collecting and selling my information
+
+* Not at all. I have better things to do then to collect your discord transcripts! Feel free to look through the source code.
+
 # Other
 
 More details can be found at https://xtremeownage.com/index.php?threads/version-1-0-released.20561/
