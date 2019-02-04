@@ -128,6 +128,14 @@ bot, enable war 4
 bot, disable war 4
 ```
 
+#### Validating the war messages are configured properly.
+
+This command will validate you have the channels and permissions properly configured to receive war messages.
+It will also send out a test message for each message, and war.
+
+```
+bot, test war messages
+```
 # Guided Setup
 
 To have WarBOT walk assist you with configuration, just use:
