@@ -59,6 +59,18 @@ bot, set channel user_join #Welcome
 #Enable this feature, and specify the target channel.
 bot, enable leave #Channel
 ```
+
+# Guided Setup
+
+To have WarBOT walk assist you with configuration, just use:
+
+```
+bot, setup
+```
+
+This command will launch a setup wizard to guide you through the majority of WarBOT's configuration.
+You may run it again at any time.
+
 ## Hustle Castle - Specific Features
 
 ### WAR Prep / War Prep Ending / War Started Reminders
@@ -136,16 +148,6 @@ It will also send out a test message for each message, and war.
 ```
 bot, test war messages
 ```
-# Guided Setup
-
-To have WarBOT walk assist you with configuration, just use:
-
-```
-bot, setup
-```
-
-This command will launch a setup wizard to guide you through the majority of WarBOT's configuration.
-You may run it again at any time.
 
 # Advanced Setup
 
