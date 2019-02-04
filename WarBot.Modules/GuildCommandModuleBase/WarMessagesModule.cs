@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
@@ -275,6 +276,28 @@ namespace WarBot.Modules.GuildCommandModules
         {
             try
             {
+                ITextChannel ch = cfg.GetGuildChannel(WarBotChannelType.WAR);
+                SocketTextChannel CH = ch as SocketTextChannel;
+
+                if (ch == null)
+                {
+                    await ReplyAsync("You do not have a valid channel configured for sending WAR messages.\r\n" +
+                        "Please configure a message using 'bot, set channel WAR #WarChannel'");
+                    return;
+                }
+                else if (!CH.TestBotPermission(ChannelPermission.ViewChannel))
+                {
+                    await ReplyAsync($"I do not have the READ_MESSAGES permission for {CH.Mention}\r\n" +
+                        $"Please grant me the proper permissions and try again.");
+                    return;
+                }
+                else if (!CH.TestBotPermission(ChannelPermission.SendMessages))
+                {
+                    await ReplyAsync($"I do not have the SEND_MESSAGES permission for {CH.Mention}\r\n" +
+                        $"Please grant me the proper permissions and try again.");
+                    return;
+                }
+
                 //If the clan has specific messages for each war, use those.
                 if (cfg[Setting_Key.WAR_PREP_STARTED]?.Value?.Split(';').Length == 4)
                     for (byte i = 1; i < 5; i++)
