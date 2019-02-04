@@ -1,14 +1,9 @@
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
 using WarBot.Core.ModuleType;
-using System.Linq;
-using System;
 
 namespace WarBot.Modules.GuildCommandModules
 {
@@ -20,7 +15,7 @@ namespace WarBot.Modules.GuildCommandModules
         [CommandUsage("{prefix} {command} [NonPinned, Pinned]")]
         [RoleLevel(RoleLevel.Leader)]
         [Summary("Delete specified messages from a channel. Will exclude pinned messages unless specified.")]
-        [RequireBotPermission(ChannelPermission.ManageMessages)]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
         ///action
         ///NonPinned = Only non-pinned messages
         ///Pinned = Only Pinned Messages
@@ -29,31 +24,13 @@ namespace WarBot.Modules.GuildCommandModules
         {
             bool SelectPinned = action.ToLowerInvariant().Equals("pinned");
 
-            DateTimeOffset discordBulkCutoffDate = DateTimeOffset.Now.AddDays(-13);
-            while (true)
+            if (!Context.GuildChannel.TestBotPermission(ChannelPermission.ManageMessages))
             {
-                var asyncresults = this.Context.Channel.GetMessagesAsync(500);
-                var results = await asyncresults.FlattenAsync();
-
-                var ToBulkDelete = results
-                    .Where(o => o.IsPinned == SelectPinned)
-                    .Where(o => o.CreatedAt > discordBulkCutoffDate)
-                    .ToList();
-
-                try
-                {
-                    //If there are messages to bulk delete, do it.
-                    if (ToBulkDelete.Count > 0)
-                        await Context.GuildChannel.DeleteMessagesAsync(ToBulkDelete);       
-                    else
-                        break;
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+                await ReplyAsync("I require the MANAGE_MESSAGES permission to perform this action.");
+                return;
             }
 
+            await bot.TaskBot.ClearMessages(Context.GuildChannel, SelectPinned);
         }
     }
 }

@@ -32,6 +32,11 @@ namespace WarBot.Core
         /// </summary>
         IGuildConfigRepository GuildRepo { get; }
 
+        /// <summary>
+        /// TaskBOT - For running tasks without blocking the main pipeline, like mass deleting messages.
+        /// </summary>
+        ITaskBOT TaskBot { get; }
+
         int LoadedModules { get; }
         int LoadedCommands { get; }
         long MessagesProcessed { get; }

@@ -17,10 +17,13 @@ namespace WarBot.Util
         private SocketTextChannel Channels_Activity { get; set; }
         private SocketTextChannel Channels_Debug { get; set; }
 
-        private WARBOT bot;
+        private WARBOT bot { get; }
+        private DiscordSocketClient Client { get; }
+
         public Log(WARBOT Discord)
         {
             bot = Discord;
+            Client = Discord.Client;
         }
 
         public async Task Client_Ready()
@@ -29,10 +32,10 @@ namespace WarBot.Util
 
             try
             {
-                Channels_Chat = bot.Client.GetChannel(bot.Config.Log_CH_Chat) as SocketTextChannel;
-                Channels_Error = bot.Client.GetChannel(bot.Config.Log_CH_Errors) as SocketTextChannel;
-                Channels_Debug = bot.Client.GetChannel(bot.Config.Log_CH_Debug) as SocketTextChannel;
-                Channels_Activity = bot.Client.GetChannel(bot.Config.Log_CH_Guilds) as SocketTextChannel;
+                Channels_Chat = Client.GetChannel(bot.Config.Log_CH_Chat) as SocketTextChannel;
+                Channels_Error = Client.GetChannel(bot.Config.Log_CH_Errors) as SocketTextChannel;
+                Channels_Debug = Client.GetChannel(bot.Config.Log_CH_Debug) as SocketTextChannel;
+                Channels_Activity = Client.GetChannel(bot.Config.Log_CH_Guilds) as SocketTextChannel;
 
                 if (Channels_Chat == null)
                     await Error(null, new NullReferenceException("Unable to locate chat output channel"));
@@ -52,7 +55,7 @@ namespace WarBot.Util
                 .WithTitle("Process Started")
                 .WithCurrentTimestamp()
                 .WithColor(Color.LightOrange)
-                .AddField("UserName", bot.Client.CurrentUser?.Username, true)
+                .AddField("UserName", Client.CurrentUser?.Username, true)
                 .AddField("Host", System.Environment.MachineName, true)
                 .AddField("Type", "WarBot.NET", true)
                 .AddField("Modules Loaded", bot.commands.Modules.Count(), true)
@@ -109,7 +112,7 @@ namespace WarBot.Util
             }
             catch (Exception ex)
             {
-                await Error(cfg.Guild, ex, nameof(MessageServerLeadership)+".Officer_Channel");
+                await Error(cfg.Guild, ex, nameof(MessageServerLeadership) + ".Officer_Channel");
             }
 
             //Either the officers channel is not configured, or we do not have permissions to send to it.
@@ -120,9 +123,9 @@ namespace WarBot.Util
                 await dm.SendMessageAsync(ErrorMessage);
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                await Error(cfg.Guild, ex, nameof(MessageServerLeadership)+".DM_Owner");
+                await Error(cfg.Guild, ex, nameof(MessageServerLeadership) + ".DM_Owner");
             }
 
             //We were unsuccessful in sending a message.

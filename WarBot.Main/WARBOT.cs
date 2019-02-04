@@ -4,7 +4,6 @@ using Discord.WebSocket;
 using Ninject;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using WarBot.Core;
@@ -16,12 +15,12 @@ namespace WarBot
     public partial class WARBOT : IWARBOT
     {
         #region IWarBot implementation
-        IDiscordClient IWARBOT.Client => this.Client;
-        int IWARBOT.LoadedCommands => this.commands.Commands.Count();
-        int IWARBOT.LoadedModules => this.commands.Modules.Count();
-        ILog IWARBOT.Log => this.Log;
-        long IWARBOT.MessagesProcessed => this.MessagesProcessed;
-        CommandService IWARBOT.CommandService => this.commands;
+        IDiscordClient IWARBOT.Client => Client;
+        int IWARBOT.LoadedCommands => commands.Commands.Count();
+        int IWARBOT.LoadedModules => commands.Modules.Count();
+        ILog IWARBOT.Log => Log;
+        long IWARBOT.MessagesProcessed => MessagesProcessed;
+        CommandService IWARBOT.CommandService => commands;
         #endregion
 
         public long MessagesProcessed = 0;
@@ -35,25 +34,28 @@ namespace WarBot
         public GuildConfigRepository GuildRepo { get; }
         public BotConfig Config { get; private set; }
         public IJobScheduler Jobs { get; private set; }
-        IGuildConfigRepository IWARBOT.GuildRepo => this.GuildRepo;
+        IGuildConfigRepository IWARBOT.GuildRepo => GuildRepo;
+        ITaskBOT IWARBOT.TaskBot => TaskBot;
+        public TaskBOT.TaskBOT TaskBot { get; set; }
 
 
         public WARBOT()
         {
-            this.Config = BotConfig.Load();
-            this.Client = new DiscordSocketClient(new DiscordSocketConfig
+            Config = BotConfig.Load();
+            Client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 AlwaysDownloadUsers = false,
 
             });
-            this.commands = new CommandService(new CommandServiceConfig
+            commands = new CommandService(new CommandServiceConfig
             {
                 DefaultRunMode = RunMode.Async,
                 CaseSensitiveCommands = false,
                 IgnoreExtraArgs = true,
             });
-            this.Log = new Util.Log(this);
-            this.GuildRepo = new GuildConfigRepository();
+            Log = new Util.Log(this);
+            GuildRepo = new GuildConfigRepository();
+            TaskBot = new TaskBOT.TaskBOT(this);
         }
 
         public void Start()
@@ -64,30 +66,30 @@ namespace WarBot
             //Initialize simple DI solution.
             kernel = new StandardKernel();
             kernel.Bind<IWARBOT, WARBOT>().ToConstant(this);
-            kernel.Bind<IDiscordClient>().ToConstant(this.Client);
-            kernel.Bind<ILog>().ToConstant(this.Log);
-            kernel.Bind<IGuildConfigRepository>().ToConstant(this.GuildRepo);
+            kernel.Bind<IDiscordClient>().ToConstant(Client);
+            kernel.Bind<ILog>().ToConstant(Log);
+            kernel.Bind<IGuildConfigRepository>().ToConstant(GuildRepo);
             kernel.Bind<WarDB>().ToSelf().InThreadScope();
             #endregion
 
             #region Create/Migration Database, if required.
-            var db = kernel.Get<WarDB>();
+            WarDB db = kernel.Get<WarDB>();
 
             db.Migrate();
             #endregion
 
             Quartz.Logging.LogProvider.SetCurrentLogProvider(new Util.QuartzLogProvider());
-            this.Jobs = new Implementation.QuartzJobScheduler(this);
+            Jobs = new Implementation.QuartzJobScheduler(this);
 
             //Initialize the config repository with an instance of the WarDB from the DI container.
-            this.GuildRepo.Initialize(this, db);
+            GuildRepo.Initialize(this, db);
 
 
             //Initialize the commands.
-            var discord_1 = commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, kernel).Result;
+            System.Collections.Generic.IEnumerable<ModuleInfo> discord_1 = commands.AddModulesAsync(typeof(Modules.Dialogs.MimicMeDialog).Assembly, kernel).Result;
 
             //Load the schedules to execute the war notifications.
-            ScheduledJobs.ScheduleJobs(this.Jobs);
+            ScheduledJobs.ScheduleJobs(Jobs);
 
 
             //Attach basic events to the bot. The rest of the events will be attached after onReady is called.
@@ -121,8 +123,12 @@ namespace WarBot
         {
             Log.Client_Ready().Wait();
 
+            TaskBot.Start(Log);
+
             //Set status to online.
             return Client.SetStatusAsync(UserStatus.Online);
+
+
         }
     }
 }
