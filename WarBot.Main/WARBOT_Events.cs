@@ -123,15 +123,14 @@ namespace WarBot
                 {
                     if (cfg[Setting_Key.USER_JOIN].Enabled && cfg.GetGuildChannel(WarBotChannelType.USER_JOIN).IsNotNull(out var ch))
                     {
+                        string Message = $"Welcome {arg.Mention}!";
+
                         if (cfg[Setting_Key.USER_JOIN].HasValue)
                         {
-                            await ch.SendMessageAsync(text: $"{arg.Mention}, {cfg[Setting_Key.USER_JOIN].Value}");
+                            Message = cfg[Setting_Key.USER_JOIN].Value.Replace("{user}", arg.Mention, StringComparison.OrdinalIgnoreCase);
                         }
-                        else
-                        {
-                            //Send a default message.
-                            await ch.SendMessageAsync(text: $"Welcome {arg.Mention}!");
-                        }
+
+                        await ch.SendMessageAsync(text: Message);
                     }
 
                     //Guild must have configured both a new user greeting channel, as well as a greeting message.
