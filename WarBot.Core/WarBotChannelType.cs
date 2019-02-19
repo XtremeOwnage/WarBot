@@ -14,5 +14,7 @@ namespace WarBot.Core
         USER_JOIN = 4,
         [Description("If a user leaves the guild, I will send the message to here.")]
         USER_LEFT = 5,
+        [Description("I will send portal-related notifications to this channel.")]
+        PORTAL = 6,
     }
 }
