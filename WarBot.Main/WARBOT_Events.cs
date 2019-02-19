@@ -9,7 +9,7 @@ namespace WarBot
 {
     public partial class WARBOT
     {
-        private async Task Client_LeftGuild(SocketGuild arg)
+        private async Task Bot_GuildDeleted(SocketGuild arg)
         {
             var cfg = await this.GuildRepo.GetConfig(arg);
             await Log.ConsoleOUT($"Removed Guild: {arg.Name}");
@@ -50,7 +50,7 @@ namespace WarBot
             }
         }
 
-        private async Task Client_JoinedGuild(SocketGuild arg)
+        private async Task Bot_GuildAdded(SocketGuild arg)
         {
             var cfg = await this.GuildRepo.GetConfig(arg);
             await Log.ConsoleOUT($"New Guild: {arg.Name}");

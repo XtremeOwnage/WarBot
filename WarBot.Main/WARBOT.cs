@@ -96,9 +96,9 @@ namespace WarBot
             Client.Ready += Client_Ready;
             Client.ChannelDestroyed += Client_ChannelDestroyed;
             Client.Disconnected += Client_Disconnected;
-            Client.JoinedGuild += Client_JoinedGuild;
+            Client.JoinedGuild += Bot_GuildAdded;
             Client.GuildAvailable += Client_GuildAvailable;
-            Client.LeftGuild += Client_LeftGuild;
+            Client.LeftGuild += Bot_GuildDeleted;
             Client.Log += Client_Log;
             Client.MessageDeleted += Client_MessageDeleted_Poll;
             Client.MessageReceived += Client_MessageReceived;
