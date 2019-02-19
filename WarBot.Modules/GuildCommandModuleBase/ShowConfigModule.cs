@@ -166,10 +166,13 @@ namespace WarBot.Modules.GuildCommandModules
                     embed.AddField("Portal Started Message", cfg[Setting_Key.PORTAL_STARTED].Value);
 
                 embed.AddField("User Join Enabled", cfg[Setting_Key.USER_JOIN].Enabled);
-                embed.AddField("User Left Enabled", cfg[Setting_Key.USER_LEFT].Enabled);
-
                 if (cfg[Setting_Key.USER_JOIN].HasValue)
                     embed.AddField("User Join Message", StringHelper.Truncate(cfg[Setting_Key.USER_JOIN].Value, 200));
+                embed.AddField("User Left Enabled", cfg[Setting_Key.USER_LEFT].Enabled);
+                if (cfg[Setting_Key.USER_LEFT].HasValue)
+                    embed.AddField("User Leave Message", StringHelper.Truncate(cfg[Setting_Key.USER_LEFT].Value, 200));
+
+
 
                 await ReplyAsync(embed: embed.Build());
             }

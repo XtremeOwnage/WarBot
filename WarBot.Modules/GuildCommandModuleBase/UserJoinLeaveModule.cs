@@ -13,13 +13,6 @@ namespace WarBot.Modules.GuildCommandModules
         #region User Left
         [RoleLevel(RoleLevel.Leader)]
         [Command("enable leave"), Alias("set leave")]
-        [Summary("Enables message to a specific channel when users leave a discord guild.")]
-        [CommandUsage("{prefix} {command} #Channel")]
-        [RequireBotPermission(ChannelPermission.SendMessages)]
-        public async Task EnableUserLeft_NoMsg(SocketTextChannel Channel) => await EnableUserLeft(Channel, null);
-
-        [RoleLevel(RoleLevel.Leader)]
-        [Command("enable leave"), Alias("set leave")]
         [Summary("Enables message to a specific channel when users leave a discord guild. {user} will be replaced with the new user's tag.")]
         [CommandUsage("{prefix} {command} #Channel Welcome to the server {user}!")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
