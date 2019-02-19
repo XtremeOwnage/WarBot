@@ -6,6 +6,7 @@ using WarBot.Core.Helper;
 using WarBot.Core.ModuleType;
 using System.Linq;
 using WarBot.Core;
+using System.Collections.Generic;
 
 namespace WarBot.Modules.Dialogs
 {
@@ -16,6 +17,8 @@ namespace WarBot.Modules.Dialogs
 
 
         private SetupStep CurrentStep = SetupStep.Initial;
+        private Stack<SetupStep> History = new Stack<SetupStep>(15);
+
         public async override Task ProcessMessage(SocketUserMessage input)
         {
             //Add the user's message to be cleaned up after this poll is completed.
@@ -48,8 +51,6 @@ namespace WarBot.Modules.Dialogs
             string msg_ChannelExpected = $"I expected a channel. Please tag the channel like this: {this.Channel.Mention}\r\n";
             string msg_RoleExpected = $"I expected a role. Please tag the role like this:\r\n {this.Guild.CurrentUser.Roles.FirstOrDefault(o => o.IsMentionable)?.Mention ?? "@MyRole"}";
 
-
-
             switch (CurrentStep)
             {
                 case SetupStep.Initial:
@@ -72,10 +73,24 @@ namespace WarBot.Modules.Dialogs
                     else if (CH != null)
                     {
                         Config.SetGuildChannel(Core.WarBotChannelType.USER_LEFT, CH);
-                        await NextStep($"When a user leaves, I will post to {CH.Mention}");
+                        await NextStep($"User leave notifications will go to {CH.Mention}");
                     }
                     else
                         await SendAsync(msg_ChannelExpected);
+                    break;
+                case SetupStep.User_Left_Message:
+                    if (Skip)
+                    {
+                        Config[Setting_Key.USER_LEFT].Set(true, null);
+                        await SkipStep("I will send a default message.");
+                    }
+                    else
+                    {
+                        Config[Setting_Key.USER_LEFT].Set(true, Message);
+                        await NextStep("When users leave the server, this message will be sent:\r" +
+                            $"\n{Message}\r" +
+                            $"\nIn channel {Config.GetGuildChannel(WarBotChannelType.USER_LEFT).Mention}");
+                    }
                     break;
                 case SetupStep.User_Join_Channel:
                     if (Skip)
@@ -103,7 +118,7 @@ namespace WarBot.Modules.Dialogs
                         Config[Setting_Key.USER_JOIN].Set(true, Message);
                         await NextStep("New users joining the server will receive this message:\r" +
                             $"\n{User.Mention}, {Message}\r" +
-                            $"\nIn channel {Config.GetGuildChannel(Core.WarBotChannelType.USER_JOIN).Mention}");
+                            $"\nIn channel {Config.GetGuildChannel(WarBotChannelType.USER_JOIN).Mention}");
                     }
                     break;
                 case SetupStep.Channel_Updates:
@@ -236,6 +251,81 @@ namespace WarBot.Modules.Dialogs
                             $"\n{Message}");
                     }
                     break;
+
+                //Enable specific wars
+                case SetupStep.Enable_Specific_Wars:
+                    if (Bool == true)
+                    {
+                        await NextStep();
+                    }
+                    else if (Bool == false || Skip)
+                    {
+                        Config[Setting_Key.WAR_1].Enable();
+                        Config[Setting_Key.WAR_2].Enable();
+                        Config[Setting_Key.WAR_3].Enable();
+                        Config[Setting_Key.WAR_4].Enable();
+                        await SkipStep("I will send notifications for all 4 war cycles.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
+
+                case SetupStep.WAR_1_Enabled:
+                    if (Bool == true)
+                    {
+                        Config[Setting_Key.WAR_1].Enable();                        
+                        await NextStep("I will notify for war 1.");
+                    }
+                    else if (Bool == false || Skip)
+                    {
+                        Config[Setting_Key.WAR_1].Disable();
+                        await SkipStep("I will not notify for war 1.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
+                case SetupStep.WAR_2_Enabled:
+                    if (Bool == true)
+                    {
+                        Config[Setting_Key.WAR_2].Enable();
+                        await NextStep("I will notify for war 2.");
+                    }
+                    else if (Bool == false || Skip)
+                    {
+                        Config[Setting_Key.WAR_2].Disable();
+                        await SkipStep("I will not notify for war 2.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
+                case SetupStep.WAR_3_Enabled:
+                    if (Bool == true)
+                    {
+                        Config[Setting_Key.WAR_3].Enable();
+                        await NextStep("I will notify for war 3.");
+                    }
+                    else if (Bool == false || Skip)
+                    {
+                        Config[Setting_Key.WAR_3].Disable();
+                        await SkipStep("I will not notify for war 3.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
+                case SetupStep.WAR_4_Enabled:
+                    if (Bool == true)
+                    {
+                        Config[Setting_Key.WAR_4].Enable();
+                        await NextStep("I will notify for war 4.");
+                    }
+                    else if (Bool == false || Skip)
+                    {
+                        Config[Setting_Key.WAR_4].Disable();
+                        await SkipStep("I will not notify for war 4.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
                 case SetupStep.Should_Set_Roles:
                     if (Bool == true)
                         await NextStep();
@@ -247,16 +337,21 @@ namespace WarBot.Modules.Dialogs
                     else
                         await SendAsync(msg_BoolParseFailed);
                     break;
-                case SetupStep.Portal_Started:
-                    if (Bool == true)
-                        await NextStep();
-                    else if (Bool == false || Skip)
+                case SetupStep.Portal_Channel:
+                    if (Skip || Bool == false)
                     {
-                        Config[Setting_Key.PORTAL_STARTED].Set(false, null);
-                        await SkipStep("I will not send a notification when the portal opens.");
+                        Config.SetGuildChannel(WarBotChannelType.PORTAL, null);
+                        Config[Setting_Key.PORTAL_STARTED].Disable();
+                        await SkipStep("I will not send portal notifications.\r" +
+                            "\nYou may enable this feature later if you wish.");
+                    }
+                    else if (CH != null)
+                    {
+                        Config.SetGuildChannel(WarBotChannelType.PORTAL, CH);
+                        await NextStep($"My portal notifications will be sent to {CH.Mention}.");
                     }
                     else
-                        await SendAsync(msg_BoolParseFailed);
+                        await SendAsync(msg_ChannelExpected);
                     break;
                 case SetupStep.Portal_Started_Message:
                     if (Skip)
@@ -326,6 +421,7 @@ namespace WarBot.Modules.Dialogs
         private async Task StartStep(SetupStep step)
         {
             CurrentStep = step;
+
             const string suffix = "\n\r\n*You may always say 'skip' to disable this feature, 'back' to return to the previous step, or 'stop' to cancel this dialog.*\r";
             switch (step)
             {
@@ -338,7 +434,8 @@ namespace WarBot.Modules.Dialogs
                     await SendAsync("Lets start by asking what my prefix should be.\r" +
                         $"\nYou also may always address me by tagging me, like this:\r" +
                         $"\n**{this.Bot.Client.CurrentUser.Mention}, help**\r" +
-                        $"\nWhat prefix should I use?" +
+                        $"\nWhat prefix should I use?\r" +
+                        $"\nMy default is 'bot,'" +
                         suffix);
                     return;
                 case SetupStep.User_Join_Channel:
@@ -349,11 +446,18 @@ namespace WarBot.Modules.Dialogs
                     break;
                 case SetupStep.User_Join_Message:
                     await SendAsync("What message would you like me to send to new users?\r" +
+                        "You may use {User} in your message, which will automatically tag the user." +
                         "\nYou may 'skip' to use a default message.");
                     break;
                 case SetupStep.User_Left_Channel:
                     await SendAsync("What channel would you like me to send a notification to when users leave?\r" +
-                        "\nIf you do not want this feature, please say 'skip'.");
+                        $"\nPlease tag the channel like this: {this.Channel.Mention}"
+                         + suffix);
+                    break;
+                case SetupStep.User_Left_Message:
+                    await SendAsync("What message would you like me to send when somebody leaves your server?\r" +
+                        "You may use {User} in your message, which will be replaced with the user's name" +
+                        "\nYou may 'skip' to use a default message.");
                     break;
                 case SetupStep.Channel_Updates:
                     await SendAsync("Occasionally, my developer will add significant new features to me.\r" +
@@ -396,9 +500,30 @@ namespace WarBot.Modules.Dialogs
                     await SendAsync("What message would you like for me to send when the war starts?" +
                         "\r\nYou may 'skip' to use a default message.");
                     break;
-                case SetupStep.Portal_Started:
-                    await SendAsync("Would you like me to send an announcement when the portal opens once per week?" +
-                        "\r\nYes or No?");
+                case SetupStep.Enable_Specific_Wars:
+                    await SendAsync("Would you like to only enable specific wars?" +
+                        "\r\nYou may 'skip' or 'no' to enable all 4 war notifications.");
+                    break;
+                case SetupStep.WAR_1_Enabled:
+                    await SendAsync("Would you like notifications for War 1? It occurs at 7am UTC\r" +
+                        "\nPlease be sure to convert to your current time zone.");                  
+                    break;
+                case SetupStep.WAR_2_Enabled:
+                    await SendAsync("Would you like notifications for War 2? It occurs at 1pm UTC\r" +
+                        "\nPlease be sure to convert to your current time zone.");
+                    break;
+                case SetupStep.WAR_3_Enabled:
+                    await SendAsync("Would you like notifications for War 3? It occurs at 7pm UTC\r" +
+                        "\nPlease be sure to convert to your current time zone.");
+                    break;
+                case SetupStep.WAR_4_Enabled:
+                    await SendAsync("Would you like notifications for War 4? It occurs at 1am UTC\r" +
+                        "\nPlease be sure to convert to your current time zone.");
+                    break;
+                case SetupStep.Portal_Channel:
+                    await SendAsync("If you would like a reminder every week when the portal opens, " +
+                        "Please let me know which channel I should send portal messages to.\r" +
+                        "\nIf you say 'No' or 'Skip', I will not send portal open notifications");
                     break;
                 case SetupStep.Portal_Started_Message:
                     await SendAsync("What message would you like for me to send when the portal opens?" +
@@ -475,73 +600,61 @@ namespace WarBot.Modules.Dialogs
         enum SetupStep
         {
             NULL,
-
-            [Step(Initial, WarBot_Prefix)]
             Initial,
 
-            //Setup the prefix for the bot.
-            [Step(WarBot_Prefix, User_Join_Channel)]
+            //Setup the prefix for the bot.            
             WarBot_Prefix,
 
-            [Step(WarBot_Prefix, User_Join_Message, User_Left_Channel)]
+            [Skip(User_Left_Channel)]
             User_Join_Channel,
-
-            [Step(User_Join_Channel, User_Left_Channel)]
             User_Join_Message,
 
-            [Step(User_Join_Channel, Channel_Updates)]
+            [Skip(Channel_Updates)]
             User_Left_Channel,
+            User_Left_Message,
 
-            //Configure various channels
-            [Step(User_Left_Channel, Channel_Officers)]
+            //Configure various channels            
             Channel_Updates,
-
-            [Step(Channel_Updates, WAR_Channel)]
             Channel_Officers,
 
             //Hustle Castle - War Related Settings
-            [Step(Channel_Officers, WAR_SendPrepStarted, Portal_Started)]
+            [Skip(Portal_Channel)]
             WAR_Channel,
-            [Step(WAR_Channel, WAR_PrepStartedMessage, WAR_SendPrepEnding)]
+
+            [Skip(WAR_SendPrepEnding)]
             WAR_SendPrepStarted,
-            [Step(WAR_SendPrepStarted, WAR_SendPrepEnding)]
             WAR_PrepStartedMessage,
-            [Step(WAR_SendPrepStarted, WAR_PrepEndingMessage, WAR_SendWarStarted)]
+            [Skip(WAR_SendWarStarted)]
             WAR_SendPrepEnding,
-            [Step(WAR_SendPrepEnding, WAR_SendWarStarted)]
             WAR_PrepEndingMessage,
-            [Step(WAR_SendPrepEnding, WAR_WarStartedMessage, Portal_Started)]
+            [Skip(Enable_Specific_Wars)]
             WAR_SendWarStarted,
-            [Step(WAR_SendWarStarted, Portal_Started)]
             WAR_WarStartedMessage,
 
+            [Skip(Portal_Channel)]
+            Enable_Specific_Wars,
+            WAR_1_Enabled,
+            WAR_2_Enabled,
+            WAR_3_Enabled,
+            WAR_4_Enabled,
+
             //Portal Enabled / Portal Message
-            [Step(WAR_Channel, Portal_Started_Message, Should_Set_Roles)]
-            Portal_Started,
-            [Step(Portal_Started, Should_Set_Roles)]
+            [Skip(Should_Set_Roles)]
+            Portal_Channel,
             Portal_Started_Message,
 
             //Roles    
-            [Step(WAR_Channel, Role_Guest, Set_Website)]
+            [Skip(Set_Website)]
             Should_Set_Roles,
-            [Step(Should_Set_Roles, Role_Member)]
             Role_Guest,
-            [Step(Role_Guest, Role_Officer)]
             Role_Member,
-            [Step(Role_Member, Role_Leader)]
             Role_Officer,
-            [Step(Role_Officer, Role_ServerAdmin)]
             Role_Leader,
-            [Step(Role_Leader, Set_Website)]
             Role_ServerAdmin,
 
-            [Step(Should_Set_Roles, Set_Loot)]
             Set_Website,
-
-            [Step(Set_Website, Done)]
             Set_Loot,
 
-            [Step(Set_Loot, Done)]
             Done,
         }
 
@@ -567,39 +680,52 @@ namespace WarBot.Modules.Dialogs
         }
         private async Task NextStep(string Message = null)
         {
+            //add the current step to the history buffer.
+            History.Push(CurrentStep);
+
             if (Message != null)
                 await SendAsync(Message);
-            SetupStep NextStep = GetStep(CurrentStep).NextStep;
+
+            SetupStep NextStep = CurrentStep + 1;
             await StartStep(NextStep);
         }
         private async Task SkipStep(string Message = null)
         {
+            //add the current step to the history buffer.
+            History.Push(CurrentStep);
+
             if (Message != null)
                 await SendAsync(Message);
-            SetupStep SkipStep = GetStep(CurrentStep).SkipStep;
-            await StartStep(SkipStep);
+
+            //Determine if we can locate a SkipAttribute.
+            var type = typeof(SetupStep);
+            var name = Enum.GetName(type, CurrentStep);
+            var skipStepAttribute = type.GetField(name).GetCustomAttributes(false).OfType<SkipAttribute>().SingleOrDefault();
+
+            //If the skip attribute exists, skip to the defined step.
+            if (skipStepAttribute != null)
+                await StartStep(skipStepAttribute.SkipStep);
+            else
+                //Else, go to the next step.
+                await StartStep(CurrentStep + 1);
         }
         private async Task PreviousStep()
         {
-            SetupStep PrevStep = GetStep(CurrentStep).PreviousStep;
-            await StartStep(PrevStep);
+            //First check the history queue.
+            if (History.TryPop(out var Step))
+                await StartStep(Step);
+            else
+                //If we fail to check the history queue, start at the beginning.
+                await StartStep(SetupStep.Initial + 1);
+
         }
-        StepAttribute GetStep(SetupStep Value)
+
+        class SkipAttribute : Attribute
         {
-            var type = typeof(SetupStep);
-            var name = Enum.GetName(type, Value);
-            return type.GetField(name).GetCustomAttributes(false).OfType<StepAttribute>().SingleOrDefault();
-        }
-        class StepAttribute : Attribute
-        {
-            public SetupStep PreviousStep { get; set; }
-            public SetupStep NextStep { get; set; }
             public SetupStep SkipStep { get; set; }
-            public StepAttribute(SetupStep Previous, SetupStep Next, SetupStep Skip = SetupStep.NULL)
+            public SkipAttribute(SetupStep Skip)
             {
-                this.PreviousStep = Previous;
-                this.NextStep = Next;
-                this.SkipStep = Skip == SetupStep.NULL ? Next : Skip;
+                this.SkipStep = Skip;
             }
         }
         #endregion
