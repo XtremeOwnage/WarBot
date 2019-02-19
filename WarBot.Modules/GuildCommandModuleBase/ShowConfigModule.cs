@@ -156,10 +156,10 @@ namespace WarBot.Modules.GuildCommandModules
                     embed.AddField("War Started Message", cfg[Setting_Key.WAR_STARTED].Value);
 
                 embed
-                    .AddField("War 1 Enabled (2am CST)", cfg[Setting_Key.WAR_1].Enabled)
-                    .AddField("War 2 Enabled (8am CST)", cfg[Setting_Key.WAR_2].Enabled)
-                    .AddField("War 3 Enabled (2pm CST)", cfg[Setting_Key.WAR_3].Enabled)
-                    .AddField("War 4 Enabled (8pm CST)", cfg[Setting_Key.WAR_4].Enabled)
+                    .AddField("War 1 Enabled (7am UTC/GMT)", cfg[Setting_Key.WAR_1].Enabled)
+                    .AddField("War 2 Enabled (1pm UTC/GMT)", cfg[Setting_Key.WAR_2].Enabled)
+                    .AddField("War 3 Enabled (7pm UTC/GMT)", cfg[Setting_Key.WAR_3].Enabled)
+                    .AddField("War 4 Enabled (1am UTC/GMT)", cfg[Setting_Key.WAR_4].Enabled)
                     .AddField("Portal Remindar Enabled", cfg[Setting_Key.PORTAL_STARTED].Enabled);
 
                 if (cfg[Setting_Key.PORTAL_STARTED].HasValue)
