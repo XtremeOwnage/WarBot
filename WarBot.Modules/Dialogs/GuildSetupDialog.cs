@@ -337,6 +337,21 @@ namespace WarBot.Modules.Dialogs
                     else
                         await SendAsync(msg_BoolParseFailed);
                     break;
+                case SetupStep.WAR_Clear_Channel:
+                    if (Bool == true)
+                    {
+                        this.Config[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Enable();
+                        var warch = this.Config.GetGuildChannel(WarBotChannelType.WAR);
+                        await NextStep($"I will automatically purge all non-pinned messages from {warch.Mention} when the preperation peroid starts.");
+                    }
+                    else if (Bool == false || Skip)
+                    {
+                        this.Config[Setting_Key.CLEAR_WAR_CHANNEL_ON_WAR_START].Disable();
+                        await SkipStep("I will not automatically empty the war channel.");
+                    }
+                    else
+                        await SendAsync(msg_BoolParseFailed);
+                    break;
                 case SetupStep.Portal_Channel:
                     if (Skip || Bool == false)
                     {
@@ -520,6 +535,10 @@ namespace WarBot.Modules.Dialogs
                     await SendAsync("Would you like notifications for War 4? It occurs at 1am UTC\r" +
                         "\nPlease be sure to convert to your current time zone.");
                     break;
+                case SetupStep.WAR_Clear_Channel:
+                    await SendAsync("I can automatically delete all non-pinned messages in the WAR channel when a new war preperation peroid is started.\r" +
+                        "\nWould you like to enable this feature?.");
+                    break;
                 case SetupStep.Portal_Channel:
                     await SendAsync("If you would like a reminder every week when the portal opens, " +
                         "Please let me know which channel I should send portal messages to.\r" +
@@ -631,12 +650,14 @@ namespace WarBot.Modules.Dialogs
             WAR_SendWarStarted,
             WAR_WarStartedMessage,
 
-            [Skip(Portal_Channel)]
+            [Skip(WAR_Clear_Channel)]
             Enable_Specific_Wars,
             WAR_1_Enabled,
             WAR_2_Enabled,
             WAR_3_Enabled,
             WAR_4_Enabled,
+
+            WAR_Clear_Channel,
 
             //Portal Enabled / Portal Message
             [Skip(Should_Set_Roles)]
