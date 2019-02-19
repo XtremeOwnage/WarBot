@@ -29,5 +29,14 @@ namespace WarBot.Core
         /// </summary>
         /// <returns>True if a message was successfully delivered.</returns>
         Task<bool> MessageServerLeadership(IGuildConfig cfg, string ErrorMessage);
+
+        /// <summary>
+        /// Log when a guild's config is updated to a newer version.
+        /// </summary>
+        /// <param name="GuildName">The guild's name.</param>
+        /// <param name="newVersion">The new version.</param>
+        /// <param name="UpdateSentToClan">If an update message was sent to the clan's update channel.</param>
+        /// <returns></returns>
+        Task GuildUpdated(string GuildName, double oldVersion, double newVersion, bool UpdateSentToClan);
     }
 }

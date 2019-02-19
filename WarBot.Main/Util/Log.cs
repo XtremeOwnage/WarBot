@@ -77,15 +77,15 @@ namespace WarBot.Util
         /// <param name="newVersion"></param>
         /// <param name="UpdateSentToClan"></param>
         /// <returns></returns>
-        public async Task GuildUpdated(IGuildConfig cfg, string newVersion, bool UpdateSentToClan)
+        public async Task GuildUpdated(string GuildName, double oldVersion, double newVersion, bool UpdateSentToClan)
         {
-            await ConsoleOUT($"Guild {cfg.Guild.Name} has been updated from {cfg.BotVersion} to version {newVersion}");
+            await ConsoleOUT($"Guild {GuildName} has been updated from {oldVersion.ToString()} to version {newVersion.ToString()}");
 
             EmbedBuilder eb = new EmbedBuilder()
                 .WithTitle("Guild Updated")
                 .WithColor(Color.Green)
-                .AddField("Guild", cfg.Guild.Name, true)
-                .AddField("Old Version", cfg.BotVersion, true)
+                .AddField("Guild", GuildName, true)
+                .AddField("Old Version", oldVersion, true)
                 .AddField("New Version", newVersion, true)
                 .AddField("Sent Update", UpdateSentToClan, true);
 

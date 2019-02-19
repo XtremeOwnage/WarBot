@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using WarBot.Core.Updates;
 
 namespace WarBot.Core
 {
@@ -27,5 +28,10 @@ namespace WarBot.Core
         /// </summary>
         /// <param name="Guild"></param>
         void removeGuild(SocketGuild Guild);
+
+        /// <summary>
+        /// Holds the latest update, and details.
+        /// </summary>
+        IBotUpdate CurrentUpdate { get; }
     }
 }

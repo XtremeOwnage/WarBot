@@ -273,14 +273,12 @@ namespace WarBot
                 await cfg.SaveConfig();
             }
         }
+
         private async Task Client_GuildAvailable(SocketGuild arg)
         {
             try
             {
-                var cfg = await this.GuildRepo.GetConfig(arg);
-
-                //Do update check.
-                await Util.Update.UpdateCheck(cfg, this);
+                await this.GuildRepo.GetConfig(arg);
             }
             catch (Exception ex)
             {
