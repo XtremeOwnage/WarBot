@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28606.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.Modules", "WarBot.Modules\WarBot.Modules.csproj", "{2104B3D9-E15F-486A-BDC3-0FD6EF031773}"
 EndProject
@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangeLogs", "ChangeLogs", 
 		ChangeLogs\v3.6.md = ChangeLogs\v3.6.md
 		ChangeLogs\v3.7.md = ChangeLogs\v3.7.md
 		ChangeLogs\v3.8.md = ChangeLogs\v3.8.md
+		ChangeLogs\v3.9.md = ChangeLogs\v3.9.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Base", "1. Base", "{4A99772F-EA7A-4CA8-9D33-12FF9F00E745}"
