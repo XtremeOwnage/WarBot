@@ -16,11 +16,18 @@ namespace WarBot.Modules.GuildCommandModules
         [Summary("Enables message to a specific channel when users leave a discord guild.")]
         [CommandUsage("{prefix} {command} #Channel")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
-        public async Task EnableUserLeft(SocketTextChannel Channel)
+        public async Task EnableUserLeft_NoMsg(SocketTextChannel Channel) => await EnableUserLeft(Channel, null);
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("enable leave"), Alias("set leave")]
+        [Summary("Enables message to a specific channel when users leave a discord guild. {user} will be replaced with the new user's tag.")]
+        [CommandUsage("{prefix} {command} #Channel Welcome to the server {user}!")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task EnableUserLeft(SocketTextChannel Channel, [Remainder] string Message)
         {
             //Update the config.
             cfg.SetGuildChannel(WarBotChannelType.USER_LEFT, Channel);
-            cfg[Setting_Key.USER_LEFT].Enable();
+            cfg[Setting_Key.USER_LEFT].Set(true, Message);
 
             await cfg.SaveConfig();
 
@@ -41,17 +48,17 @@ namespace WarBot.Modules.GuildCommandModules
         }
         #endregion
         [RoleLevel(RoleLevel.Leader)]
-        [Command("enable greeting"), Alias("set greeting")]
+        [Command("enable greeting"), Alias("set greeting", "set user join", "enable user join")]
         [Summary("Enables message  when users leave a discord guild.")]
-        [CommandUsage("{prefix} {command} Your Message Goes Here")]
+        [CommandUsage("{prefix} {command}")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableGreeting_MsgOnly([Remainder] string Message = null) => await EnableGreeting(null, Message);
 
         #region User Joined
         [RoleLevel(RoleLevel.Leader)]
-        [Command("enable greeting"), Alias("set greeting")]
+        [Command("enable greeting"), Alias("set greeting", "set user join", "enable user join")]
         [Summary("Enables message to a specific channel when users leave a discord guild.")]
-        [CommandUsage("{prefix} {command} #Channel Your Message Goes Here")]
+        [CommandUsage("{prefix} {command} #Channel Welcome to the server {user}!")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task EnableGreeting(SocketTextChannel Channel = null, [Remainder] string Message = null)
         {
