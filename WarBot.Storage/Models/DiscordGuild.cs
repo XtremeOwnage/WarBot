@@ -225,6 +225,11 @@ namespace WarBot.Storage.Models
             this.ClearAllRoles();
             this.Channels.Clear();
 
+            this[Setting_Key.WAR_1].Enable();
+            this[Setting_Key.WAR_2].Enable();
+            this[Setting_Key.WAR_3].Enable();
+            this[Setting_Key.WAR_4].Enable();
+
             return Task.CompletedTask;
         }
         #endregion
