@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
@@ -48,6 +49,46 @@ namespace WarBot.Modules.GuildCommandModules
             cfg[Setting_Key.PORTAL_STARTED].Enabled = true;
             await cfg.SaveConfig();
             await ReplyAsync("I will send a message when the portal is opened.");
+        }
+
+        [RoleLevel(RoleLevel.Leader)]
+        [Command("test portal"), Alias("test portal messages")]
+        [Summary("This will send a test of the portal messages")]
+        [CommandUsage("{prefix} {command}")]
+        [RequireBotPermission(ChannelPermission.SendMessages)]
+        public async Task TestMessages()
+        {
+            try
+            {
+                ITextChannel ch = cfg.GetGuildChannel(WarBotChannelType.PORTAL);
+                SocketTextChannel CH = ch as SocketTextChannel;
+
+                if (ch == null)
+                {
+                    await ReplyAsync("You do not have a valid channel configured for sending PORTAL messages.\r\n" +
+                        "Please configure a message using 'bot, set channel PORTAL #PortalChannel'");
+                    return;
+                }
+                else if (!CH.TestBotPermission(ChannelPermission.ViewChannel))
+                {
+                    await ReplyAsync($"I do not have the READ_MESSAGES permission for {CH.Mention}\r\n" +
+                        $"Please grant me the proper permissions and try again.");
+                    return;
+                }
+                else if (!CH.TestBotPermission(ChannelPermission.SendMessages))
+                {
+                    await ReplyAsync($"I do not have the SEND_MESSAGES permission for {CH.Mention}\r\n" +
+                        $"Please grant me the proper permissions and try again.");
+                    return;
+                }
+
+                //Send the portal message.
+                await MessageTemplates.Portal_Notifications.Portal_Opened(cfg);
+            }
+            catch (System.Exception ex)
+            {
+                await bot.Log.Error(cfg.Guild, ex, "TestPortalMessages");
+            }
         }
     }
 }
