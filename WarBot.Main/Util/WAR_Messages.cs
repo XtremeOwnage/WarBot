@@ -77,7 +77,7 @@ namespace WarBot.Util
                  .Select(cfg => new Action(() =>
                  {
                      //Guild has elected out for this notification.
-                     if (!cfg[Setting_Key.PORTAL_STARTED].Enabled)
+                     if (!cfg[Setting_Key.PORTAL_STARTED].Enabled || cfg.GetGuildChannel(WarBotChannelType.PORTAL) == null)
                          return;
 
                      //Send the message.
