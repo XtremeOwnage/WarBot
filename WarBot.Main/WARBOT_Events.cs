@@ -153,7 +153,16 @@ namespace WarBot
                 if (cfg[Setting_Key.USER_LEFT].Enabled && ch != null)
                 {
                     string name = !string.IsNullOrWhiteSpace(arg.Nickname) ? arg.Nickname : arg.Username;
-                    await ch.SendMessageAsync($"{name} has left the guild.");
+                    string Message = $"{name} has left the guild.";
+
+                    if (cfg[Setting_Key.USER_LEFT].HasValue)
+                    {
+                        Message = cfg[Setting_Key.USER_LEFT].Value.Replace("{user}", name, StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    await ch.SendMessageAsync(text: Message);
+
+
                 }
             });
             return Task.CompletedTask;
