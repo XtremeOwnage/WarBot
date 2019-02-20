@@ -47,7 +47,7 @@ namespace WarBot.Modules.CommandModuleBase
         [Command("set status")]
         [Summary("Updates WARBot's status message.")]
         [CommandUsage("{prefix} {command} Status goes here.")]
-        public async Task SetStatus(string Status)
+        public async Task SetStatus([Remainder]string Status)
         {
             try
             {
