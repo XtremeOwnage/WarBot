@@ -85,7 +85,7 @@ namespace WarBot.Storage
                 await newCfg.SetDefaults(Guild);
 
                 //Set the current version.
-                await updateConfigIfRequired(g);
+                await updateConfigIfRequired(newCfg);
 
                 //"Inflate" the channels, users, roles, etc.
                 newCfg.Initialize(Guild, Save, bot);
