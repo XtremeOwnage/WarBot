@@ -44,6 +44,23 @@ namespace WarBot.Modules.CommandModuleBase
         }
 
         [RoleLevel(RoleLevel.GlobalAdmin)]
+        [Command("set status")]
+        [Summary("Updates WARBot's status message.")]
+        [CommandUsage("{prefix} {command} Status goes here.")]
+        public async Task SetStatus(string Status)
+        {
+            try
+            {
+                await Context.Client.SetGameAsync(Status);
+                await ReplyAsync("Done.");
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(ex.Message);
+            }
+        }
+
+        [RoleLevel(RoleLevel.GlobalAdmin)]
         [Command("send pm")]
         [Summary("Sends a DM to another user.")]
         [CommandUsage("{prefix} {command} (person Id)")]
