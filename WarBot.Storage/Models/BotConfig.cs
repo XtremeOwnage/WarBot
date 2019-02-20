@@ -28,10 +28,16 @@ namespace WarBot
         //    File.WriteAllText("./Config/BotConfig", Text);
         //}
 
+        /// <summary>
+        /// Discord bot list token.
+        /// </summary>
+        public string DBL_Token { get; set; }
 
+        /// <summary>
+        /// Discord API Token.
+        /// </summary>
         public string Discord_API_Token { get; set; }
         public ulong BotId { get; set; }
-        public string GuildConfigPath { get; set; }
         public ulong Log_CH_Chat { get; set; }
         public ulong Log_CH_Debug { get; set; }
         public ulong Log_CH_Errors { get; set; }

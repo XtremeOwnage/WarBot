@@ -35,6 +35,8 @@ namespace WarBot
             //Send Portal Started
             job.RecurringJob<WAR_Messages>("portal_opened", o => o.SendPortalOpened().Wait(), "0 0 9 ? * FRI");
 
+            //Update the Discord bot list every two hours.
+            job.RecurringJob<WARBOT>("update_dbl", o => o.TaskBot.Update_DiscordBotList().Wait(), "0 */2 * * * ?");
         }
     }
 }
