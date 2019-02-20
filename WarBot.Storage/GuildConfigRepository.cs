@@ -84,11 +84,11 @@ namespace WarBot.Storage
                 //Set defaults for the new config.
                 await newCfg.SetDefaults(Guild);
 
-                //Set the current version.
-                await updateConfigIfRequired(newCfg);
-
                 //"Inflate" the channels, users, roles, etc.
                 newCfg.Initialize(Guild, Save, bot);
+
+                //Set the current version.
+                await updateConfigIfRequired(newCfg);
 
                 //Add the new Guild to the database.
                 db.Guilds.Add(newCfg);
