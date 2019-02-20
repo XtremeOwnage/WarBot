@@ -14,7 +14,7 @@ namespace WarBot.TaskBOT
         public async Task Update_DiscordBotList()
         {
             try
-            {
+            {               
                 var config = this.BOT.Config;
 
                 if (string.IsNullOrEmpty(config.DBL_Token))
