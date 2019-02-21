@@ -39,7 +39,7 @@ namespace WarBot
             job.RecurringJob<WARBOT>("update_dbl", o => o.TaskBot.Update_DiscordBotList().Wait(), "0 0 */2 * * ?");
 
             //Update the Discord bot list every two hours.
-            job.RecurringJob<WARBOT>("update_status", o => o.TaskBot.Update_Status(null).Wait(), "0 0 */10 * * ?");
+            job.RecurringJob<WARBOT>("update_status", o => o.TaskBot.Update_Status(null).Wait(), "0 0/5 0 ? * * *");
         }
     }
 }
