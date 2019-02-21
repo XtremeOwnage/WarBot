@@ -23,10 +23,10 @@ namespace WarBot.TaskBOT
                     switch (DateTime.UtcNow.Hour)
                     {
                         //In war prep.
-                        case int i when (i >= 7 && i < 9) || (i >= 13 && i < 15) || (i >= 19 && i < 21) || (i >= 1 && i < 3):
+                        case int i when (i >= 1 && i < 3) || (i >= 7 && i < 9) || (i >= 13 && i < 15) || (i >= 19 && i < 21)  :
                             {
-                                DateTime nextPrep = GetNextEvent(new int[] { 3, 9, 15, 21 });
-                                var timeUntil = nextPrep.Subtract(DateTime.UtcNow);
+                                DateTime warStart = GetNextEvent(new int[] { 3, 9, 15, 21 });
+                                var timeUntil = warStart.Subtract(DateTime.UtcNow);
 
                                 Status = timeUntil.Humanize() + " until war.";
                             }
@@ -54,16 +54,15 @@ namespace WarBot.TaskBOT
 
         public DateTime GetNextEvent(int[] Events)
         {
-            int[] EventHours = { 1, 7, 13, 19 };
             var now = DateTime.UtcNow;
 
-            if (now.Hour > EventHours.Max())
+            if (now.Hour > Events.Max())
             {
-                return new DateTime(now.Year, now.Month, now.Day, EventHours.Min(), 0, 0).AddDays(1);
+                return new DateTime(now.Year, now.Month, now.Day, Events.Min(), 0, 0, DateTimeKind.Utc).AddDays(1);
             }
             else
             {
-                return new DateTime(now.Year, now.Month, now.Day, EventHours.First(o => o > now.Hour), 0, 0);
+                return new DateTime(now.Year, now.Month, now.Day, Events.First(o => o > now.Hour), 0, 0, DateTimeKind.Utc);
             }
         }
     }
