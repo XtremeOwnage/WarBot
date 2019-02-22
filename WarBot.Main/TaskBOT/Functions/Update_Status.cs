@@ -23,13 +23,16 @@ namespace WarBot.TaskBOT
                     switch (DateTime.UtcNow.Hour)
                     {
                         //In war prep.
-                        case int i when (i >= 1 && i < 3) || (i >= 7 && i < 9) || (i >= 13 && i < 15) || (i >= 19 && i < 21)  :
+                        case int i when (i >= 1 && i < 3) || (i >= 7 && i < 9) || (i >= 13 && i < 15) || (i >= 19 && i < 21):
                             {
                                 DateTime warStart = GetNextEvent(new int[] { 3, 9, 15, 21 });
                                 var timeUntil = warStart.Subtract(DateTime.UtcNow);
 
                                 Status = timeUntil.Humanize() + " until war.";
                             }
+                            break;
+                        case int i when (i == 3 || i == 9 || i == 15 || i == 21) && DateTime.Now.Minute < 10:
+                            Status = "War is being fought now.";
                             break;
                         default:
                             {
