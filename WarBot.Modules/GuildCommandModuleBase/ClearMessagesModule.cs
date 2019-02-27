@@ -12,7 +12,7 @@ namespace WarBot.Modules.GuildCommandModules
     public class ClearMessagesModule : GuildCommandModuleBase
     {
         [Command("clear messages"), Alias("clear", "purge")]
-        [CommandUsage("{prefix} {command} [NonPinned, Pinned]")]
+        [CommandUsage("{prefix} {command} [-Pinned] [-Extended]")]
         [RoleLevel(RoleLevel.Leader)]
         [Summary("Delete specified messages from a channel. Will exclude pinned messages unless specified.")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
@@ -20,9 +20,10 @@ namespace WarBot.Modules.GuildCommandModules
         ///NonPinned = Only non-pinned messages
         ///Pinned = Only Pinned Messages
         ///ALL = Everything!
-        public async Task ClearMessages(string action = "NonPinned")
+        public async Task ClearMessages([Remainder]string action)
         {
-            bool SelectPinned = action.ToLowerInvariant().Equals("pinned");
+            bool SelectPinned = action.ToLowerInvariant().Contains("-pinned");
+            bool Extended = action.ToLowerInvariant().Contains("-extended");
 
             if (!Context.GuildChannel.TestBotPermission(ChannelPermission.ManageMessages))
             {
@@ -30,7 +31,7 @@ namespace WarBot.Modules.GuildCommandModules
                 return;
             }
 
-            await bot.TaskBot.ClearMessages(Context.GuildChannel, SelectPinned);
+            await bot.TaskBot.ClearMessages(Context.GuildChannel, SelectPinned, Extended);
         }
     }
 }
