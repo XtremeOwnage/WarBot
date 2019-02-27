@@ -228,6 +228,9 @@ namespace WarBot.Modules.MessageTemplates
                 System.Collections.Generic.IAsyncEnumerable<System.Collections.Generic.IReadOnlyCollection<IMessage>> asyncresults = ch.GetMessagesAsync(500);
                 System.Collections.Generic.IEnumerable<IMessage> results = await asyncresults.FlattenAsync();
 
+                if (results == null || results.Count() == 0)
+                    return;
+
                 System.Collections.Generic.List<IMessage> ToBulkDelete = results
                     .Where(o => !o.IsPinned)
                     .Where(o => o.CreatedAt > discordBulkCutoffDate)
@@ -236,7 +239,7 @@ namespace WarBot.Modules.MessageTemplates
                 try
                 {
                     //If there are messages to bulk delete, do it.
-                    if (ToBulkDelete.Count > 0)
+                    if (ToBulkDelete != null && ToBulkDelete.Count > 0)
                         await ch.DeleteMessagesAsync(ToBulkDelete);
                     else
                         break;
