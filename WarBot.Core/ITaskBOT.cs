@@ -5,6 +5,6 @@ namespace WarBot.Core
 {
     public interface ITaskBOT
     {
-        Task ClearMessages(SocketTextChannel Channel, bool DeletePinned = false);
+        Task ClearMessages(SocketTextChannel Channel, bool DeletePinned, bool Extended);
     }
 }

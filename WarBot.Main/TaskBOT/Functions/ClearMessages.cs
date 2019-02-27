@@ -4,12 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WarBot.Core;
 
 namespace WarBot.TaskBOT
 {
-    public partial class TaskBOT
+    public partial class TaskBOT : ITaskBOT
     {
-        public async Task ClearMessages(SocketTextChannel Channel, bool DeletePinned = false)
+        public async Task ClearMessages(SocketTextChannel Channel, bool DeletePinned = false, bool Extended = false)
         {
             try
             {
@@ -22,11 +23,13 @@ namespace WarBot.TaskBOT
                     IEnumerable<IMessage> results = await asyncresults.FlattenAsync();
 
                     List<IMessage> ToBulkDelete = results
-                    .Where(o => o.CreatedAt > discordBulkCutoffDate)
-                    .ToList();
+                        .Where(o => o.CreatedAt > discordBulkCutoffDate)
+                        .ToList();
 
                     if (DeletePinned == false)
-                        ToBulkDelete = ToBulkDelete.Where(o => o.IsPinned == false).ToList();
+                        ToBulkDelete = ToBulkDelete
+                            .Where(o => o.IsPinned == false)
+                            .ToList();
 
 
                     //If there are messages to bulk delete, do it.
@@ -36,6 +39,12 @@ namespace WarBot.TaskBOT
                         break;
 
                 }
+
+                //If an extended delete was not requested, return now.
+                if (!Extended)
+                    return;
+
+                #region Long Term, Bulk Delete.
                 RequestOptions options = RequestOptions.Default;
                 options.Timeout = (int)TimeSpan.FromMinutes(5).TotalSeconds;
                 options.RetryMode = RetryMode.RetryRatelimit;
@@ -46,12 +55,21 @@ namespace WarBot.TaskBOT
                 while (true)
                 {
                     try
-                    {                       
+                    {
 
-                        List<IMessage> msgs = ch.GetMessagesAsync(1, CacheMode.AllowDownload, options).FlattenAsync().Result.ToList();
+                        List<IMessage> msgs = ch
+                            .GetMessagesAsync(1, CacheMode.AllowDownload, options)
+                            .FlattenAsync()?
+                            .Result?
+                            .ToList();
 
-                        if (msgs.Count == 0)
+                        if (msgs == null || msgs.Count == 0)
                             break;
+
+                        if (DeletePinned == false)
+                            msgs = msgs
+                                .Where(o => o.IsPinned == false)
+                                .ToList();
 
                         foreach (IMessage msg in msgs)
                         {
@@ -60,7 +78,7 @@ namespace WarBot.TaskBOT
                             await Task.Delay(50);
                         }
                     }
-                    catch(System.TimeoutException)
+                    catch (System.TimeoutException)
                     {
                         FailCount++;
 
@@ -77,6 +95,7 @@ namespace WarBot.TaskBOT
                         await Task.Delay((int)TimeSpan.FromMinutes(1).TotalMilliseconds);
                     }
                 }
+                #endregion
             }
             catch (Exception ex)
             {

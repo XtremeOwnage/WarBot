@@ -14,7 +14,7 @@ namespace WarBot
     {
         private Task Client_MessageReceived(SocketMessage socketMessage)
         {
-            Interlocked.Increment(ref this.MessagesProcessed);
+             Interlocked.Increment(ref this.MessagesProcessed);
 
             var message = socketMessage as SocketUserMessage;
 
