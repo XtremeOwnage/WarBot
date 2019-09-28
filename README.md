@@ -266,7 +266,7 @@ Warbot will reply to either bot, {command} or @WarBot {command}.
 
 # Other
 
-More details can be found at https://xtremeownage.com/index.php?threads/version-1-0-released.20561/
+More details can be found at https://xtremeownage.com/forum/index.php?threads/version-1-0-released.20561/
 
 You may join the WarBot Development discord server @ https://discord.gg/uEkamH9 for support.
 
