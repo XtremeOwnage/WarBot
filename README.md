@@ -242,7 +242,7 @@ bot, show config
 # Invite URL
 To Invite WarBot to your discord server, Please visit this url:
 
-https://xtremeownage.com/forum/index.php?link-forums/discord-invite-link.53/
+https://discordapp.com/oauth2/authorize?client_id=437983722193551363&scope=bot&permissions=0x00000008
 
 # Usage and Further Assistance
 
