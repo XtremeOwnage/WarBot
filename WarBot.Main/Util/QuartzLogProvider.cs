@@ -1,7 +1,5 @@
 ﻿using Quartz.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace WarBot.Util
 {
@@ -19,7 +17,7 @@ namespace WarBot.Util
             };
         }
 
-        public IDisposable OpenMappedContext(string key, string value)
+        public IDisposable OpenMappedContext(string key, object value, bool destructure = false)
         {
             throw new NotImplementedException();
         }

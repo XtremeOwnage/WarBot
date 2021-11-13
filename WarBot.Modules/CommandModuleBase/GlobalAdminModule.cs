@@ -1,13 +1,10 @@
 using Discord;
 using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using WarBot.Attributes;
 using WarBot.Core;
-using WarBot.Core.ModuleType;
 namespace WarBot.Modules.CommandModuleBase
 {
     public class ServerAdminModule : WarBot.Core.ModuleType.CommandModuleBase
@@ -24,6 +21,40 @@ namespace WarBot.Modules.CommandModuleBase
 
             await ReplyAsync(embed: eb.Build());
             System.Environment.Exit(0);
+        }
+
+        [RoleLevel(RoleLevel.GlobalAdmin)]
+        [Command("announce")]
+        [Summary("Delivers a message to the configured update channel of all subscribed guilds, if the guild has WARBOT_UPDATES enabled.")]
+        [CommandUsage("{prefix} {command} (Message)")]
+        public async Task Announce(string Message)
+        {
+            try
+            {
+                var guilds = await this.bot.Client.GetGuildsAsync(CacheMode.AllowDownload);
+                foreach (var guild in guilds)
+                {
+                    var sg = guild as SocketGuild;
+                    var cfg = await bot.GuildRepo.GetConfig(sg);
+
+                    var updateChannel = cfg.GetGuildChannel(WarBotChannelType.WARBOT_UPDATES);
+
+                    //No Update Channel? Then, no updates.
+                    if (cfg[Setting_Key.WARBOT_UPDATES].Enabled == false || updateChannel is null)
+                        continue;
+
+                    //Otherwise, if they are subscribed to updates AND the update channel is not null, send the update.
+                    await updateChannel.SendMessageAsync(text: Message);
+
+                    Console.WriteLine("Testing");
+                }
+
+                await ReplyAsync("Done.");
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(ex.Message);
+            }
         }
 
         [RoleLevel(RoleLevel.GlobalAdmin)]
@@ -47,7 +78,7 @@ namespace WarBot.Modules.CommandModuleBase
         [Command("set status")]
         [Summary("Updates WARBot's status message.")]
         [CommandUsage("{prefix} {command} Status goes here.")]
-        public async Task SetStatus([Remainder]string Status)
+        public async Task SetStatus([Remainder] string Status)
         {
             try
             {

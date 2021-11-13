@@ -23,19 +23,19 @@ namespace WarBot.Storage
         public void Migrate()
         {
             //Perform migrations as needed.
-            var Migrations = this.Database.GetPendingMigrations();
-            if (Migrations.Count() == 0)
-            {
-                Console.WriteLine("WarDB is up to date.");
-                return;
-            }
-            foreach (var m in Migrations)
-            {
-                Console.WriteLine("WarDB Migration Pending: " + m);
-            }
-            Console.WriteLine("Applying Migrations");
+            //var Migrations = this.Database.GetPendingMigrations();
+            //if (Migrations.Count() == 0)
+            //{
+            //    Console.WriteLine("WarDB is up to date.");
+            //    return;
+            //}
+            //foreach (var m in Migrations)
+            //{
+            //    Console.WriteLine("WarDB Migration Pending: " + m);
+            //}
+            //Console.WriteLine("Applying Migrations");
 
-            this.Database.Migrate();
+            //this.Database.Migrate();
 
         }
 
