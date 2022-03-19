@@ -1,14 +1,14 @@
+---
+title: ToDo list
+---
+
 # The big ToDo list before moving v4.0 to prod.
 
 1. Communication to all current users of WarBOT.
-
-Users will need to remove, and re-add the bot to add the new application commands permissions.
-
-All configurations will need to be reset.
-
+    * Users will need to remove, and re-add the bot to add the new application commands permissions.
+    * All configurations will need to be reset.
 2. Voting / Polls functionality.
-
-Needs to be added back in.
+    * Needs to be added back in.
 
 
 ## Nice to have

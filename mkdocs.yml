@@ -18,3 +18,12 @@ plugins:
 
 repo_url: https://github.com/XtremeOwnage/WarBot
 repo_name: WarBOT
+
+extra:
+  social:
+    - icon: fontawesome/brands/discord 
+      link: https://discord.gg/uEkamH9
+      name: WarBOT Development Discord
+    - icon: fontawesome/brands/github 
+      link: https://github.com/XtremeOwnage/WarBot
+      name: WarBOT Github
