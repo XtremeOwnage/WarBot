@@ -17,3 +17,7 @@ title: ToDo list
 2. Add better detection of invalid configurations. 
     * ie- detect if we can actually send messages to a channel configured by the user.
     * ensure we can actually manage the roles in both role management, and custom actions.
+3. Custom Command Improvements
+    * Ability to add parameters. Ie, User, Channel, Role. etc.
+4. Custom Actions for guilds events.
+    * Ie- trigger custom action when user joins / leaves guild.
