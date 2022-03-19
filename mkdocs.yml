@@ -13,7 +13,7 @@ theme:
         icon: material/toggle-switch
         name: Switch to light mode
 plugins:
-  - mkdocs-git-revision-date-localized-plugin
+  - git-revision-date-localized
 #   - privacy
 
 repo_url: https://github.com/XtremeOwnage/WarBot
