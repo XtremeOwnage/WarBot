@@ -84,9 +84,13 @@ Each of the above events is optional, and may be opted out.
 
 As well, each war is optional, and can be configured to a different channel, if desired. Each war has its own messages
 
+Read more in the [Hustle Castle Documentation](Features/HustleFeatures.md#Wars)
+
 #### Portal Notifications
 
 Have trouble remember when the portal opens every week? Warbot can remind you in the channel you desire, with a message you can set.
+
+Read more in the [Hustle Castle Documentation](Features/HustleFeatures.md#Portal)
 
 
 # How to add WarBOT?
