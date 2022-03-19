@@ -98,17 +98,6 @@ In the Select a guild screen, click the "Invite WarBOT"  button at the bottom.
 
 Please read about.... [WarBOT Permissions](Faqs/Permissions.md)
 
-
-# Usage and Further Assistance
-
-The following commands, will direct the bot to print available commands for your role level.
-```
-# Display a list of all available commands to your role
-bot, help
-```
-
-Warbot will reply to either bot, {command} or @WarBot {command}.
-
 # Faqs
 
 #### The bot is replying, but, is I cannot see any text.
@@ -121,8 +110,6 @@ Warbot will reply to either bot, {command} or @WarBot {command}.
 
 # Other
 
-More details can be found at https://xtremeownage.com/forum/index.php?threads/version-1-0-released.20561/
+You may join the [WarBot Development discord server](https://discord.gg/uEkamH9) for support.
 
-You may join the WarBot Development discord server @ https://discord.gg/uEkamH9 for support.
-
-To submit a request for a new feature, please submit through github via https://github.com/XtremeOwnage/WarBot/issues/new/choose
+If you would like a new feature, [Send a request!](https://github.com/XtremeOwnage/WarBot/issues/new/choose)
