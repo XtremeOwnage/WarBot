@@ -13,7 +13,7 @@ By default, executing `/clear` will remove all non-pinned messages from the targ
 
 ### Deleting Pinned Messages
 
-You may execute `/clear action:Pinned' to remove pinned messages as well.
+You may execute `/clear action:Pinned` to remove pinned messages as well.
 
 ## Context Command
 

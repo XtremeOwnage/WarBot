@@ -27,3 +27,8 @@ extra:
     - icon: fontawesome/brands/github 
       link: https://github.com/XtremeOwnage/WarBot
       name: WarBOT Github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
