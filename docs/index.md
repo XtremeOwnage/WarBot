@@ -6,6 +6,66 @@ Warbot is a discord bot orignally designed for the hustle-castle mobile phone ga
 
 These days, Warbot is a general purpose discord bot, offering many useful features to your discord guild.
 
+## Importance Notice - May 2024
+
+!!! danger
+    If action is not taken by July 5th, 2024, WarBOT will cease to offer their services to the discord community.
+
+    It has been a great 8 years.
+
+On May 7th, I received this notice from discord.
+
+![](./Assets/DiscordNotice.png)
+
+I figure, oh, just need to go re-verify my account. Shouldn't be an issue, right?
+
+![](./Assets/Stripe.jpg)
+
+Turns out- they want me to upload a copy of my photo ID.
+
+For MANY reasons, including- but, not limited to...
+
+* Privacy
+* Data theft concerns
+* The use of my data for marketing
+* etc...
+
+I refuse to upload a copy of my photo ID. I have been a consistent user of discord, for over a decade at this point. 
+
+If- my history is not enough of a verification, then I am sure an easily faked photo ID will not suffice either. 
+
+That being said- I will not be playing these games.
+
+I did, however, submit a ticket to discord.
+
+![](./Assets/Ticket.png)
+
+I seriously doubt it will be read, or taken seriously... but, I did submit it.
+
+
+That being said- WarBOT at its peak has supported over 1,500 unique guilds. At this time of writing this- 859 guilds are still subscribed to WarBOT with a combined total of 94,761 users.
+
+I have never asked for, or accepted a single penny from the community which I support.
+
+I have never once, displayed any forms of advertisement, or asked for any form of compensation. 
+
+I have not once, lost, or had any user-data stolen.
+
+I have never sold, or used user-data for marketing purposes.
+
+As a matter of fact, I don't even collect user-data, other then the settings you specify for your guilds.
+
+
+It has been fantastic supporting all of you. Good luck in the future.
+
+-XtremeOwnage
+
+
+!!! info
+    If- anyone DID want to give discord a copy of their drivers license, or photo ID, WarBOT is open source, and can be easily hosted.
+
+
+
 ## Basic Features
 
 #### Custom Commands
