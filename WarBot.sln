@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "9. GitHub", "9. GitHub", "{
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Dependancies", "0. Dependancies", "{F16B3A77-11B0-43EF-80C9-47736E32FEC1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Base", "1. Base", "{4A99772F-EA7A-4CA8-9D33-12FF9F00E745}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Data", "2. Data", "{C1C8700D-C561-4230-B4B4-8B427629393B}"
@@ -45,8 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.Localization", "..\W
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC518C8F-4F2C-43D8-BB6B-3AD62130ED22}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build-docker.yaml = .github\workflows\build-docker.yaml
+		.github\workflows\build-bot-docker.yaml = .github\workflows\build-bot-docker.yaml
 		.github\workflows\build-docs.yaml = .github\workflows\build-docs.yaml
+		.github\workflows\build-web-docker.yaml = .github\workflows\build-web-docker.yaml
 	EndProjectSection
 EndProject
 Global
