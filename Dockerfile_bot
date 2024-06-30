@@ -1,0 +1,45 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# Use the base .NET runtime image
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
+WORKDIR /app
+
+# Use the .NET SDK for building
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy the entire repository into the Docker image
+COPY . .
+
+# Display the contents of the current directory for debugging
+RUN ls -la
+
+# Display the contents of the current directory for debugging
+RUN ls -la /src
+
+# Display the contents of the current directory for debugging
+RUN ls -la /src/src
+
+# Change directory to the main project folder
+WORKDIR "/src/src/WarBot.Main"
+
+# Run dotnet restore and dotnet build commands
+RUN dotnet restore "WarBot.csproj"
+RUN dotnet build "WarBot.csproj" -c Release -o /app/build
+
+# Create a separate stage for publishing
+FROM build AS publish
+RUN dotnet publish "WarBot.csproj" -c Release -o /app/publish
+
+# Use the base image again for the final stage
+FROM base AS final
+WORKDIR /app
+
+# Copy the published output from the previous stage
+COPY --from=publish /app/publish .
+
+# Create a directory for logs and set permissions
+RUN mkdir -p /app/logs && chmod 777 /app/logs
+
+# Define the entry point for the container
+ENTRYPOINT ["dotnet", "WarBot.dll"]
