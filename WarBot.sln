@@ -1,0 +1,102 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31903.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "9. GitHub", "9. GitHub", "{E7D63BC3-AA9D-4D32-B345-A521B0A246F9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Dependancies", "0. Dependancies", "{F16B3A77-11B0-43EF-80C9-47736E32FEC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Base", "1. Base", "{4A99772F-EA7A-4CA8-9D33-12FF9F00E745}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Data", "2. Data", "{C1C8700D-C561-4230-B4B4-8B427629393B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.. Modules", "4.. Modules", "{FAF7BCE1-04BB-490D-9A14-E18012699E55}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Program", "5. Program", "{0B780D73-D3BC-447F-90C4-9BD989F9E32A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Data Access", "3. Data Access", "{5A37D515-A4B3-4D9F-BC6B-76572013BEC4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{EB9C5AF3-211E-49BC-87C9-E66257ACA736}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile_bot = Dockerfile_bot
+		Dockerfile_web = Dockerfile_web
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.Modules", "src\WarBot.Modules\WarBot.Modules.csproj", "{0467F3FB-2019-4C90-BBFE-F0F6BD7BDC59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot", "src\WarBot.Main\WarBot.csproj", "{EB1BCAD8-BD56-4657-8E09-46977A7A12D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.UI", "src\WarBot.UI\WarBot.UI.csproj", "{B3D2F62A-8F16-4D15-970E-FB7EBC8ECF8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.Data", "src\WarBot.Data\WarBot.Data.csproj", "{E49964D7-C11E-4C1C-A2E6-C7B2F2037C34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.Core", "src\WarBot.Core\WarBot.Core.csproj", "{CC520EB6-5DFD-4312-9765-C5EE0C1C7DB0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.DataAccess", "src\WarBot.DataAccess\WarBot.DataAccess.csproj", "{48A47620-9C0B-4477-A6D3-2184614501C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarBot.Localization", "..\WarBots\src\Warbot.Localization\WarBot.Localization.csproj", "{CD82CB80-540D-4837-9EEB-6DA4C21D8697}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC518C8F-4F2C-43D8-BB6B-3AD62130ED22}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-docker.yaml = .github\workflows\build-docker.yaml
+		.github\workflows\build-docs.yaml = .github\workflows\build-docs.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0467F3FB-2019-4C90-BBFE-F0F6BD7BDC59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0467F3FB-2019-4C90-BBFE-F0F6BD7BDC59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0467F3FB-2019-4C90-BBFE-F0F6BD7BDC59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0467F3FB-2019-4C90-BBFE-F0F6BD7BDC59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB1BCAD8-BD56-4657-8E09-46977A7A12D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB1BCAD8-BD56-4657-8E09-46977A7A12D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB1BCAD8-BD56-4657-8E09-46977A7A12D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB1BCAD8-BD56-4657-8E09-46977A7A12D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3D2F62A-8F16-4D15-970E-FB7EBC8ECF8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3D2F62A-8F16-4D15-970E-FB7EBC8ECF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3D2F62A-8F16-4D15-970E-FB7EBC8ECF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3D2F62A-8F16-4D15-970E-FB7EBC8ECF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E49964D7-C11E-4C1C-A2E6-C7B2F2037C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E49964D7-C11E-4C1C-A2E6-C7B2F2037C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E49964D7-C11E-4C1C-A2E6-C7B2F2037C34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E49964D7-C11E-4C1C-A2E6-C7B2F2037C34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC520EB6-5DFD-4312-9765-C5EE0C1C7DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC520EB6-5DFD-4312-9765-C5EE0C1C7DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC520EB6-5DFD-4312-9765-C5EE0C1C7DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC520EB6-5DFD-4312-9765-C5EE0C1C7DB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48A47620-9C0B-4477-A6D3-2184614501C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48A47620-9C0B-4477-A6D3-2184614501C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48A47620-9C0B-4477-A6D3-2184614501C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48A47620-9C0B-4477-A6D3-2184614501C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD82CB80-540D-4837-9EEB-6DA4C21D8697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD82CB80-540D-4837-9EEB-6DA4C21D8697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD82CB80-540D-4837-9EEB-6DA4C21D8697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD82CB80-540D-4837-9EEB-6DA4C21D8697}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0467F3FB-2019-4C90-BBFE-F0F6BD7BDC59} = {FAF7BCE1-04BB-490D-9A14-E18012699E55}
+		{EB1BCAD8-BD56-4657-8E09-46977A7A12D2} = {0B780D73-D3BC-447F-90C4-9BD989F9E32A}
+		{B3D2F62A-8F16-4D15-970E-FB7EBC8ECF8C} = {0B780D73-D3BC-447F-90C4-9BD989F9E32A}
+		{E49964D7-C11E-4C1C-A2E6-C7B2F2037C34} = {C1C8700D-C561-4230-B4B4-8B427629393B}
+		{CC520EB6-5DFD-4312-9765-C5EE0C1C7DB0} = {4A99772F-EA7A-4CA8-9D33-12FF9F00E745}
+		{48A47620-9C0B-4477-A6D3-2184614501C0} = {5A37D515-A4B3-4D9F-BC6B-76572013BEC4}
+		{CD82CB80-540D-4837-9EEB-6DA4C21D8697} = {FAF7BCE1-04BB-490D-9A14-E18012699E55}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7C9431B-35F8-4124-9533-6CA1A366EACD}
+	EndGlobalSection
+EndGlobal
