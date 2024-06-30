@@ -1,0 +1,84 @@
+﻿@page "/Config/Basic"
+@using Microsoft.AspNetCore.Authentication
+
+@using System.Net.Http.Headers
+@using Microsoft.EntityFrameworkCore
+@using WarBot.Data
+@using WarBot.DataAccess.Logic
+@using WarBot.Core
+@using WarBot.UI.Models.Discord
+
+<PageTitle>Basic Setup</PageTitle>
+
+
+<h1>Basic Setup</h1>
+
+<EditForm Model="@EditModel">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label">Website</label>
+        <TagHelper Class="form-control" @bind-Value=@EditModel.Website></TagHelper>
+        <div id="prefixHelp" class="form-text">This will be displayed when somebody executes /website</div>
+        <ValidationMessage For="() =>EditModel.Website" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Loot Message</label>
+        <TagHelper Class="form-control" @bind-Value=@EditModel.Loot></TagHelper>
+        <div id="prefixHelp" class="form-text">This will be displayed when somebody executes /loot</div>
+        <ValidationMessage For="() =>EditModel.Loot" />
+    </div>
+
+    <div class="btn-group">
+        <button class="btn @edit.Class" type="submit" value="Save" @onclick="SubmitAsync">@edit.Text</button>
+    </div>
+</EditForm>
+
+
+
+
+@code {
+    [CascadingParameter]
+    public GuildLogic? Logic { get; set; }
+
+    [Inject]
+    ILogger<Basic> log { get; set; }
+
+    private Model EditModel { get; set; } = new Model();
+    private EditButtonHelper edit = new EditButtonHelper();
+
+    private class Model
+    {
+        public string Website { get; set; }
+        public string Loot { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        EditModel = new Model
+            {
+                Website = Logic.Website,
+                Loot = Logic.HustleSettings.LootMessage
+            };
+        edit.Ready();
+        base.OnInitialized();
+    }
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            edit.Saving();
+            Logic.Website = EditModel.Website;
+            Logic.HustleSettings.LootMessage = EditModel.Loot;
+
+            await Logic.SaveChangesAsync();
+            await edit.OnSavedAsync();
+        }
+        catch (Exception ex)
+        {
+            edit.Error();
+            log.LogError(ex, "Error while saving basic.");
+        }
+        StateHasChanged();
+    }
+}

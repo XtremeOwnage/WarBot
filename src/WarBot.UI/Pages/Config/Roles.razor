@@ -1,0 +1,49 @@
+﻿@page "/Config/Roles"
+@using Microsoft.AspNetCore.Authentication
+
+@using System.Net.Http.Headers
+@using Microsoft.EntityFrameworkCore
+@using WarBot.Data
+@using WarBot.DataAccess.Logic
+@using WarBot.Core
+@using WarBot.UI.Models.Discord
+
+<PageTitle>Roles</PageTitle>
+
+
+<h1>Guild Roles Setup</h1>
+
+<div>
+    <h3>Role Management</h3>
+    <p>WarBOT allows basic role management. You can use /promote and /demote to promote or demote members to the next role up or down.</p>
+    <p>Each role is optional, however, officers and leaders will have more access to WarBOT commands.</p>
+    <p>For documentation around role management, please visit <a href="https://docs.warbot.dev/Features/RoleManagement/" target="_blank">Warbot docs</a></p>
+</div>
+<TabControl>
+    <TabPage Text="Guest">
+        <h2>Guest Role</h2>
+        <ModifyRole Role=Logic?.Roles?.Role_Guest />
+    </TabPage>
+    <TabPage Text="Member">
+        <h2>Member Role</h2>
+        <ModifyRole Role=Logic?.Roles?.Role_Member />
+    </TabPage>
+    <TabPage Text="SuperMember">
+        <h2>SuperMember Role</h2>
+        <ModifyRole Role=Logic?.Roles?.Role_SuperMember />
+    </TabPage>
+    <TabPage Text="Officer">
+        <h2>Officer Role</h2>
+        <ModifyRole Role=Logic?.Roles?.Role_Officer />
+    </TabPage>
+    <TabPage Text="Leader">
+        <h2>Leader Role</h2>
+        <ModifyRole Role=Logic?.Roles?.Role_Leader />
+    </TabPage>
+</TabControl>
+
+
+@code {
+    [CascadingParameter]
+    public GuildLogic? Logic { get; set; }
+}

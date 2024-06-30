@@ -1,0 +1,74 @@
+﻿@using Discord
+@using Discord.WebSocket
+@using Microsoft.AspNetCore.Authentication
+@using System.Net.Http.Headers
+@using WarBot.Core
+@using WarBot.DataAccess
+@using WarBot.UI.Models.Discord
+
+<div class="input-group">
+    @if (!Roles.Any())
+    {
+        <select disabled class="form-control">
+            <option value="">Please Wait</option>
+        </select>
+    }
+    else
+    {
+        <select class="form-control custom-select" @onchange="setRole">
+            @foreach (var item in Roles.Where(o => o.Key < RoleLevel.GlobalAdmin))
+            {
+                string Displayname = !string.IsNullOrEmpty(item.Value?.CustomName) ? item.Value.CustomName : item.Key.ToString();
+                <option selected=@(SelectedValue == item.Key) value="@item.Key">@Displayname</option>
+                // Blazor needs to know what values it binds to!
+            }
+        </select>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public GuildLogic? Logic { get; set; }
+
+    [Inject]
+    ILogger<RoleLevelPicker> log { get; set; }
+
+    [Parameter]
+    public Action<RoleLevel?>? OnUpdated { get; set; }
+
+    [Parameter]
+    public RoleLevel? SelectedValue { get; set; }
+
+    public IDictionary<RoleLevel, RoleLogic?> Roles { get; set; } = new Dictionary<RoleLevel, RoleLogic>();
+
+    private void setRole(ChangeEventArgs changeArgs)
+    {
+        if (Enum.TryParse<RoleLevel>(changeArgs.Value.ToString(), out RoleLevel u))
+        {
+            this.SelectedValue = u;
+            OnUpdated?.Invoke(u);
+            this.StateHasChanged();
+        }
+        else
+        {
+            this.SelectedValue = null;
+            OnUpdated?.Invoke(u);
+            this.StateHasChanged();
+        }
+
+    }
+    private async Task refresh()
+    {
+        this.Roles = Logic.Roles.GetRoleMap();
+        this.StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await refresh();
+        }
+    }
+
+}

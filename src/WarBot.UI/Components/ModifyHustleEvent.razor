@@ -1,0 +1,192 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using WarBot.DataAccess.Logic.Events
+<EditForm Model="@EditModel">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3 form-check">
+        <InputCheckbox class="form-check-input" @bind-Value=@EditModel.Enabled></InputCheckbox>
+        <label class="form-check-label">Event Enabled</label>
+        <div class="form-text">Is this event enabled for the selected server?</div>
+        <ValidationMessage For="() =>EditModel.Enabled" />
+    </div>
+
+    @if (EditModel.Enabled)
+    {
+        <div class="mb-3">
+            <label class="form-label">War Prep Started Message</label>
+            <TagHelper Class="form-control" @bind-Value=@EditModel.PrepStartedMessage></TagHelper>
+            <div class="form-text">The message to be displayed when war preperation starts. Leave empty to disable.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">War Prep Ending Message</label>
+            <TagHelper Class="form-control" @bind-Value=@EditModel.PrepEndingMessage></TagHelper>
+            <div class="form-text">The message to be displayed before preperation peroid ends. Leave empty to disable.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">War Started Message</label>
+            <TagHelper Class="form-control" @bind-Value=@EditModel.EventStartedMessage></TagHelper>
+            <div class="form-text">The message to be displayed when this event occurs.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Channel</label>
+            <ChannelPicker @ref=channelPicker SelectedChannelID="@EditModel.ChannelId" OnChannelSelected="(ch) => EditModel.ChannelId = ch?.Id" />
+            <div class="form-text">Which channel will the notification be sent to?</div>
+            <ValidationMessage For="() =>EditModel.ChannelId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Message Clear Method</label>
+            <InputSelect @bind-Value=EditModel.ClearType class="form-control custom-select">
+                <option value="@EventClearType.DISABLED">Don't Delete Messages</option>
+                <option value="@EventClearType.INDIVIDUAL_MESSAGE_TIMER">Clear Individual Messages</option>
+                <option value="@EventClearType.ENTIRE_CHANNEL">Clear Entire Channel</option>
+            </InputSelect>
+            <div class="form-text">
+                @EditModel.ClearType.GetDescriptionAttribute()
+            </div>
+            <ValidationMessage For="() =>EditModel.ClearType" />
+        </div>
+
+        @if (EditModel.ClearType != EventClearType.DISABLED)
+        {
+            <div class="mb-3">
+                <label class="form-label">Minutes to Retain Messages</label>
+                <InputNumber @bind-Value=EditModel.ClearDuration class="form-control" />
+                <ValidationMessage For="() =>EditModel.ClearDuration" />
+            </div>
+        }
+
+        <div class="mb-3 form-check">
+            <InputCheckbox class="form-check-input" @bind-Value=@EditModel.Event_Enabled></InputCheckbox>
+            <label class="form-check-label">Discord Event Enabled</label>
+            <div class="form-text">If checked, will create a discord event for wars, starting at war prep time.</div>
+            <ValidationMessage For="() =>EditModel.Event_Enabled" />
+        </div>
+
+
+        @if (EditModel.Event_Enabled)
+        {
+            <div class="border rounded p-3 mb-3">
+                <div class="mb-3">
+                    <label class="form-label">Discord Event Title</label>
+                    <InputText class="form-control" @bind-Value=@EditModel.Event_Title></InputText>
+                    <div class="form-text">Title of Discord Event. {WAR_NO} will be replaced with war number. {CHANNEL} will be replaced with the specified war channel.</div>
+                    <ValidationMessage For="() =>EditModel.Event_Title" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Discord Event Description</label>
+                    <InputText class="form-control" @bind-Value=@EditModel.Event_Description></InputText>
+                    <div class="form-text">Description of Discord Event. {WAR_NO} will be replaced with war number. {CHANNEL} will be replaced with the specified war channel.</div>
+                    <ValidationMessage For="() =>EditModel.Event_Description" />
+                </div>
+            </div>
+        }
+    }
+
+    <div class="mb-3">
+        <div class="btn-group">
+            <button class="btn @edit.Class" type="submit" @onclick="() => Save()">@edit.Text</button>
+        </div>
+    </div>
+
+
+</EditForm>
+
+
+
+@code {
+    [Parameter]
+    public HustleGuildChannelEventLogic Event { get; set; }
+
+    [Inject]
+    ILogger<ModifyHustleEvent> log { get; set; }
+
+    private ChannelPicker channelPicker { get; set; }
+    private Model EditModel { get; set; } = new Model();
+    private EditButtonHelper edit = new();
+
+    private class Model
+    {
+        public bool Enabled { get; set; }
+
+        [Required(ErrorMessage = "A channel is required")]
+        public ulong? ChannelId { get; set; }
+
+        public string? PrepStartedMessage { get; set; }
+        public string? PrepEndingMessage { get; set; }
+        public string? EventStartedMessage { get; set; }
+        public string? EventEndingMessage { get; set; }
+
+        public bool Event_Enabled { get; set; }
+        [StringLength(maximumLength: int.MaxValue, MinimumLength = 1, ErrorMessage = "Please enter a title for the event.")]
+        public string? Event_Title { get; set; }
+
+        [StringLength(maximumLength: int.MaxValue, MinimumLength = 1, ErrorMessage = "Please enter a description for the event.")]
+        public string? Event_Description { get; set; }
+
+        public EventClearType ClearType { get; set; }
+
+        [Range(5, 1440, ErrorMessage = "Duration must be between 0 (Instant), and 1440 (One Day)")]
+        public int ClearDuration { get; set; }
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        EditModel.Enabled = Event.Enabled;
+        EditModel.ChannelId = Event.Channel.ChannelID;
+        EditModel.PrepStartedMessage = Event.Prep_Started_Message;
+        EditModel.PrepEndingMessage = Event.Prep_Ending_Message;
+        EditModel.EventStartedMessage = Event.Event_Started_Message;
+        EditModel.EventEndingMessage = Event.Event_Finished_Message;
+
+        EditModel.Event_Enabled = Event.Event_Enabled;
+        EditModel.Event_Title = Event.Event_Title;
+        EditModel.Event_Description = Event.Event_Description;
+
+        EditModel.ClearType = Event.ClearMethod;
+        EditModel.ClearDuration = Event.ClearDurationMins;
+
+        edit.Ready();
+
+        return base.OnParametersSetAsync();
+
+    }
+
+    public async Task Save()
+    {
+        try
+        {
+            log.LogDebug("Saving changes");
+            edit.Saving();
+
+            Event.Enabled = EditModel.Enabled;
+
+            Event.Prep_Started_Message = EditModel.PrepStartedMessage;
+            Event.Prep_Ending_Message = EditModel.PrepEndingMessage;
+            Event.Event_Started_Message = EditModel.EventStartedMessage;
+            Event.Event_Finished_Message = EditModel.EventEndingMessage;
+            Event.Event_Enabled = EditModel.Event_Enabled;
+            Event.Event_Title = EditModel.Event_Title;
+            Event.Event_Description = EditModel.Event_Description;
+            Event.ClearMethod = EditModel.ClearType;
+            Event.ClearDurationMins = EditModel.ClearDuration;
+
+            var selChannel = channelPicker.GetSelectedChannel();
+            Event.Channel.SetChannel(selChannel);
+
+
+            await Event.GuildLogic.SaveChangesAsync();
+            log.LogInformation("Changes saved.");
+            await edit.OnSavedAsync();
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Error while saving changes.");
+            edit.Error();
+        }
+    }
+    }

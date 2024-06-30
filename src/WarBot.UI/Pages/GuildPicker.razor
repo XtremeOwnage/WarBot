@@ -1,0 +1,92 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using System.Net.Http.Headers
+@using WarBot.Core
+@using WarBot.DataAccess
+@using WarBot.UI.Models.Discord
+
+<h1>Select A Guild</h1>
+
+@if (Guilds is null)
+{
+    <h3>Please wait - refreshing guilds.</h3>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">Note</h4>
+        <p>Only guilds where you have administrative rights will be displayed.</p>
+    </div>
+
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Guild Name</th>
+                <th>Is Owner</th>
+                <th>Is Admin</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var guild in Guilds)
+            {
+                <tr>
+                    <td>@guild.name</td>
+                    <td>@guild.owner</td>
+                    <td>@guild.Permissions.HasFlag(Permissions.ADMINISTRATOR)</td>
+                    <td>
+                        @if (guild.owner == true || guild.Permissions.HasFlag(Permissions.ADMINISTRATOR))
+                        {
+                            if (SelectedGuild != null && SelectedGuild.id == guild.id)
+                            {
+                                <input disabled type="button" class="btn btn-success" value="Selected" />
+                            }
+@*                            else if (!guild.HasWarbotConfig)
+                            {
+                                <a class="btn btn-primary" target="_blank" href="@BotConfig.DISCORD_INVITE_URL_FULL">Invite WarBOT</a>
+                            }*@
+                            else
+                            {
+                                <input type="button" class="btn btn-success" value="Set Active" @onclick="() => setGuild(guild)" />
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<a class="btn btn-primary" href="@BotConfig.DISCORD_INVITE_URL_FULL">Invite WarBOT</a>
+
+@code {
+
+    [CascadingParameter]
+    public Models.Discord.UserGuild? SelectedGuild { get; set; }
+
+    [Inject]
+    public DiscordAPI api { get; set; }
+
+    [Parameter]
+    public Action<UserGuild> OnGuildSelected { get; set; }
+
+    public List<UserGuild>? Guilds { get; set; }
+
+    private void setGuild(UserGuild guild)
+    {
+        OnGuildSelected?.Invoke(guild);
+    }
+    private async Task RefreshGuilds()
+    {
+        Guilds = await api.GetUserGuildsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshGuilds();
+            this.StateHasChanged();
+
+        }
+    }
+
+}

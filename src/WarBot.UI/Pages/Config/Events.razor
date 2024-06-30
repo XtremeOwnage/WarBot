@@ -1,0 +1,44 @@
+﻿@page "/Config/Events"
+@using Microsoft.AspNetCore.Authentication
+
+@using System.Net.Http.Headers
+@using Microsoft.EntityFrameworkCore
+@using WarBot.Data
+@using WarBot.DataAccess.Logic
+@using WarBot.Core
+@using WarBot.UI.Models.Discord
+
+<PageTitle>Guild Events</PageTitle>
+
+
+
+
+<div>
+    <h1>Guild Events Setup</h1>
+    <p>For documentation around user join / leaving events, please visit <a href="https://docs.warbot.dev/Features/UserJoinLeave/" target="_blank">Warbot docs</a></p>
+</div>
+
+<TabControl>
+    <TabPage Text="User Joined">
+        <h2>Configure new user greetings</h2>
+        <p>This event is triggered anytime a new user joins your discord guild. {User} will be automatically replaced with the new user's mention.</p>
+        <ModifyEvent Event=Logic.Event_UserJoin />
+    </TabPage>
+    <TabPage Text="User Leaving">
+        <h2>Configure user leaving</h2>
+         <p>This event is triggered anytime a user leaves your discord guild. {User} will be automatically replaced with the user's name.</p>
+        <ModifyEvent Event=Logic?.Event_UserLeft />
+    </TabPage>
+    <TabPage Text="WarBOT Updates">
+        <h2>Configure update notifications</h2>
+         <p>This event is triggered anytime an important message is released for this bot. It is recommended to leave these enabled.</p>
+        <ModifyEvent Event=Logic?.Event_Updates HideMessage=true />
+    </TabPage>
+</TabControl>
+
+
+@code {
+    [CascadingParameter]
+    public GuildLogic? Logic { get; set; }
+
+}

@@ -1,0 +1,132 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using WarBot.DataAccess.Logic.Events
+<EditForm Model="@EditModel">
+    <DataAnnotationsValidator />
+    <div class="mb-3 form-check">
+        <InputCheckbox class="form-check-input" @bind-Value=@EditModel.Enabled></InputCheckbox>
+        <label class="form-check-label">Event Enabled</label>
+        <div class="form-text">Is this event enabled for the selected server?</div>
+        <ValidationMessage For="() =>EditModel.Enabled" />
+    </div>
+
+    @if (EditModel.Enabled)
+    {
+        @if (!HideMessage)
+        {
+            <div class="mb-3">
+                <label class="form-label">Message</label>
+                <TagHelper Class="form-control" @bind-Value=@EditModel.Message></TagHelper>
+                <div class="form-text">The message to be displayed when this event occurs.</div>
+                <ValidationMessage For="() =>EditModel.Message" />
+            </div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label">Channel</label>
+            <ChannelPicker @ref=channelPicker SelectedChannelID="@EditModel.ChannelId" OnChannelSelected="(ch)=>EditModel.ChannelId = ch.Id" />
+            <div class="form-text">Which channel will the notification be sent to?</div>
+            <ValidationMessage For="() =>EditModel.ChannelId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Message Clear Method</label>
+            <InputSelect @bind-Value=EditModel.ClearType class="form-control custom-select">
+                <option value="@EventClearType.DISABLED">Don't Delete Messages</option>
+                <option value="@EventClearType.INDIVIDUAL_MESSAGE_TIMER">Clear Individual Messages</option>
+                <option value="@EventClearType.ENTIRE_CHANNEL">Clear Entire Channel</option>
+            </InputSelect>
+            <div class="form-text">
+                @EditModel.ClearType.GetDescriptionAttribute()
+            </div>
+            <ValidationMessage For="() =>EditModel.ClearType" />
+        </div>
+
+        @if (EditModel.ClearType != EventClearType.DISABLED)
+        {
+            <div class="mb-3">
+                <label class="form-label">Minutes to Retain Messages</label>
+                <InputNumber @bind-Value=EditModel.ClearDuration class="form-control" />
+                <ValidationMessage For="() =>EditModel.ClearDuration" />
+            </div>
+        }
+    }
+
+    <div class="btn-group">
+        <button class="btn @edit.Class" type="submit" @onclick="() => Save()">@edit.Text</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public WarBot.DataAccess.Logic.Events.GuildChannelEventLogic Event { get; set; }
+
+    /// <summary>
+    /// If specified, will hide the message field.
+    /// </summary>
+    [Parameter]
+    public bool HideMessage { get; set; } = false;
+
+    private ChannelPicker channelPicker { get; set; }
+
+    private Model EditModel { get; set; } = new Model();
+    private EditButtonHelper edit = new();
+
+    [Inject]
+    ILogger<ModifyEvent> log { get; set; }
+
+
+    private class Model
+    {
+        public bool Enabled { get; set; } = false;
+
+        [Required(ErrorMessage = "You must provide a message.", AllowEmptyStrings = false)]
+        public string? Message { get; set; }
+
+        [Required(ErrorMessage = "A channel is required.")]
+        public ulong? ChannelId { get; set; }
+
+        public EventClearType ClearType { get; set; }
+
+        [Range(5, 1440, ErrorMessage = "Duration must be between 0 (Instant), and 1440 (One Day)")]
+        public int ClearDuration { get; set; }
+
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        EditModel.Enabled = Event.Enabled;
+        EditModel.Message = Event.Message;
+        EditModel.ChannelId = Event.Channel.ChannelID;
+        EditModel.ClearType = Event.ClearMethod;
+        EditModel.ClearDuration = Event.ClearDurationMins;
+
+        edit.Ready();
+        return base.OnParametersSetAsync();
+    }
+
+    public async Task Save()
+    {
+        try
+        {
+            log.LogDebug("Saving changes...");
+            edit.Saving();
+
+            Event.Enabled = EditModel.Enabled;
+            Event.Message = EditModel.Message;
+            Event.ClearMethod = EditModel.ClearType;
+            Event.ClearDurationMins = EditModel.ClearDuration;
+
+            var selChannel = channelPicker.GetSelectedChannel();
+            Event.Channel.SetChannel(selChannel);
+
+            await Event.GuildLogic.SaveChangesAsync();
+            await edit.OnSavedAsync();
+            log.LogInformation("Changes saved.");
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Error while saving changes");
+            edit.Error();
+        }
+    }
+    }

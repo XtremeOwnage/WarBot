@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Dialogs\MimicMeDialog.cs" />
+	  <Compile Remove="Dialogs\PollOptionEntryDialog.cs" />
+	  <Compile Remove="GuildCommand\DIS_VotingModule.cs" />
+	  <Compile Remove="GuildCommand\DIS_WarMessagesModule.cs" />
+	  <Compile Remove="GuildCommand\_TemplateModule.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Dialogs\PollOptionEntryDialog.cs" />
+	  <None Include="GuildCommand\DIS_VotingModule.cs" />
+	  <None Include="GuildCommand\DIS_WarMessagesModule.cs" />
+	  <None Include="GuildCommand\_TemplateModule.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Discord.Interactions" />
+		<Using Include="Discord" />
+		<Using Include="Microsoft.Extensions.DependencyInjection" />
+		<Using Include="Discord.WebSocket" />
+		<Using Include="Discord.Interactions" />
+		<Using Include="Discord.ChannelPermission" Alias="ChannelPermission" />
+		<Using Include="Discord.GuildPermission" Alias="GuildPermission" />
+		<Using Include="Discord.IMessage" Alias="IMessage" />
+		<Using Include="WarBot.Core" />
+		<Using Include="WarBot.Modules.Base" />
+		<Using Include="WarBot.DataAccess.Helpers" />
+		<Using Include="WarBot.DataAccess.Logic" />
+		<Using Include="Microsoft.Extensions.Logging" />
+				
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Discord.Net.Interactions" Version="3.14.1" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.12" />
+		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
+		<PackageReference Include="DiscordBotsList.Api" Version="1.5.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\WarBot.DataAccess\WarBot.DataAccess.csproj" />
+	</ItemGroup>
+</Project>

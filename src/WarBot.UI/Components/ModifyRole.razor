@@ -1,0 +1,78 @@
+﻿@using System.ComponentModel.DataAnnotations
+<EditForm Model="@EditModel">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label class="form-label">Custom Name</label>
+        <InputText class="form-control" @bind-Value=@EditModel.CustomName></InputText>
+        <div class="form-text">If specified, role will be referred to as this name.</div>
+        <ValidationMessage For="() =>EditModel.CustomName" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Discord Role</label>
+        <RolePicker @ref=rolePicker SelectedRoleID="@EditModel.RoleId" />
+        <div class="form-text">Which discord role does this role correspond to?</div>
+        <ValidationMessage For="() =>EditModel.RoleId" />
+    </div>
+
+    <div class="btn-group">
+        <button class="btn @edit.Class" type="submit" @onclick="() => Save()">@edit.Text</button>
+    </div>
+</EditForm>
+
+
+
+@code {
+    [Parameter]
+    public WarBot.DataAccess.Logic.RoleLogic Role { get; set; }
+
+    [Inject]
+    ILogger<ModifyRole> log { get; set; }
+
+    private RolePicker rolePicker { get; set; }
+    private Model EditModel { get; set; } = new Model();
+    private EditButtonHelper edit = new EditButtonHelper();
+
+    private class Model
+    {
+        public string? CustomName { get; set; }
+        public ulong? RoleId { get; set; }
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        EditModel.CustomName = Role.CustomName;
+        EditModel.RoleId = Role.RoleID;
+
+        edit.Ready();
+
+        return base.OnParametersSetAsync();
+    }
+
+    public async Task Save()
+    {
+        try
+        {
+            log.LogDebug("Saving changes");
+            edit.Saving();
+
+            Role.CustomName = EditModel.CustomName;
+
+
+            var selRole = rolePicker.GetSelectedRole();
+            Role.SetRole(selRole);
+
+
+            await Role.GuildLogic.SaveChangesAsync();
+            log.LogInformation("Saved changes.");
+
+            await edit.OnSavedAsync();
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Error while saving");
+            edit.Error();
+        }
+    }
+    }

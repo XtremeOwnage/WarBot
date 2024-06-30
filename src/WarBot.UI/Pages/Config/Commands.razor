@@ -1,0 +1,71 @@
+﻿@page "/Config/Commands"
+@using Microsoft.AspNetCore.Authentication
+
+@using System.Net.Http.Headers
+@using Microsoft.EntityFrameworkCore
+@using WarBot.Data
+@using WarBot.DataAccess.Logic
+@using WarBot.Core
+@using WarBot.UI.Models.Discord
+
+<PageTitle>Custom Commands</PageTitle>
+
+
+<h1>Custom Slash Commands</h1>
+
+<div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">Note</h4>
+    <p>Once you have finished creating commands, you must use the discord command /reload-commands to sync the commands into your server.</p>
+    <p>You only need to run this command after adding, or removing a new command. It does not need to be ran for changing/adding/removing actions.</p>
+    <p>For documentation around custom commands, please visit <a href="https://docs.warbot.dev/Features/CustomCommands/" class="alert-link" target="_blank">Warbot docs</a></p>
+</div>
+<div class="alert alert-warning" role="alert">
+    /reload-commands has a daily limit! Once exceeded, you cannot sync commands to your server for the rest of the day.
+</div>
+
+<div>
+    @if (Data is not null && Data.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Command Name</th>
+                    <th>Description</th>
+                    <th>Min Role</th>
+                    <th>Enabled</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cmd in Data)
+                {
+                    string MinRole = cmd.MinimumRoleLevel == null ? "[NOT SET]" : Logic.Roles.GetRoleName(cmd.MinimumRoleLevel.Value);
+                    <tr>
+                        <td>@cmd.Name</td>
+                        <td>@cmd.Description</td>
+                        <td>@MinRole</td>
+                        <td>
+                            @(cmd.Enabled ? "True" : "False")
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" href="/Config/Command/@cmd.ID">Edit</a>
+                            <btn class="btn btn-danger" @onclick="() => Delete(cmd)">Delete</btn>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<div class="btn-group">
+    <a class=" btn btn-primary" href="/Config/Command">
+        Create New Command
+    </a>
+    @if (hasChanges)
+    {
+        <button class=" btn btn-success" @onclick=Save>
+            Save
+        </button>
+    }
+</div>

@@ -1,0 +1,82 @@
+﻿<button class="btn @Class" type="submit" @onclick=OnSavingAsync>@Text</button>
+
+@code {
+    [Parameter]
+    public bool StartReady { get; set; } = true;
+
+    [Parameter]
+    public Func<Task>? OnSaveAsync { get; set; }
+
+    [Parameter]
+    public TimeSpan? Time_Saved { get; init; } = TimeSpan.FromMilliseconds(500);
+
+    private string Text { get; set; } = "Save";
+    private string Class { get; set; } = "disabled";
+
+    public string Class_NotReady { get; init; } = "btn-success disabled";
+    public string Class_Ready { get; init; } = "btn-success";
+    public string Class_Saving { get; init; } = "btn-primary disabled";
+    public string Class_Saved { get; init; } = "btn-success disabled";
+    public string Class_Error { get; init; } = "btn-danger disabled";
+
+
+    public void Ready()
+    {
+        Class = Class_Ready;
+    }
+
+
+    private async Task OnSavingAsync()
+    {
+        Class = Class_Saving;
+        Text = "Saving... Please Wait";
+
+        try
+        {
+            if (OnSaveAsync is not null)
+                await OnSaveAsync().ContinueWith(async t => await OnSavedAsync());
+            else
+                await OnSavedAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Error();
+        }
+
+
+    }
+
+    private Task OnSavedAsync()
+    {
+        Class = Class_Saved;
+        Text = "Saved";
+
+        if (Time_Saved is null)
+        {
+            Class = Class_Ready;
+            Text = "Save";
+            return Task.CompletedTask;
+        }
+        return Task.Delay(Time_Saved.Value).ContinueWith((t) =>
+        {
+            Class = Class_Ready;
+            Text = "Save";
+        });
+    }
+
+    private void Error()
+    {
+        Class = Class_Error;
+        Text = "Error. Please Reload.";
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (StartReady)
+            Class = Class_Ready;
+        else
+            Class = Class_NotReady;
+    }
+}

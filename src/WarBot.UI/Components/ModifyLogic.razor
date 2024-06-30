@@ -1,0 +1,80 @@
+﻿<EditForm EditContext=@editContext OnValidSubmit=OnValidSubmit>
+    <Blazored.FluentValidation.FluentValidationValidator />
+    <ValidationMessage For="()=>Model.GuildLogic" />
+
+    @ChildContent
+
+    <div class="btn-group">
+        @if (!string.IsNullOrEmpty(GoBackURL))
+        {
+            <button class="btn btn-secondary" type="button" @onclick=GoBack>Back</button>
+        }
+        <button class="btn @_edit.Class" type="submit">@_edit.Text</button>
+    </div>
+
+    <div class="pt-5">
+        @NoPendingChanges
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public WarBot.DataAccess.Logic.Base.LogicBase? Model { get; set; }
+
+    [Parameter]
+    public RenderFragment NoPendingChanges { get; set; }
+
+    [Parameter]
+    public string GoBackURL { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public Func<Task> OnSavedAsync { get; set; }
+
+    [Inject]
+    private NavigationManager nav { get; set; }
+
+    [Inject]
+    private ILogger<ModifyLogic> log { get; set; }
+
+    private readonly EditButtonHelper _edit = new();
+
+
+
+    private EditContext editContext;
+
+    protected override void OnParametersSet()
+    {
+        editContext = new(Model);
+        base.OnParametersSet();
+        _edit.Ready();
+    }
+
+    private void GoBack()
+    {
+        nav.NavigateTo(GoBackURL, true);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        _edit.Saving();
+
+        try
+        {
+            await Model.GuildLogic.SaveChangesAsync();
+            if (OnSavedAsync is not null)
+                await OnSavedAsync.Invoke();
+            await _edit.OnSavedAsync();
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Something broke while saving changes.");
+            _edit.Error();
+        }
+        StateHasChanged();
+
+    }
+}

@@ -1,0 +1,74 @@
+﻿@page "/Config/Command"
+@page "/Config/Command/{ID:long}"
+
+<PageTitle>Custom Command</PageTitle>
+<h2>Modify Command</h2>
+@if (Data is not null)
+{
+    <ModifyLogic Model=Data OnSavedAsync=OnSavedAsync GoBackURL="/Config/Commands">
+        <ChildContent>
+            <div class="mb-3">
+                <div class="form-check">
+                    <InputCheckbox class="form-check-input" @bind-Value=@Data.Enabled></InputCheckbox>
+                    <label class="form-check-label">Enabled</label>
+                </div>
+                <div class="form-text">Is this command enabled? If not, nobody will be able to see or use it.</div>
+                <ValidationMessage For="() =>Data.Enabled" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Command Name</label>
+                <InputText class="form-control" @bind-Value=@Data.Name></InputText>
+                <div class="form-text">If specified, role will be referred to as this name.</div>
+                <ValidationMessage For="() =>Data.Name" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <InputTextArea class="form-control" @bind-Value=@Data.Description></InputTextArea>
+                <div class="form-text">A helpful description for you to identify this action.</div>
+                <ValidationMessage For="() =>Data.Description" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Minimum Role Level</label>
+                <RoleLevelPicker SelectedValue=Data.MinimumRoleLevel OnUpdated=roleSelected />
+                <div class="form-text">What is the minimum role ?</div>
+                <ValidationMessage For="() =>Data.MinimumRoleLevel" />
+            </div>
+        </ChildContent>
+        <NoPendingChanges>
+            @if (ID.HasValue)
+            {
+                <a class="btn btn-primary" type="button" href="/Config/Command/@ID/Action">Add Action</a>
+            }
+
+            <div>
+                @if (Actions is not null && Actions.Any())
+                {
+                    <h4>Actions</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <td>Actions</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cmd in Actions)
+                            {
+                                <tr>
+                                    <td>@cmd.Description</td>
+                                    <td>
+                                        <a class="btn btn-primary" href="/Config/Command/@ID/Action/@cmd.ID">Edit</a>
+                                        <btn class="btn btn-danger" @onclick="() => DeleteAction(cmd)">Delete</btn>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </NoPendingChanges>
+    </ModifyLogic>
+}

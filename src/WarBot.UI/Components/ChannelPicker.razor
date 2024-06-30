@@ -1,0 +1,30 @@
+﻿@using Discord
+@using Discord.Rest
+@using Discord.WebSocket
+@using Microsoft.AspNetCore.Authentication
+@using System.Net.Http.Headers
+@using WarBot.Core
+@using WarBot.DataAccess
+@using WarBot.UI.Models.Discord
+
+<div class="input-group">
+    @if (!Channels.Any())
+    {
+        <select disabled class="form-control">
+            <option value="" selected=@(!(SelectedChannelID.HasValue))>Please Wait... Loading channels.</option>
+        </select>
+        <button disabled class="btn btn-primary">Refresh</button>
+    }
+    else
+    {
+        <select class="form-control custom-select" @onchange="setChannel">
+            <option value="" selected=@(!(SelectedChannelID.HasValue))>--Not Set--</option>
+            @foreach (var item in Channels)
+            {
+                <option selected=@(SelectedChannelID == item.Id) value="@item.Id">@item.Name</option>
+                // Blazor needs to know what values it binds to!
+            }
+        </select>
+        <input type="button" class="btn btn-primary" @onclick="refreshChannels" value="Refresh" />
+    }
+</div>

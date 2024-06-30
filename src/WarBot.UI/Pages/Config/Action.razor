@@ -1,0 +1,58 @@
+﻿@page "/Config/Command/{CommandID:long}/Action"
+@page "/Config/Command/{CommandID:long}/Action/{ActionID:long}"
+@using WarBot.Data.Models
+
+<PageTitle>Custom Command</PageTitle>
+<h2>Modify Command</h2>
+@if (Data is not null)
+{
+    string GoBack = $"/Config/Command/{CommandID}";
+    <ModifyLogic Model="@Data" OnSavedAsync=AfterSaveAsync GoBackURL=@GoBack>
+
+        <ValidationMessage For="() => Data.Parent" />
+        <div class="mb-3">
+            <label class="form-label">Action Type</label>
+            <InputSelect @bind-Value=Data.Type class="form-control custom-select">
+                <option>--Not Selected--</option>
+                <option value="@CustomCommandActionType.REPLY_WITH_MESSAGE">Reply with message</option>
+                <option value="@CustomCommandActionType.BROADCAST_MESSAGE_TARGET_CHANNEL">Send Message to channel</option>
+                <option value="@CustomCommandActionType.ADD_ROLE_CALLING_USER">Add User To Role</option>
+                <option value="@CustomCommandActionType.REMOVE_ROLE_CALLING_USER">Remove User From Role</option>
+            </InputSelect>
+            <ValidationMessage For="() =>Data.Type" />
+        </div>
+
+        @if (Data.Type != CustomCommandActionType.NEW_ACTION)
+        {
+            @if (CustomCommandActionType.FLAGS_HAS_CUSTOM_MESSAGE.HasFlag(Data.Type))
+            {
+                <div class="mb-3">
+                    <label class="form-label">Message</label>
+                    <InputTextArea class="form-control" @bind-Value=@Data.Message></InputTextArea>
+                    <div class="form-text">The message to be delivered</div>
+                    <ValidationMessage For="() =>Data.Message" />
+                </div>
+            }
+
+            @if (CustomCommandActionType.FLAGS_HAS_TARGET_CHANNEL.HasFlag(Data.Type))
+            {
+                <div class="mb-3">
+                    <label class="form-label">Target Channel</label>
+                    <ChannelPicker SelectedChannelID="@Data.TargetChannel.ChannelID" OnChannelSelected="(ch) => Data.TargetChannel.SetChannel(ch)" />
+                    <div class="form-text">Which channel will this action apply to?</div>
+                    <ValidationMessage For="() =>Data.TargetChannel" />
+                </div>
+            }
+
+            @if (CustomCommandActionType.FLAGS_HAS_TARGET_ROLE.HasFlag(Data.Type))
+            {
+                <div class="mb-3">
+                    <label class="form-label">Target Role</label>
+                    <RolePicker SelectedRoleID="@Data.RoleID" OnRoleSelected="(role) => Data.TargetRole.SetRole(role)" />
+                    <div class="form-text">Which role will this action apply to?</div>
+                    <ValidationMessage For="() =>Data.TargetRole" />
+                </div>
+            }
+        }
+    </ModifyLogic>
+}

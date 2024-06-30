@@ -1,0 +1,37 @@
+﻿<div class="input-group">
+    <InputText class="@Class" @bind-Value=@Value></InputText>
+    <input type="button" class="btn btn-primary" @onclick="Toggle" value="Add Mention" />
+</div>
+
+@if (Show)
+{
+    <div class="modal show" tabindex="-1" role="dialog" style="display:block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Mention</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick=Toggle>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Choose mention type</h5>
+                    <TabControl>
+                        <br />
+                        <br />
+                        <TabPage Text="Role">
+                            <RolePicker OnRoleSelected="(r) => mention = r.Mention"></RolePicker>
+                        </TabPage>
+                        <TabPage Text="Channel">
+                            <ChannelPicker OnChannelSelected="(r) => mention = r?.Mention"></ChannelPicker>
+                        </TabPage>
+                    </TabControl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick=AddMention>Add Mention</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Toggle">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

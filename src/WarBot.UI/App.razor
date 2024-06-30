@@ -1,0 +1,37 @@
+﻿<ErrorBoundary>
+    <ChildContent>
+
+        <CascadingAuthenticationState>
+            <Router AppAssembly="@typeof(App).Assembly">
+                <Found Context="routeData">
+                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+                </Found>
+                <NotFound>
+                    <PageTitle>Not found</PageTitle>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <p role="alert">Sorry, there's nothing at this address.</p>
+                    </LayoutView>
+                </NotFound>
+            </Router>
+        </CascadingAuthenticationState>
+
+
+    </ChildContent>
+    <ErrorContent>
+        Something went wrong. You should click <a href="/logout" @onclick="logout">log out</a>, and then refresh your page.
+        <p>
+            If this happens frequently, let us know.
+        </p>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code{
+    [Inject]
+    public NavigationManager navigationManager { get; set; }
+
+    private void logout()
+    {
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,128 @@
+﻿@inherits LayoutComponentBase
+@using Discord
+@using Models.Discord;
+@using WarBot.Data
+
+<CascadingValue Value="SelectedGuild">
+    <CascadingValue Value=Logic>
+        <PageTitle>WarBot.UI</PageTitle>
+        <style type="text/css">
+            .guilddisplay {
+                text-align: left;
+            }
+        </style>
+        <div class="page">
+            <div class="sidebar">
+
+                <NavMenu />
+            </div>
+            <main>
+                <div class="top-row px-4 auth">
+                    @if (GuildSelected)
+                    {
+                        <div class="mx-auto">
+                            Current Guild: @SelectedGuild?.name
+
+                            <input type="button" value="Reset" @onclick="async () => await setGuild(null)" />
+                        </div>
+                    }
+                    <div class="col-lg-6">
+                        <LoginDisplay />
+                    </div>
+                </div>
+
+                <article class="content px-4">
+                    @if (!GuildSelected)
+                    {
+                        if (HasLoaded)
+                        {
+                            <WarBot.UI.Pages.GuildPicker OnGuildSelected="async (guild) => await setGuild(guild)" />
+                        }
+                        else
+                        {
+                            <h4>Please wait a moment.</h4>
+                        }
+                    }
+                    else
+                    {
+                        @Body
+                    }
+                </article>
+            </main>
+        </div>
+    </CascadingValue>
+</CascadingValue>
+
+@code {
+
+    Models.Discord.UserGuild? SelectedGuild { get; set; }
+    GuildLogic? Logic { get; set; }
+
+    private bool GuildSelected => Logic is not null;
+
+    private bool HasLoaded = false;
+
+    [Inject]
+    private ProtectedSessionStorage store { get; set; }
+
+    [Inject]
+    private WarDB db { get; set; }
+
+    [Inject]
+    private Discord.Rest.DiscordRestClient Discord { get; set; }
+
+    [Inject]
+    public NavigationManager nav { get; set; }
+
+    [Inject]
+    ILogger<MainLayout> log { get; set; }
+
+    private async Task setGuildLogic(UserGuild guild)
+    {
+        if (guild?.ID_NUM is null)
+        {
+            Logic = null;
+            return;
+        }
+
+        var dGuild = await Discord.GetGuildAsync(guild.ID_NUM.Value);
+
+        if (dGuild is null)
+        {
+            Logic = null;
+            return;
+        }
+
+        Logic = await GuildLogic.GetOrCreateAsync(Discord, db, dGuild);
+    }
+    private async Task setGuild(UserGuild guild)
+    {
+        log.LogInformation("Guild set to {guild}", guild?.name ?? "NULL");
+        await store.SetAsync("guild", guild);
+        SelectedGuild = guild;
+        await setGuildLogic(guild);
+        this.StateHasChanged();
+    }
+
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var getTask = await store.GetAsync<Models.Discord.UserGuild>("guild");
+            if (getTask.Success && (getTask.Value?.ID_NUM.HasValue ?? false))
+            {
+                SelectedGuild = getTask.Value;
+                await setGuildLogic(SelectedGuild);
+                HasLoaded = true;
+                this.StateHasChanged();
+            }
+            else
+            {
+                SelectedGuild = null;
+                HasLoaded = true;
+                this.StateHasChanged();
+            }
+        }
+    }
+}

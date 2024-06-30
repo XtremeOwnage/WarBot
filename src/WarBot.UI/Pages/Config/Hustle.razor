@@ -1,0 +1,79 @@
+﻿@page "/Config/Hustle"
+@using Microsoft.AspNetCore.Authentication
+
+@using System.Net.Http.Headers
+@using Microsoft.EntityFrameworkCore
+@using WarBot.Data
+@using WarBot.DataAccess.Logic
+@using WarBot.Core
+@using WarBot.UI.Models.Discord
+
+<PageTitle>Hustle Castle Settings</PageTitle>
+
+
+<h1>Guild Events Setup</h1>
+
+<div>
+    <p>For documentation around hustle castle features, please visit <a href="https://docs.warbot.dev/Features/HustleFeatures/" target="_blank">Warbot docs</a></p>
+</div>
+
+<div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">Note</h4>
+    <p>Displayed event times are in UTC</p>
+</div>
+
+<TabControl>
+    <div class="pt-2">
+    <TabPage Text="Wars">
+        <TabControl>
+            <TabPage Text="@(WarTimeHelper.War_1.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure War #1</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_War_1 />
+            </TabPage>
+            <TabPage Text="@(WarTimeHelper.War_2.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure War #2</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_War_2 />
+            </TabPage>
+            <TabPage Text="@(WarTimeHelper.War_3.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure War #3</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_War_3 />
+            </TabPage>
+            <TabPage Text="@(WarTimeHelper.War_4.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure War #4</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_War_4 />
+            </TabPage>
+        </TabControl>
+    </TabPage>
+    <TabPage Text="Expeditions">
+        <TabControl>
+            <TabPage Text="@(WarTimeHelper.Expedition_1.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure Expedition #1</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_Expedition_1 />
+            </TabPage>
+            <TabPage Text="@(WarTimeHelper.Expedition_2.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure Expedition #2</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_Expedition_2 />
+            </TabPage>
+            <TabPage Text="@(WarTimeHelper.Expedition_3.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure Expedition #3</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_Expedition_3 />
+            </TabPage>
+            <TabPage Text="@(WarTimeHelper.Expedition_4.UTC_EventStart.ToString("HH:mm"))">
+                <h2>Configure Expedition #4</h2>
+                <ModifyHustleEvent Event=Logic?.HustleSettings?.Event_Expedition_4 />
+            </TabPage>
+        </TabControl>
+    </TabPage>
+    <TabPage Text="Portal">
+        <h2>Configure Portal</h2>
+        <ModifyEvent Event=Logic?.HustleSettings?.Event_Portal />
+    </TabPage>
+    </div>
+</TabControl>
+
+
+@code {
+    [CascadingParameter]
+    public GuildLogic? Logic { get; set; }
+
+    }
