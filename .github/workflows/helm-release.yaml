@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev/v5
 
 jobs:
   release:
@@ -20,7 +21,7 @@ jobs:
 
     - name: Package Helm Chart
       run: |
-        helm package deployment/helm/warbot
+        helm package deployment/helm
         helm repo index . --url https://XtremeOwnage.github.io/WarBot/
     
     - name: Deploy to GitHub Pages
