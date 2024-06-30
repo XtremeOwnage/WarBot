@@ -1,0 +1,181 @@
+# Default values for WarBot.
+
+# Replica count for the deployment
+replicaCount: 1
+
+# Image configuration
+image:
+  repository: git.kube.xtremeownage.com/xtremeownage.com/warbot
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# UI settings
+ui:
+  enabled: true
+  image:
+    repository: git.kube.xtremeownage.com/xtremeownage.com/warbot-ui
+    tag: latest
+    pullPolicy: IfNotPresent
+
+# Database settings
+database:
+  enabled: true  # Set to false if using an external database
+  host: db
+  port: 3306
+  name: warbot
+  user: warbot_user
+  password: secret
+
+# External database configuration (if not using the provided database)
+externalDatabase:
+  host: ""
+  port: 3306
+  name: ""
+  user: ""
+  password: ""
+
+# Discord settings
+discord:
+  id: "437983722193551363"
+  token: "your-discord-token"
+  secret: "your-discord-secret"
+
+# Public URL
+publicUrl: "https://warbot.dev/"
+
+# Kubernetes service settings
+service:
+  type: ClusterIP
+  port: 80
+
+# UI service settings
+uiService:
+  type: ClusterIP
+  port: 80
+
+# Ingress settings
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+
+# Traefik IngressRoute settings
+ingressRoute:
+  enabled: false
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`warbot.dev`)
+      kind: Rule
+      services:
+        - name: web
+          port: http
+
+# NetworkPolicy settings
+networkPolicies:
+  enabled: true
+  policies:
+    - name: default-policy
+      podSelector:
+        matchLabels:
+          app: warbot-prod
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app: warbot-prod
+      egress:
+        - to:
+            - podSelector:
+                matchLabels:
+                  app: warbot-prod
+    - name: egress-allow-internet
+      podSelector:
+        matchLabels:
+          networking/allow-internet-egress: "true"
+      egress:
+        - to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+                except:
+                  - 10.0.0.0/8
+                  - 192.168.0.0/16
+                  - 172.16.0.0/20
+    - name: egress-web
+      podSelector:
+        matchLabels:
+          app: warbot-prod
+          role: web
+      egress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: traefik
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: traefik
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: cloudflare
+              podSelector:
+                matchLabels:
+                  app: cloudflared
+    - name: ingress-allow-traefik
+      podSelector:
+        matchLabels:
+          app: warbot-prod
+          role: web
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: traefik
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: traefik-traefik
+                  app.kubernetes.io/name: traefik
+    - name: egress-allow-dns
+      podSelector:
+        matchLabels:
+          networking/allow-internet-egress: "true"
+      egress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: kube-system
+              podSelector:
+                matchLabels:
+                  k8s-app: kube-dns
+          ports:
+            - protocol: TCP
+              port: 53
+            - protocol: UDP
+              port: 53
+    - name: ingress-allow-cloudflare
+      podSelector:
+        matchLabels:
+          app: warbot-prod
+          role: web
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: cloudflare
+              podSelector:
+                matchLabels:
+                  app: cloudflared
+
+resources: {}
+autoscaling: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Environment variables
+env:
+  SUPERADMIN_USER_IDS: "381654208073433091"
+  ADMIN_GUILDS: "458992709718245377,381654582444687370"
+  PUBLIC_URL: "https://warbot.dev/"

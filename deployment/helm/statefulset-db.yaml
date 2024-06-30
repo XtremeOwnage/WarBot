@@ -1,0 +1,45 @@
+{{- if .Values.database.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: db
+  selector:
+    matchLabels:
+      role: db
+  template:
+    metadata:
+      labels:
+        app: {{ include "warbot.name" . }}
+        role: db
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: db
+          image: mariadb:latest
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            runAsUser: 30001
+            runAsGroup: 30001
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+              - ALL
+          envFrom:
+            - secretRef:
+                name: db-secrets
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: db
+          ports:
+            - containerPort: 3306
+              name: sql
+{{- end }}

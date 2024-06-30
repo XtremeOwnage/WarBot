@@ -1,0 +1,18 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ include "warbot.name" . }}
+    role: db
+  ports:
+    - name: sql
+      port: 3306
+      protocol: TCP
+      targetPort: sql
+{{- end }}

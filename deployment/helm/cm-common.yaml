@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+data:
+  DB_HOST: {{ .Values.database.host | quote }}
+  DB_PORT: {{ .Values.database.port | quote }}
+  PUBLIC_URL: {{ .Values.publicUrl | quote }}

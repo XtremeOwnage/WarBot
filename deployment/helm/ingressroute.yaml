@@ -1,0 +1,21 @@
+{{- if .Values.ingressRoute.enabled -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "warbot.fullname" . }}
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    {{- toYaml .Values.ingressRoute.entryPoints | nindent 4 }}
+  routes:
+  {{- range .Values.ingressRoute.routes }}
+    - match: {{ .match | quote }}
+      kind: {{ .kind }}
+      services:
+      {{- range .services }}
+        - name: {{ .name }}
+          port: {{ .port }}
+      {{- end }}
+  {{- end }}
+{{- end }}

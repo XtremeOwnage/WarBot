@@ -1,0 +1,11 @@
+{{- if .Values.ui.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+data:
+  PUBLIC_URL: {{ .Values.publicUrl | quote }}
+{{- end }}

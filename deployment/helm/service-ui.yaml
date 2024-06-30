@@ -1,0 +1,19 @@
+{{- if .Values.ui.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.uiService.type }}
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "warbot.selectorLabels" . | nindent 4 }}
+    role: web
+{{- end }}

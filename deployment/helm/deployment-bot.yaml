@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "warbot.fullname" . }}-bot
+  labels:
+    {{- include "warbot.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "warbot.selectorLabels" . | nindent 6 }}
+      role: bot
+  template:
+    metadata:
+      labels:
+        {{- include "warbot.selectorLabels" . | nindent 8 }}
+        role: bot
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: warbot
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SUPERADMIN_USER_IDS
+              value: {{ .Values.env.SUPERADMIN_USER_IDS | quote }}
+            - name: ADMIN_GUILDS
+              value: {{ .Values.env.ADMIN_GUILDS | quote }}
+            - name: DB_HOST
+              value: {{ if .Values.database.enabled }}db{{ else }}{{ .Values.externalDatabase.host | quote }}{{ end }}
+            - name: DB_PORT
+              value: {{ if .Values.database.enabled }}3306{{ else }}{{ .Values.externalDatabase.port | quote }}{{ end }}
+            - name: DB_NAME
+              value: {{ if .Values.database.enabled }}warbot{{ else }}{{ .Values.externalDatabase.name | quote }}{{ end }}
+            - name: DB_USER
+              value: {{ if .Values.database.enabled }}warbot_user{{ else }}{{ .Values.externalDatabase.user | quote }}{{ end }}
+            - name: DB_PASS
+              value: {{ if .Values.database.enabled }}secret{{ else }}{{ .Values.externalDatabase.password | quote }}{{ end }}
+            - name: DISCORD_TOKEN
+              value: {{ .Values.discord.token | quote }}
+            - name: DISCORD_ID
+              value: {{ .Values.discord.id | quote }}
+            - name: DISCORD_SECRET
+              value: {{ .Values.discord.secret | quote }}
+            - name: PUBLIC_URL
+              value: {{ .Values.publicUrl | quote }}
+          ports:
+            - containerPort: 80
+              name: http
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "end=$(date -u +%s);start=$(stat -c %Z /proc/1 | awk '{print int($1)}'); test $(($end-$start)) -lt 172800"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
