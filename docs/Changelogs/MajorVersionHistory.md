@@ -28,3 +28,9 @@ Most of the bot was re-written to no longer leverage parsed message commands, an
 As well, the bot was updated to .NET 6.
 
 The largest addition to this version asides from using application commands, is the inclusion of its [Configuration Website](https://warbot.dev/) allowing the bot to be configured without the use of any commands.
+
+## Version 5.0
+
+Warbot's source code lived on my personal Gitea server for the last few years.
+
+After discord decided to require a photo ID for me to continue hosting warbot- I have decided instead, to publish it to allow anyone to self host it.
