@@ -22,8 +22,8 @@ repo_name: WarBOT
 extra:
   social:
     - icon: fontawesome/brands/discord 
-      link: https://discord.gg/uEkamH9
-      name: WarBOT Development Discord
+      link: https://static.xtremeownage.com/discord
+      name: Discord
     - icon: fontawesome/brands/github 
       link: https://github.com/XtremeOwnage/WarBot
       name: WarBOT Github
