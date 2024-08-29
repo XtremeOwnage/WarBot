@@ -2,7 +2,13 @@ name: Sync labels
 on:
   # Allow manually triggering this job.
   workflow_dispatch:
-  
+    inputs:
+      dry-run:
+        description: "Should a dry-run be performed? Will not perform any changes."
+        required: false
+        default: false
+        type: boolean
+        
 permissions:
   # This job will need write permissions to issues (to manage labels)
   issues: write
@@ -19,4 +25,4 @@ jobs:
         config-file: https://raw.githubusercontent.com/XtremeOwnage/Defaults/main/.github/labels.yml
 
         # If you want the action just to show you the preview of the changes, without actually editing the labels, set this to true
-        dry-run: false
+        dry-run: ${{ inputs.dry-run }}
