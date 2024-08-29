@@ -17,11 +17,8 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         
-        # Template repo which contains defaults, and templates.
-        source-repo: XtremeOwnage/Template
-        
-        # Labels configuration is stored here
-        config-file: .github/labels.yml
+        # Use config from a repository containing defaults.
+        config-file: https://raw.githubusercontent.com/XtremeOwnage/Template/main/.github/workflows/sync-upstream-repo.yml
 
         # If you want the action just to show you the preview of the changes, without actually editing the labels, set this to true
         dry-run: true
