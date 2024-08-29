@@ -19,4 +19,4 @@ jobs:
         config-file: https://raw.githubusercontent.com/XtremeOwnage/Defaults/main/.github/labels.yml
 
         # If you want the action just to show you the preview of the changes, without actually editing the labels, set this to true
-        dry-run: true
+        dry-run: false
