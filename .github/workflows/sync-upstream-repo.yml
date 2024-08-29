@@ -15,10 +15,8 @@ jobs:
     steps:
     - uses: EndBug/label-sync@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        
         # Use config from a repository containing defaults.
-        config-file: https://raw.githubusercontent.com/XtremeOwnage/Template/main/.github/workflows/sync-upstream-repo.yml
+        config-file: https://raw.githubusercontent.com/XtremeOwnage/Defaults/main/.github/labels.yml
 
         # If you want the action just to show you the preview of the changes, without actually editing the labels, set this to true
         dry-run: true
