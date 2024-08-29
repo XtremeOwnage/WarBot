@@ -15,7 +15,7 @@ jobs:
       with:
         # Labels
         # Only issues with these labels are checked.
-        only-labels: lifecycle/new, lifecycle/active, lifecycle/stale
+        # only-labels: lifecycle/new, lifecycle/active, lifecycle/stale
 
         # Exempt / Frozen
         exempt-issue-labels: 'lifecycle/frozen'
