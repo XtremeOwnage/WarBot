@@ -1,6 +1,9 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Request new feature or functionality for this project
+title: ''
+labels: kind/feature, lifecycle/active, needs-triage, priority/awaiting-more-evidence
+assignees: ''
 
 ---
 
